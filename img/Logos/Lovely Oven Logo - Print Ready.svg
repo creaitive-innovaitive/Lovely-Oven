@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <defs>
+    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3A6B45"></stop>
+      <stop offset="100%" stop-color="#1E2C22"></stop>
+    </linearGradient>
+  </defs>
+
+  
+  <circle cx="250" cy="250" r="250" fill="url(#greenGradient)"></circle>
+
+  
+  <circle cx="250" cy="250" r="236" fill="none" stroke="#F2C880" stroke-width="2.8"></circle>
+
+  
+  <circle cx="250" cy="250" r="222" fill="none" stroke="#F2C880" stroke-width="0.9" opacity="0.45"></circle>
+
+  
+  <text x="250" y="130" text-anchor="middle" font-family="&#39;DM Sans&#39;, DM Sans, Helvetica Neue, Arial, sans-serif" font-size="20" font-weight="500" fill="#F2C880" letter-spacing="11">HOMEMADE</text>
+
+  
+  <line x1="86" y1="154" x2="414" y2="154" stroke="#F2C880" stroke-width="1.6" opacity="0.55"></line>
+
+  
+  <text x="250" y="239" text-anchor="middle" font-family="&#39;Playfair Display&#39;, Playfair Display, Georgia, serif" font-size="82" font-weight="700" fill="#ffffff" letter-spacing="7">LOVELY</text>
+
+  
+  <text x="250" y="314" text-anchor="middle" font-family="&#39;Playfair Display&#39;, Playfair Display, Georgia, serif" font-size="59" font-weight="400" font-style="italic" fill="#F2C880" letter-spacing="2">Oven</text>
+
+  
+  <line x1="86" y1="339" x2="414" y2="339" stroke="#F2C880" stroke-width="1.6" opacity="0.55"></line>
+
+  
+  <text x="250" y="384" text-anchor="middle" font-family="&#39;DM Sans&#39;, DM Sans, Helvetica Neue, Arial, sans-serif" font-size="20" font-weight="500" fill="#F2C880" letter-spacing="8" opacity="0.85">ORIGINAL RECIPES</text>
+
+</svg>
