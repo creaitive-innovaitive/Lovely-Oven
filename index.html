@@ -14,16 +14,13 @@
 <!-- ── Navigation ── -->
 <nav>
   <a href="#" class="nav-logo">
-    <div>
-      <img src= "img/Logos/LovelyOvenLogo.svg" alt="Lovely Oven Logo" class="logo-img">
-    </div>
-    Lovely Oven
+    <img src="img/Logos/LovelyOvenLogo.svg" alt="Lovely Oven Logo" class="logo-img">
+    <span class="logo-text"><span class="logo-lovely">Lovely</span><span class="logo-oven"> Oven</span></span>
   </a>
   <ul class="nav-links">
     <li><a href="#heritage">Heritage</a></li>
     <li><a href="#food">Food</a></li>
-    <li><a href="#world">World</a></li>
-    <li><a href="#" onclick="openPopup(event)">Menu</a></li>
+    <li><a href="menu.html">Menu</a></li>
   </ul>
   <div class="hamburger" onclick="toggleMobile()" id="hamburger">
     <span></span><span></span><span></span>
@@ -35,7 +32,7 @@
   <button class="close-btn" onclick="toggleMobile()">✕</button>
   <a href="#heritage" onclick="toggleMobile()">Heritage</a>
   <a href="#food" onclick="toggleMobile()">Food</a>
-  <a href="#world" onclick="toggleMobile()">World</a>
+  <a href="menu.html" onclick="toggleMobile()">Menu</a>
 </div>
 
 <!-- ── Hero ── -->
@@ -79,76 +76,34 @@
     <ellipse cx="26" cy="330" rx="6" ry="2" fill="#3A5C45"/>
   </svg>
 
-  <p class="hero-eyebrow">Warmth · Flavour · Story</p>
+  <p class="hero-eyebrow">Fresh · Chicken · Flavours</p>
   <h1 class="hero-title">
-    Fire, Herbs<br>
-    <span class="accent-line">&amp; Heart.</span>
+    Home cooked, Fresh<br>
+    <span class="accent-line">&amp; Healthy.</span>
     <span class="highlight">The Lovely<br>Oven.</span>
   </h1>
   <div class="hero-divider"></div>
-  <p class="hero-sub">Where the smoky heat of the open grill meets the fragrant soul of Vietnamese kitchens. Every dish carries a memory, every bite tells a story.</p>
+  <p class="hero-sub">Chicken cooked properly, fresh ingredients, never frozen, made with love. </p>
   <div class="hero-cta">
-    <a href="#cards" class="btn-primary"><span>Discover Our Story</span></a>
+    <a href="#heritage" class="btn-primary"><span>Discover Our Story</span></a>
   </div>
 </section>
 
 <!-- ── Red Ticker Band ── -->
 <div class="chili-band">
   <div class="chili-ticker" id="ticker">
-    <span>Slow-Grilled Over Charcoal</span>
-    <span>Marinated with Lemongrass &amp; Chilli</span>
-    <span>Fresh Herbs from the Garden</span>
-    <span>Nourishing Families Since 2026</span>
-    <span>Lovely Oven — Đà Nẵng, Vietnam</span>
-    <span>Slow-Roasted Over Charcoal</span>
-    <span>Marinated with Lemongrass &amp; Chilli</span>
-    <span>Fresh Herbs from the Garden</span>
-    <span>Nourishing Families Since 2026</span>
-    <span>Lovely Oven — Đà Nẵng, Vietnam</span>
+    <span>Fresh Chicken</span>
+    <span>Flavoursome herbs &amp; spices</span>
+    <span>Tasty Side Dishes</span>
+    <span>Generous portions of rice</span>
+    <span>Free Delivery available</span>
+    <span>Fresh Chicken</span>
+    <span>Flavoursome herbs &amp; spices</span>
+    <span>Tasty Side Dishes</span>
+    <span>Generous portions of rice</span>
+    <span>Free Delivery available</span>
   </div>
 </div>
-
-<!-- ── Cards / Explore Grid ── -->
-<section class="cards-section" id="cards">
-  <div class="cards-intro">
-    <p class="section-label">Explore Everything</p>
-    <h2 class="section-title" style="color:var(--warm-cream)">Five Paths Into<br><em style="color:var(--gold)">Our World</em></h2>
-    <p class="section-body">From the roots of our recipes to the hands that cook them — every corner of our story is worth exploring.</p>
-  </div>
-
-  <div class="cards-grid">
-    <a href="#heritage" class="card card-heritage">
-      <div class="card-img"></div>
-      <div class="card-overlay"></div>
-      <div class="card-content">
-        <p class="card-label">Explore</p>
-        <h3 class="card-title">Heritage</h3>
-        <p class="card-desc">Our roots run deep — from riverside villages to city kitchens. Discover how tradition shapes every dish we serve.</p>
-        <span class="card-arrow">Learn More</span>
-      </div>
-    </a>
-    <a href="#food" class="card card-food">
-      <div class="card-img"></div>
-      <div class="card-overlay"></div>
-      <div class="card-content">
-        <p class="card-label">Explore</p>
-        <h3 class="card-title">Food</h3>
-        <p class="card-desc">Pho, bún bò, and fire-licked grills. Our menu is a love letter to Vietnamese home cooking, elevated with care.</p>
-        <span class="card-arrow">Our Menu</span>
-      </div>
-    </a>
-    <a href="#world" class="card card-world">
-      <div class="card-img"></div>
-      <div class="card-overlay"></div>
-      <div class="card-content">
-        <p class="card-label">Explore</p>
-        <h3 class="card-title">World</h3>
-        <p class="card-desc">The flavours of Vietnam, ready to travel. Find us in your city and bring a taste of home wherever you are.</p>
-        <span class="card-arrow">Find Us</span>
-      </div>
-    </a>
-  </div>
-</section>
 
 <!-- ── Welcome / Heritage Section ── -->
 <section class="welcome-section" id="heritage">
@@ -176,7 +131,7 @@
   <div class="philosophy-inner">
     <div style="text-align:center; max-width:560px; margin:0 auto;">
       <p class="section-label" style="justify-content:center;">Our Philosophy</p>
-      <h2 class="section-title" style="color:var(--warm-cream);">Fire, Soul &amp;<br><em style="color:var(--gold)">Honest Ingredients</em></h2>
+      <h2 class="section-title" style="color:var(--ink);">Fire, Soul &amp;<br><em style="color:var(--accent)">Honest Ingredients</em></h2>
     </div>
     <div class="philosophy-grid">
       <div class="phil-card">
@@ -202,7 +157,7 @@
 </section>
 
 <!-- ── Green Ticker Band ── -->
-<div style="background:var(--olive-dark); padding:1rem 2rem; overflow:hidden; white-space:nowrap; border-top:1px solid rgba(196,163,90,0.15);">
+<div style="background:var(--olive-darker); padding:1rem 2rem; overflow:hidden; white-space:nowrap; border-top:1px solid rgba(196,163,90,0.15);">
   <div class="chili-ticker" style="animation-duration:25s;">
     <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🌿 No artificial flavours</span>
     <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🥬 Locally sourced vegetables</span>
@@ -217,61 +172,34 @@
   </div>
 </div>
 
-<!-- ── World / CTA Banner ── -->
-<section style="background:var(--deep-red); padding:4rem 2rem; text-align:center; position:relative; overflow:hidden;" id="world">
-  <div style="position:absolute; inset:0; background:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%221%22 fill=%22%23FAF3E8%22 opacity=%220.06%22/%3E%3C/svg%3E');"></div>
-  <div style="position:relative; z-index:1; max-width:600px; margin:0 auto;">
-    <p style="font-size:0.7rem; letter-spacing:0.3em; text-transform:uppercase; color:rgba(250,243,232,0.7); margin-bottom:1rem;">Find Your Table</p>
-    <h2 style="font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3.5rem); color:var(--warm-cream); font-weight:900; line-height:1.1; margin-bottom:1.2rem;">A Table is Waiting<br><em style="color:var(--gold);">For You</em></h2>
-    <p style="color:rgba(250,243,232,0.7); line-height:1.7; margin-bottom:2rem; font-size:0.95rem;">Wherever you are in Vietnam — or the world — we'd love to welcome you home. Find your nearest Lovely Oven and book your seat.</p>
-    <a href="#" class="btn-primary" style="background:var(--gold); color:var(--dark);"><span>Where we deliver</span></a>
-  </div>
-</section>
-
 <!-- ── Footer ── -->
 <footer>
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <div class="brand-name">Lovely Oven</div>
-        <p>Honouring Vietnamese home cooking, one fire-grilled dish at a time.</p>
+        <div class="brand-name"><span class="logo-lovely">Lovely</span><span class="logo-oven"> Oven</span></div>
+        <p>Home cooked, Fresh & Healthy.</p>
       </div>
       <div class="footer-links">
         <h4>Explore</h4>
         <ul>
           <li><a href="#heritage">Our Heritage</a></li>
           <li><a href="#food">Our Food</a></li>
-          <li><a href="#world">Find Us</a></li>
+          <li><a href="menu.html">Menu</a></li>
+
         </ul>
       </div>
-      <div class="footer-links">
-        <h4>More</h4>
-        <ul>
-          <li><a href="#">Catering</a></li>
-          <li><a href="#">Gift Vouchers</a></li>
-          <li><a href="#">Careers</a></li>
-          <li><a href="#">Press</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-      </div>
+
       <div class="footer-links">
         <h4>Social</h4>
         <ul>
           <li><a href="#">Instagram</a></li>
           <li><a href="#">Facebook</a></li>
-          <li><a href="#">TikTok</a></li>
-          <li><a href="#">YouTube</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <p>© 2026 Lovely Oven. All rights reserved.</p>
-      <div class="footer-legal">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Use</a>
-        <a href="#">Site Map</a>
-        <a href="#">FAQs</a>
-      </div>
     </div>
   </div>
 </footer>
@@ -298,16 +226,9 @@
     <p class="popup-body">Explore the stories, food, and people that make Lovely Oven what it is.</p>
     <ul class="popup-nav">
       <li><a href="#heritage" onclick="closePopup()">Heritage — Our Story</a></li>
-      <li><a href="#food" onclick="closePopup()">Food — Our Menu</a></li>
-      <li><a href="#people" onclick="closePopup()">People — Our Family</a></li>
-      <li><a href="#restaurants" onclick="closePopup()">Restaurants — Our Spaces</a></li>
-      <li><a href="#world" onclick="closePopup()">World — Find Us</a></li>
+      <li><a href="#food" onclick="closePopup()">Food — Our Philosophy</a></li>
+      <li><a href="menu.html" onclick="closePopup()">Menu — Order Now</a></li>
     </ul>
-    <div class="popup-links">
-      <a href="#">FAQs</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Site Map</a>
-    </div>
   </div>
 </div>
 

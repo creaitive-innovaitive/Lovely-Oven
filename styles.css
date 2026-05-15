@@ -4,26 +4,26 @@
 
 /* ── CSS Variables ── */
 :root {
-  --red: #7A5C2E;
-  --deep-red: #4A3518;
+  --red: #4A7A58;
+  --deep-red: #1D3327;
   --gold: #C4A35A;
-  --warm-cream: #B5A882;
-  --dark: #2C2210;
-  --charcoal: #3D3020;
-  --green: #6B7A4A;
-  --light-green: #9AAA72;
-  --text-muted: #5C4E30;
-  --border: rgba(90,68,32,0.25);
+  --warm-cream: #F0EBE0;
+  --dark: #1C2820;
+  --charcoal: #2C4A35;
+  --green: #4A7A58;
+  --light-green: #7AAA88;
+  --text-muted: #4A5040;
+  --border: rgba(44,74,53,0.18);
 
-  /* Extended palette from menu image */
-  --olive: #B5A882;
-  --olive-light: #CFC8A8;
-  --olive-dark: #8A7D5A;
-  --olive-darker: #5C5035;
-  --parchment: #EDE8D8;
-  --ink: #2C2210;
+  /* Extended palette — forest green + cream */
+  --olive: #FAF0DC;
+  --olive-light: #FDF6E8;
+  --olive-dark: #4A7A58;
+  --olive-darker: #2C4A35;
+  --parchment: #FAF7F2;
+  --ink: #1C2820;
   --accent: #C4A35A;
-  --accent-muted: rgba(196,163,90,0.25);
+  --accent-muted: rgba(196,163,90,0.2);
 }
 
 /* ── Reset & Base ── */
@@ -83,7 +83,7 @@ nav {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  background: rgba(44,34,16,0.97);
+  background: linear-gradient(135deg, #1A3527 0%, #2C5040 50%, #1E3D2E 100%);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(196,163,90,0.2);
   padding: 0 2rem;
@@ -97,13 +97,23 @@ nav {
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.5rem;
   font-weight: 600;
-  font-style: italic;
-  color: var(--accent);
   text-decoration: none;
   letter-spacing: 0.04em;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+.logo-text {
+  margin-left: 0.4rem;
+}
+.logo-lovely {
+  color: var(--parchment);
+  font-style: normal;
+  font-weight: 700;
+}
+.logo-oven {
+  color: var(--accent);
+  font-style: italic;
 }
 .nav-logo .lotus-icon {
   width: 32px; height: 32px;
@@ -208,9 +218,9 @@ nav {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(196,163,90,0.18) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 20% 80%, rgba(107,122,74,0.15) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(181,168,130,0.12) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(74,122,88,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 20% 80%, rgba(44,74,53,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(196,163,90,0.10) 0%, transparent 60%);
 }
 
 /* Lantern decorations */
@@ -246,10 +256,10 @@ nav {
 .lantern-body {
   width: 22px;
   height: 32px;
-  background: linear-gradient(135deg, #C8392B, #8B1A10);
+  background: linear-gradient(135deg, #C4A35A, #8A7035);
   border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
   position: relative;
-  box-shadow: 0 0 12px rgba(200,57,43,0.6), inset 0 0 6px rgba(255,200,100,0.3);
+  box-shadow: 0 0 12px rgba(196,163,90,0.55), inset 0 0 6px rgba(255,220,130,0.3);
 }
 .lantern-body::before {
   content: '';
@@ -372,13 +382,13 @@ nav {
   transition: all 0.3s;
   position: relative;
   overflow: hidden;
-  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  border-radius: 3px;
 }
 .btn-primary::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--olive-light);
+  background: var(--charcoal);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.3s ease;
@@ -432,7 +442,7 @@ section { padding: 6rem 2rem; }
 }
 
 .section-body {
-  color: var(--olive-darker);
+  color: var(--text-muted);
   line-height: 1.75;
   max-width: 560px;
   font-weight: 400;
@@ -473,11 +483,11 @@ section { padding: 6rem 2rem; }
 
 /* ── Category Cards ── */
 .cards-section {
-  background: var(--olive-darker);
+  background: var(--olive);
   padding: 5rem 2rem;
 }
-.cards-section .section-title { color: var(--parchment); }
-.cards-section .section-body { color: rgba(237,232,216,0.65); }
+.cards-section .section-title { color: var(--ink); }
+.cards-section .section-body { color: var(--text-muted); }
 .cards-section .section-label { justify-content: center; }
 
 .cards-intro {
@@ -515,11 +525,11 @@ section { padding: 6rem 2rem; }
 .card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(28,16,8,0.92) 0%, rgba(28,16,8,0.2) 60%, transparent 100%);
+  background: linear-gradient(to top, rgba(15,28,20,0.92) 0%, rgba(15,28,20,0.2) 60%, transparent 100%);
   transition: opacity 0.4s;
 }
 .card:hover .card-overlay {
-  background: linear-gradient(to top, rgba(28,16,8,0.98) 0%, rgba(28,16,8,0.5) 70%, rgba(28,16,8,0.1) 100%);
+  background: linear-gradient(to top, rgba(15,28,20,0.98) 0%, rgba(15,28,20,0.5) 70%, rgba(15,28,20,0.1) 100%);
 }
 
 .card-content {
@@ -578,7 +588,7 @@ section { padding: 6rem 2rem; }
 
 /* Card background illustrations (CSS only) */
 .card-heritage .card-img {
-  background: linear-gradient(135deg, #4A3518 0%, #2C2210 40%, #1A1508 100%);
+  background: linear-gradient(135deg, #1D3A28 0%, #152518 40%, #0D1A10 100%);
 }
 .card-heritage .card-img::before {
   content: '🌶';
@@ -591,7 +601,7 @@ section { padding: 6rem 2rem; }
 }
 
 .card-food .card-img {
-  background: linear-gradient(135deg, #4A4A2A 0%, #2E2E1A 40%, #1A1A0D 100%);
+  background: linear-gradient(135deg, #1A3A2A 0%, #112518 40%, #0A1810 100%);
 }
 .card-food .card-img::before {
   content: '🍜';
@@ -603,7 +613,7 @@ section { padding: 6rem 2rem; }
 }
 
 .card-people .card-img {
-  background: linear-gradient(135deg, #5C4A20 0%, #3A2E10 40%, #201A06 100%);
+  background: linear-gradient(135deg, #1D3A30 0%, #122820 40%, #0A1A14 100%);
 }
 .card-people .card-img::before {
   content: '🏮';
@@ -615,7 +625,7 @@ section { padding: 6rem 2rem; }
 }
 
 .card-restaurants .card-img {
-  background: linear-gradient(135deg, #3A3520 0%, #20200D 40%, #101006 100%);
+  background: linear-gradient(135deg, #152E22 0%, #0D1E16 40%, #071410 100%);
 }
 .card-restaurants .card-img::before {
   content: '🏯';
@@ -627,7 +637,7 @@ section { padding: 6rem 2rem; }
 }
 
 .card-world .card-img {
-  background: linear-gradient(135deg, #3A4A20 0%, #202E0A 40%, #101804 100%);
+  background: linear-gradient(135deg, #1A3A28 0%, #10261A 40%, #08180E 100%);
 }
 .card-world .card-img::before {
   content: '🌿';
@@ -666,7 +676,7 @@ section { padding: 6rem 2rem; }
 }
 .welcome-frame-1 {
   inset: 0 30px 30px 0;
-  background: linear-gradient(135deg, #5C5035, #8A7D5A, #3D3020);
+  background: linear-gradient(135deg, #2C4A35, #4A7A58, #1D3327);
   overflow: hidden;
 }
 .welcome-frame-1::before {
@@ -738,7 +748,7 @@ section { padding: 6rem 2rem; }
 
 /* ── Philosophy Section ── */
 .philosophy-section {
-  background: var(--olive-dark);
+  background: var(--olive);
   padding: 6rem 2rem;
   position: relative;
 }
@@ -763,29 +773,29 @@ section { padding: 6rem 2rem; }
   background: var(--border);
 }
 .phil-card {
-  background: rgba(44,34,16,0.92);
+  background: #fff;
   padding: 2.5rem 2rem;
   text-align: center;
   transition: background 0.3s;
+  border-radius: 4px;
 }
-.phil-card:hover { background: rgba(61,48,32,0.95); }
+.phil-card:hover { background: var(--olive-light); }
 .phil-icon {
   font-size: 2.5rem;
   margin-bottom: 1.2rem;
   display: block;
-  filter: drop-shadow(0 0 8px rgba(212,168,67,0.3));
 }
 .phil-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.4rem;
   font-weight: 600;
-  color: var(--parchment);
+  color: var(--ink);
   margin-bottom: 0.75rem;
   letter-spacing: 0.04em;
 }
 .phil-body {
   font-size: 0.85rem;
-  color: rgba(237,232,216,0.6);
+  color: var(--text-muted);
   line-height: 1.7;
   letter-spacing: 0.03em;
 }
@@ -799,9 +809,9 @@ section { padding: 6rem 2rem; }
 
 /* ── Footer ── */
 footer {
-  background: #1A1508;
+  background: #122018;
   border-top: 1px solid rgba(196,163,90,0.2);
-  padding: 3rem 2rem 2rem;
+  padding: 1rem 2rem 0.6rem;
 }
 .footer-inner {
   max-width: 1100px;
@@ -811,18 +821,24 @@ footer {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 2rem;
+  gap: 1rem;
   flex-wrap: wrap;
-  padding-bottom: 2.5rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 2rem;
+  margin-bottom: 0.6rem;
 }
 .footer-brand .brand-name {
   font-family: 'Cormorant Garamond', serif;
   font-size: 2rem;
   font-weight: 600;
-  font-style: italic;
+}
+.footer-brand .brand-name .logo-lovely {
+  color: var(--parchment);
+  font-style: normal;
+}
+.footer-brand .brand-name .logo-oven {
   color: var(--accent);
+  font-style: italic;
 }
 .footer-brand p {
   font-size: 0.82rem;
@@ -837,10 +853,10 @@ footer {
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--gold);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 .footer-links ul { list-style: none; }
-.footer-links li { margin-bottom: 0.6rem; }
+.footer-links li { margin-bottom: 0.3rem; }
 .footer-links a {
   color: var(--olive-dark);
   text-decoration: none;
@@ -899,7 +915,7 @@ footer {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(28,16,8,0.85);
+  background: rgba(15,28,20,0.85);
   z-index: 2000;
   align-items: center;
   justify-content: center;

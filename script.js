@@ -9,7 +9,15 @@ window.addEventListener('scroll', () => {
 });
 
 /* ── Cookie Banner ── */
+(function() {
+  if (localStorage.getItem('cookieDismissed')) {
+    const banner = document.getElementById('cookieBanner');
+    if (banner) banner.style.display = 'none';
+  }
+})();
+
 function dismissCookie() {
+  localStorage.setItem('cookieDismissed', '1');
   const banner = document.getElementById('cookieBanner');
   const scrollBtn = document.getElementById('scrollTop');
   if (banner) banner.style.display = 'none';
