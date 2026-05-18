@@ -721,7 +721,8 @@ section { padding: 6rem 2rem; }
 
 /* ── Welcome Section ── */
 .welcome-section {
-  background: var(--olive-light);
+  background: #e8e0d0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
   display: flex;
   align-items: center;
   justify-content: center;
@@ -797,6 +798,14 @@ section { padding: 6rem 2rem; }
   text-align: center;
 }
 
+.welcome-text {
+  background: rgba(253, 248, 238, 0.92);
+  border-radius: 16px;
+  padding: 2.5rem 2.8rem;
+  box-shadow: 0 6px 32px rgba(44,74,53,0.10), 0 1px 4px rgba(0,0,0,0.06);
+  border: 1px solid rgba(196,163,90,0.18);
+}
+
 .welcome-text .section-title span {
   color: var(--olive-darker);
   display: block;
@@ -819,7 +828,8 @@ section { padding: 6rem 2rem; }
 
 /* ── Philosophy Section ── */
 .philosophy-section {
-  background: var(--olive);
+  background: #d6cfc2;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.07'/%3E%3C/svg%3E");
   padding: 6rem 2rem;
   position: relative;
 }
@@ -844,13 +854,15 @@ section { padding: 6rem 2rem; }
   background: var(--border);
 }
 .phil-card {
-  background: #fff;
+  background: rgba(253, 248, 238, 0.95);
   padding: 2.5rem 2rem;
   text-align: center;
-  transition: background 0.3s;
-  border-radius: 4px;
+  transition: background 0.3s, transform 0.3s;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(44,74,53,0.08);
+  border: 1px solid rgba(196,163,90,0.15);
 }
-.phil-card:hover { background: var(--olive-light); }
+.phil-card:hover { background: #fff; transform: translateY(-4px); }
 .phil-icon {
   font-size: 2.5rem;
   margin-bottom: 1.2rem;
