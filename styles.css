@@ -438,6 +438,35 @@ nav {
 .btn-primary:hover::before { transform: scaleX(1); transform-origin: left; }
 .btn-primary span { position: relative; z-index: 1; }
 
+.btn-ring {
+  position: relative;
+  display: inline-flex;
+  border-radius: 5px;
+}
+
+.btn-ring::before,
+.btn-ring::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 7px;
+  background: conic-gradient(from var(--ring-angle),
+    transparent 0%,
+    #4d96ff 15%,
+    #c77dff 30%,
+    #ff6b6b 45%,
+    #ffd93d 58%,
+    #6bcb77 72%,
+    transparent 88%
+  );
+  animation: ring-spin 3s linear infinite;
+}
+
+.btn-ring::after {
+  filter: blur(7px);
+  opacity: 0.65;
+}
+
 /* ── Keyframe Animations ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(30px); }
