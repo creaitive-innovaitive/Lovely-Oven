@@ -797,6 +797,15 @@ section { padding: 6rem 2rem; }
   text-align: center;
 }
 
+.welcome-text {
+  background: #2C4A35;
+  border-radius: 4px;
+  padding: 2.8rem 3rem;
+}
+.welcome-text .section-label { color: var(--accent); }
+.welcome-text .section-title { color: var(--parchment); }
+.welcome-text .section-body { color: rgba(250,247,242,0.82); }
+
 .welcome-text .section-title span {
   color: var(--olive-darker);
   display: block;
