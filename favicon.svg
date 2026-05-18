@@ -2,7 +2,7 @@
   <!-- Dark green circle with gold border -->
   <circle cx="16" cy="16" r="15" fill="#2C4A35" stroke="#C4A35A" stroke-width="1.5"/>
   <!-- L in white, O in gold -->
-  <text text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="15">
-    <tspan x="13" y="22" fill="#FAF7F2">L</tspan><tspan fill="#C4A35A" font-style="italic">O</tspan>
+  <text x="16" y="16" text-anchor="middle" dominant-baseline="central" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="15">
+    <tspan fill="#FAF7F2">L</tspan><tspan fill="#C4A35A" font-style="italic">O</tspan>
   </text>
 </svg>
