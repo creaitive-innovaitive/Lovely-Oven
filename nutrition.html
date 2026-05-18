@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nutrition — Lovely Oven</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="logo-ring"><img src="img/Logos/LovelyOvenLogo.svg" alt="Lovely Oven Logo" class="logo-img"></span>
+    <span class="logo-text"><span class="logo-lovely">Lovely</span><span class="logo-oven"> Oven</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="nutrition.html">Nutrition</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMobile()" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ── Mobile Menu ── -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close-btn" onclick="toggleMobile()">✕</button>
+  <a href="index.html" onclick="toggleMobile()">Home</a>
+  <a href="menu.html" onclick="toggleMobile()">Menu</a>
+  <a href="nutrition.html" onclick="toggleMobile()">Nutrition</a>
+</div>
+
+<!-- ── Page Hero ── -->
+<section class="nutrition-hero">
+  <div class="nutrition-hero-overlay"></div>
+  <div class="nutrition-hero-content">
+    <p class="hero-eyebrow">Honest Food · Real Ingredients</p>
+    <h1 class="hero-title"><span class="accent-line">What Goes Into</span><span class="highlight"> Every Dish.</span></h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">We believe you should know exactly what you're eating. Full transparency on ingredients, cooking methods, and where everything comes from.</p>
+  </div>
+</section>
+
+<!-- ── Nutritional Information ── -->
+<section class="nutri-section">
+  <div class="nutri-inner">
+    <p class="section-label">What We Count</p>
+    <h2 class="section-title">Nutritional <span>Information</span></h2>
+    <p class="section-body">Detailed nutritional breakdowns for every dish on our menu. Add your content here — calories, protein, carbohydrates, fats, and allergen information for each meal.</p>
+
+    <div class="nutri-placeholder">
+      <p>Nutritional content coming soon — check back for full macro and allergen breakdowns per dish.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Cooking Procedures ── -->
+<section class="nutri-section nutri-section--alt">
+  <div class="nutri-inner">
+    <p class="section-label">How We Cook</p>
+    <h2 class="section-title">Our Cooking <span>Procedures</span></h2>
+    <p class="section-body">Every dish starts fresh each morning. No shortcuts, no reheating, no compromises. Detail your cooking methods here — marinating times, cooking temperatures, preparation processes.</p>
+
+    <div class="nutri-cards">
+      <div class="nutri-card">
+        <div class="nutri-card-icon">🔥</div>
+        <h3>Grilling & Roasting</h3>
+        <p>Add your grilling and roasting process here — temperatures, timings, and the techniques that make your chicken special.</p>
+      </div>
+      <div class="nutri-card">
+        <div class="nutri-card-icon">🌿</div>
+        <h3>Marinades & Seasoning</h3>
+        <p>Detail your marinade process — how long, which spices, and what makes your flavour profile unique.</p>
+      </div>
+      <div class="nutri-card">
+        <div class="nutri-card-icon">🥘</div>
+        <h3>Sides & Accompaniments</h3>
+        <p>Describe how your sides are prepared fresh daily — rice cooking methods, coleslaw preparation, and more.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Ingredient Sourcing ── -->
+<section class="nutri-section">
+  <div class="nutri-inner">
+    <p class="section-label">Where It Comes From</p>
+    <h2 class="section-title">Our Ingredients <span>&amp; Sourcing</span></h2>
+    <p class="section-body">We know our farmers by name. Every ingredient is chosen with care — freshness, ethics, and quality come first. Add your supplier information and sourcing commitments here.</p>
+
+    <div class="nutri-cards">
+      <div class="nutri-card">
+        <div class="nutri-card-icon">🐓</div>
+        <h3>Our Chicken</h3>
+        <p>Add details about your poultry supplier — farm name, location, welfare standards, and why you chose them.</p>
+      </div>
+      <div class="nutri-card">
+        <div class="nutri-card-icon">🥬</div>
+        <h3>Fresh Vegetables</h3>
+        <p>Describe where your vegetables come from — local market, specific farms, or weekly fresh deliveries.</p>
+      </div>
+      <div class="nutri-card">
+        <div class="nutri-card-icon">🌾</div>
+        <h3>Rice &amp; Grains</h3>
+        <p>Share the story behind your rice — variety, origin, and what makes it the perfect base for your dishes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand-name"><span class="logo-lovely">Lovely</span><span class="logo-oven"> Oven</span></div>
+        <p>Home cooked, Fresh &amp; Healthy.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="menu.html">Menu</a></li>
+          <li><a href="nutrition.html">Nutrition</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Social</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Facebook</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Lovely Oven. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script src="script.js"></script>
+</body>
+</html>

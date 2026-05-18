@@ -1079,3 +1079,91 @@ footer {
 @media (max-width: 480px) {
   .cards-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Nutrition Page ── */
+.nutrition-hero {
+  min-height: 55vh;
+  background-image: url('img/menu/menu-top.jpg');
+  background-size: cover;
+  background-position: center 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 2rem 4rem;
+  position: relative;
+}
+.nutrition-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+}
+.nutrition-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.nutri-section {
+  padding: 5rem 2rem;
+  background: var(--olive-light);
+}
+.nutri-section--alt {
+  background: var(--parchment);
+}
+.nutri-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.nutri-inner .section-body {
+  max-width: 680px;
+  margin-bottom: 3rem;
+}
+
+.nutri-placeholder {
+  background: var(--parchment);
+  border: 1.5px dashed rgba(196,163,90,0.4);
+  border-radius: 8px;
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.nutri-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.nutri-card {
+  background: var(--parchment);
+  border-radius: 8px;
+  padding: 2rem 1.5rem;
+  border-top: 3px solid var(--accent);
+}
+.nutri-section--alt .nutri-card {
+  background: var(--olive-light);
+}
+.nutri-card-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.nutri-card h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+}
+.nutri-card p {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .nutri-cards { grid-template-columns: 1fr; }
+  .nutrition-hero { min-height: 45vh; }
+}
