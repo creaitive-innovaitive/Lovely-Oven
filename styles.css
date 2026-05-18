@@ -203,7 +203,7 @@ nav {
 /* ── Hero ── */
 .hero {
   min-height: 100vh;
-  background-image: url('img/menu/Menu Top Image.jpg');
+  background-image: url('img/menu/menu-top.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
