@@ -121,6 +121,49 @@ nav {
 .logo-img {
   height: 44px;
   width: auto;
+  position: relative;
+  z-index: 1;
+}
+
+@property --ring-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.logo-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.logo-ring::before,
+.logo-ring::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(from var(--ring-angle),
+    transparent 0%,
+    #4d96ff 15%,
+    #c77dff 30%,
+    #ff6b6b 45%,
+    #ffd93d 58%,
+    #6bcb77 72%,
+    transparent 88%
+  );
+  animation: ring-spin 3s linear infinite;
+}
+
+.logo-ring::after {
+  filter: blur(7px);
+  opacity: 0.65;
+}
+
+@keyframes ring-spin {
+  to { --ring-angle: 360deg; }
 }
 
 .nav-links {
