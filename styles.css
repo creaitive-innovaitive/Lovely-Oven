@@ -203,7 +203,9 @@ nav {
 /* ── Hero ── */
 .hero {
   min-height: 100vh;
-  background: var(--olive-darker);
+  background-image: url('img/menu/Menu Top Image.jpg');
+  background-size: cover;
+  background-position: center;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -217,10 +219,7 @@ nav {
 .hero-bg {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(74,122,88,0.18) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 20% 80%, rgba(44,74,53,0.15) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(196,163,90,0.10) 0%, transparent 60%);
+  background: rgba(0, 0, 0, 0.48);
 }
 
 /* Lantern decorations */
