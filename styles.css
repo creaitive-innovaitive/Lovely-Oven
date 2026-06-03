@@ -1216,9 +1216,11 @@ footer {
 .instagram-cta > * { position: relative; z-index: 1; }
 
 .zalo-qr {
-  width: 220px;
-  height: 220px;
-  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+  width: 280px;
+  max-width: 100%;
+  height: auto;
   border-radius: 8px;
 }
 .instagram-icon {
