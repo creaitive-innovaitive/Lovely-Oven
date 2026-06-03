@@ -1214,6 +1214,15 @@ footer {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='1' fill='%23D4A843' opacity='0.12'/%3E%3C/svg%3E");
 }
 .instagram-cta > * { position: relative; z-index: 1; }
+
+.zalo-qr {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+  border: 3px solid rgba(196,163,90,0.35);
+}
 .instagram-icon {
   font-size: 3.5rem;
   margin-bottom: 1rem;
