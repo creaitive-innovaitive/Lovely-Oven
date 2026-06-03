@@ -1241,3 +1241,267 @@ footer {
   .instagram-cta { padding: 3rem 1.5rem; }
   .social-embed-wrapper { border-radius: 4px; min-height: 500px; }
 }
+
+/* ── Nutrition Page — Dish Cards ── */
+.dish-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.dish-card {
+  background: var(--parchment);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(196,163,90,0.2);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dish-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(28,40,32,0.1);
+}
+
+.dish-photo {
+  height: 170px;
+  background: linear-gradient(135deg, var(--olive-darker) 0%, var(--ink) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.dish-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.dish-photo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.dish-photo-placeholder span {
+  font-size: 3rem;
+  opacity: 0.55;
+}
+
+.dish-photo-placeholder p {
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(250,243,232,0.35);
+}
+
+.dish-card-body {
+  padding: 1.25rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dish-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.2rem;
+}
+
+.dish-flavour {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.1rem;
+  font-style: italic;
+}
+
+.macro-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: rgba(196,163,90,0.06);
+  border-radius: 6px;
+  padding: 0.75rem 0.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(196,163,90,0.15);
+}
+
+.macro-item {
+  text-align: center;
+  padding: 0 0.25rem;
+}
+
+.macro-item + .macro-item {
+  border-left: 1px solid rgba(196,163,90,0.18);
+}
+
+.macro-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  line-height: 1;
+}
+
+.macro-unit {
+  font-size: 0.58rem;
+  color: var(--accent);
+  font-family: 'Jost', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.macro-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.dish-footer {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(196,163,90,0.15);
+}
+
+.spice-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spice-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.spice-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.spice-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(196,163,90,0.18);
+}
+
+.spice-dot.lit { background: #C4703A; }
+
+.allergen-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.allergen-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  background: rgba(74,120,88,0.1);
+  color: var(--olive-darker);
+  border: 1px solid rgba(74,120,88,0.22);
+}
+
+.allergen-badge--warn {
+  background: rgba(196,112,58,0.1);
+  color: #7A3800;
+  border-color: rgba(196,112,58,0.28);
+}
+
+.nutri-disclaimer {
+  margin-top: 2.5rem;
+  padding: 1rem 1.5rem;
+  background: rgba(196,163,90,0.07);
+  border-left: 3px solid rgba(196,163,90,0.35);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  border-radius: 0 4px 4px 0;
+}
+
+/* ── Allergen Table ── */
+.allergen-table-wrap {
+  overflow-x: auto;
+  margin-top: 2.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(196,163,90,0.2);
+}
+
+.allergen-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--parchment);
+  font-size: 0.82rem;
+  min-width: 540px;
+}
+
+.allergen-table th {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  font-family: 'Jost', sans-serif;
+  padding: 0.9rem 1rem;
+  text-align: center;
+  background: rgba(196,163,90,0.07);
+  border-bottom: 1px solid rgba(196,163,90,0.2);
+  white-space: nowrap;
+}
+
+.allergen-table th:first-child { text-align: left; }
+
+.allergen-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(196,163,90,0.1);
+  text-align: center;
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+
+.allergen-table tr:last-child td { border-bottom: none; }
+.allergen-table tr:hover td { background: rgba(196,163,90,0.04); }
+
+.allergen-table td:first-child {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+}
+
+.at-tick  { color: var(--olive-dark); }
+.at-cross { color: rgba(196,163,90,0.3); }
+.at-warn  { color: #C4703A; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; }
+
+@media (max-width: 900px) {
+  .dish-cards { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .dish-cards { grid-template-columns: 1fr; }
+}
