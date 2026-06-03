@@ -1167,3 +1167,133 @@ footer {
   .nutri-cards { grid-template-columns: 1fr; }
   .nutrition-hero { min-height: 45vh; }
 }
+
+/* ── Social Page ── */
+.social-hero {
+  min-height: 55vh;
+  background-image: url('img/menu/menu-top.jpg');
+  background-size: cover;
+  background-position: center 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 2rem 4rem;
+  position: relative;
+}
+.social-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(28,40,32,0.72) 0%, rgba(44,74,53,0.65) 100%);
+}
+.social-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.social-section {
+  padding: 5rem 2rem;
+  background: var(--olive-light);
+}
+.social-section--alt {
+  background: var(--parchment);
+}
+.social-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+.social-inner .section-body {
+  max-width: 620px;
+  margin-bottom: 2.5rem;
+}
+
+.social-embed-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  border: 1px solid rgba(196,163,90,0.25);
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 540px;
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(28,40,32,0.08);
+  min-height: 640px;
+}
+
+.social-follow-btn {
+  display: inline-block;
+  padding: 0.85rem 2.5rem;
+  font-family: 'Jost', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 3px;
+  transition: all 0.3s;
+  border: 1.5px solid transparent;
+}
+.social-follow-btn span { position: relative; z-index: 1; }
+.social-follow-btn--fb {
+  background: var(--accent);
+  color: var(--ink);
+  border-color: var(--accent);
+}
+.social-follow-btn--fb:hover {
+  background: var(--olive-darker);
+  color: var(--parchment);
+  border-color: var(--olive-darker);
+}
+.social-follow-btn--ig {
+  background: var(--accent);
+  color: var(--ink);
+  border-color: var(--accent);
+}
+.social-follow-btn--ig:hover {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.instagram-cta {
+  background: linear-gradient(135deg, var(--olive-darker) 0%, var(--ink) 100%);
+  border-radius: 12px;
+  padding: 4rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(196,163,90,0.2);
+}
+.instagram-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='1' fill='%23D4A843' opacity='0.12'/%3E%3C/svg%3E");
+}
+.instagram-cta > * { position: relative; z-index: 1; }
+.instagram-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+.instagram-cta h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  color: var(--parchment);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.instagram-cta p {
+  color: rgba(250,243,232,0.7);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 440px;
+  margin: 0 auto 2rem;
+}
+
+@media (max-width: 768px) {
+  .social-hero { min-height: 45vh; }
+  .instagram-cta { padding: 3rem 1.5rem; }
+  .social-embed-wrapper { border-radius: 4px; min-height: 500px; }
+}
