@@ -1152,16 +1152,15 @@ footer {
 }
 
 .social-embed-wrapper {
-  display: flex;
-  justify-content: center;
+  display: block;
   margin: 0 auto;
   border: 1px solid rgba(196,163,90,0.25);
   border-radius: 8px;
   overflow: hidden;
-  max-width: 540px;
+  width: 500px;
+  max-width: 100%;
   background: #fff;
   box-shadow: 0 4px 24px rgba(28,40,32,0.08);
-  min-height: 640px;
 }
 
 .social-follow-btn {
@@ -1239,7 +1238,8 @@ footer {
 @media (max-width: 768px) {
   .social-hero { min-height: 45vh; }
   .instagram-cta { padding: 3rem 1.5rem; }
-  .social-embed-wrapper { border-radius: 4px; min-height: 500px; }
+  .social-embed-wrapper { border-radius: 4px; width: 100%; }
+  .social-embed-wrapper iframe { width: 100%; }
 }
 
 /* ── Nutrition Page — Dish Cards ── */
