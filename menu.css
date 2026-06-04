@@ -42,8 +42,36 @@ body {
 }
 
 @media print {
-  body { background: none; }
-  .page { margin: 0; box-shadow: none; }
+  /* Hide everything except the menu pages */
+  nav, .mobile-menu, .menu-intro, .menu-tags-footer,
+  footer, .scroll-top, .cookie-banner, .pdf-download-btn {
+    display: none !important;
+  }
+
+  body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  .menu-page-wrapper {
+    padding: 0 !important;
+    background: none !important;
+  }
+
+  .page {
+    margin: 0 !important;
+    box-shadow: none !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+
+  /* Ensure the last page doesn't force an extra blank page */
+  .page:last-of-type {
+    page-break-after: auto;
+  }
 }
 
 /* ══════════════════════════════
@@ -873,6 +901,34 @@ body {
   padding: 1.5rem 2rem;
   background: var(--olive);
 }
+/* Download button */
+.pdf-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1.5rem;
+  padding: 0.7rem 1.6rem;
+  background: var(--green);
+  color: #fff;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.pdf-download-btn::before {
+  content: '↓';
+  font-size: 1rem;
+  font-weight: 700;
+}
+.pdf-download-btn:hover {
+  background: var(--green-mid);
+  transform: translateY(-1px);
+}
+
 .menu-tag {
   font-family: 'Jost', sans-serif;
   font-size: 0.65rem;
