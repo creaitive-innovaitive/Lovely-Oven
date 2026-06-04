@@ -733,6 +733,10 @@ section { padding: 6rem 2rem; }
   font-weight: 600;
   line-height: 1;
 }
+.welcome-frame-2 .stat-quality {
+  font-size: 1.6rem;
+  text-align: center;
+}
 .welcome-frame-2 .stat-label {
   font-size: 0.7rem;
   letter-spacing: 0.15em;
