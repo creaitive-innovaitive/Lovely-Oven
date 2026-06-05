@@ -348,7 +348,7 @@ html {
   color: var(--charcoal);
   line-height: 1.3;
 }
-.moption-name em { font-style: italic; color: var(--charcoal-soft); font-weight: 400; }
+.moption-name em { display: block; font-style: italic; color: var(--charcoal-soft); font-weight: 400; font-size: 0.78rem; margin-top: 2px; }
 .moption-wide {
   grid-column: span 3;
   flex-direction: row;
