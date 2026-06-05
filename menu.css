@@ -194,15 +194,14 @@ body {
 .step-protein-card {
   height: 100%;
   box-sizing: border-box;
-  padding-right: 43%;
 }
 .step-flavour-overlay {
   position: absolute;
-  top: 4mm;
-  right: 4mm;
+  top: 3mm;
+  right: -14mm;
   width: 40%;
   border: 1.5px solid var(--green) !important;
-  box-shadow: 0 6px 22px rgba(0,0,0,0.14);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
   z-index: 5;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
