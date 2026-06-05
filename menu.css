@@ -185,35 +185,8 @@ body {
 .steps-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4mm;
-  align-items: stretch;
-}
-.step-protein-wrapper {
-  position: relative;
-}
-.step-protein-card {
-  height: 100%;
-  box-sizing: border-box;
-}
-.step-flavour-overlay {
-  position: absolute;
-  top: 3mm;
-  right: -14mm;
-  width: 40%;
-  border: 1.5px solid var(--green) !important;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-  z-index: 5;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-.step-col-pair {
-  display: flex;
-  flex-direction: column;
-  gap: 4mm;
-  height: 100%;
-}
-.step-col-pair .step-card {
-  flex: 1;
+  grid-template-rows: 1fr 1fr;
+  gap: 5mm;
 }
 .step-card {
   background: #fff;
