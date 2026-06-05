@@ -184,9 +184,8 @@ body {
 
 .steps-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 5mm;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4mm;
 }
 .step-card {
   background: #fff;
