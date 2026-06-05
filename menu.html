@@ -39,29 +39,326 @@
   <a href="social.html" onclick="toggleMobile()">Social</a>
 </div>
 
-<!-- ── Menu Content ── -->
-<div class="menu-page-wrapper">
 
-<div class="menu-intro">
-  <h1>Fresh Home-Cooked Chicken,<br><em>Delivered in Danang &amp; Hoi An</em></h1>
-  <p>Every meal is cooked fresh from our home oven using quality ingredients — never frozen, never rushed. Choose your cut, pick your marinade, and we'll have it ready for you. Full meal ₫130,000, with free delivery on group orders.</p>
-  <p>Order by phone, WhatsApp, Zalo or Facebook — we deliver daily across Danang and Hoi An.</p>
-  <button class="pdf-download-btn" onclick="window.print()">Download Menu as PDF</button>
-</div>
+<!-- ══════════════════════════════════════════
+     SCREEN CONTENT — interactive menu journey
+══════════════════════════════════════════ -->
+<div class="menu-screen">
+
+  <!-- ── HERO ── -->
+  <section class="mhero">
+    <img src="img/menu/menu-top.jpg" alt="Fresh Lovely Oven chicken" class="mhero-bg">
+    <div class="mhero-overlay"></div>
+    <div class="mhero-content">
+      <div class="mhero-eyebrow">Danang &amp; Hoi An</div>
+      <h1 class="mhero-title">Real food,<br><em>made with love.</em></h1>
+      <p class="mhero-sub">Fresh ingredients, cooked daily from our home oven.<br>No shortcuts — ever.</p>
+      <div class="mhero-price-pill">Full meal — <strong>₫130,000</strong></div>
+      <div class="mhero-cue">
+        <span>Build your meal</span>
+        <div class="mhero-arrow">↓</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── JOURNEY INTRO ── -->
+  <section class="mjintro">
+    <div class="mjintro-inner reveal">
+      <span class="meyebrow">How it works</span>
+      <h2 class="mjintro-heading">Four steps to your<br><em>perfect plate.</em></h2>
+      <p>Tell us what you want and we'll cook it fresh. Four simple choices — one outstanding meal, delivered to your door.</p>
+      <div class="mjintro-steps">
+        <span><strong>01</strong> Protein</span>
+        <span class="mjintro-dash">—</span>
+        <span><strong>02</strong> Flavour</span>
+        <span class="mjintro-dash">—</span>
+        <span><strong>03</strong> Carb</span>
+        <span class="mjintro-dash">—</span>
+        <span><strong>04</strong> Side</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════
+       STEP 01 — CHOOSE YOUR PROTEIN
+  ══════════════════════════ -->
+  <section class="mstep mstep-light" id="step-01">
+    <div class="mstep-bknum" aria-hidden="true">01</div>
+    <div class="mstep-inner">
+
+      <div class="mstep-label reveal-left">
+        <span class="mstep-eyebrow">Step One</span>
+        <h2 class="mstep-title">Choose Your<br><em>Protein</em></h2>
+        <p class="mstep-desc">Start with your cut. Everything cooked fresh — never frozen. Chicken straight from the oven, or one of our hearty hand-made specials.</p>
+      </div>
+
+      <div class="mstep-options reveal-right">
+        <div class="moption-grid">
+          <div class="moption-card" style="--i:0"><span class="moption-icon">🍗</span><span class="moption-name">¼ Chicken</span></div>
+          <div class="moption-card" style="--i:1"><span class="moption-icon">🍗</span><span class="moption-name">Boneless Thigh</span></div>
+          <div class="moption-card" style="--i:2"><span class="moption-icon">🍗</span><span class="moption-name">Drumsticks</span></div>
+          <div class="moption-card" style="--i:3"><span class="moption-icon">🍗</span><span class="moption-name">Chicken Breast</span></div>
+          <div class="moption-card" style="--i:4"><span class="moption-icon">🥧</span><span class="moption-name">Cottage Pie</span></div>
+          <div class="moption-card" style="--i:5"><span class="moption-icon">🌶️</span><span class="moption-name">Chilli Con Carne</span></div>
+          <div class="moption-card moption-wide" style="--i:6"><span class="moption-icon">🍝</span><span class="moption-name">Bolognaise <em>(Beef / Pork)</em></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mstep-photos reveal">
+      <div class="mstep-photo">
+        <img src="img/menu/6727ca01.jpg" alt="Peri Peri ¼ Chicken with Pillau and Mango Salad">
+        <div class="mstep-photo-label"><span>Peri Peri</span><strong>¼ Chicken · Pillau &amp; Mango Salad</strong></div>
+      </div>
+      <div class="mstep-photo">
+        <img src="img/menu/e4c199f5.jpg" alt="BBQ Boneless Thigh">
+        <div class="mstep-photo-label"><span>BBQ</span><strong>Boneless Thigh</strong></div>
+      </div>
+      <div class="mstep-photo">
+        <img src="img/menu/67523121.jpg" alt="Peri Peri Drumsticks with Wedges">
+        <div class="mstep-photo-label"><span>Peri Peri</span><strong>Drumsticks &amp; Wedges</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════
+       STEP 02 — CHOOSE YOUR FLAVOUR
+  ══════════════════════════ -->
+  <section class="mstep mstep-dark" id="step-02">
+    <div class="mstep-bknum" aria-hidden="true">02</div>
+    <div class="mstep-inner mstep-inner-center">
+      <div class="mstep-label reveal">
+        <span class="mstep-eyebrow light">Step Two</span>
+        <h2 class="mstep-title light">Choose Your<br><em>Flavour</em></h2>
+        <p class="mstep-desc light">Each marinade is made in-house. Pick the mood that matches yours.</p>
+        <p class="mstep-spice-note reveal">Peri Peri available in <strong>mild, medium or hot</strong> — other flavours served as-is.</p>
+      </div>
+    </div>
+    <div class="mflavour-grid">
+      <div class="mflavour-card reveal" style="--i:0">
+        <span class="mflavour-emoji">🔥</span>
+        <span class="mflavour-name">Peri Peri</span>
+        <span class="mflavour-note">Fiery · Smoky · Bold</span>
+      </div>
+      <div class="mflavour-card reveal" style="--i:1">
+        <span class="mflavour-emoji">🧂</span>
+        <span class="mflavour-name">Salt &amp; Pepper</span>
+        <span class="mflavour-note">Classic · Clean</span>
+      </div>
+      <div class="mflavour-card reveal" style="--i:2">
+        <span class="mflavour-emoji">🌶️</span>
+        <span class="mflavour-name">Chilli &amp; Lime</span>
+        <span class="mflavour-note">Zingy · Fresh</span>
+      </div>
+      <div class="mflavour-card reveal" style="--i:3">
+        <span class="mflavour-emoji">🍖</span>
+        <span class="mflavour-name">BBQ</span>
+        <span class="mflavour-note">Sweet · Smoky · Rich</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════
+       STEP 03 — CHOOSE YOUR CARB
+  ══════════════════════════ -->
+  <section class="mstep mstep-light" id="step-03">
+    <div class="mstep-bknum" aria-hidden="true">03</div>
+    <div class="mstep-inner mstep-inner-split">
+
+      <div class="mstep-img-col reveal-left">
+        <img src="img/menu/23b6f5e8.jpg" alt="Turmeric Basmati Rice">
+        <div class="mstep-img-badge">Made from scratch</div>
+      </div>
+
+      <div class="mstep-label mstep-label-r reveal-right">
+        <span class="mstep-eyebrow">Step Three</span>
+        <h2 class="mstep-title">Choose Your<br><em>Carb</em></h2>
+        <p class="mstep-desc">Every carb is made from scratch — nothing out of a packet, ever. Real food, the way it should be.</p>
+        <ul class="mcarb-list">
+          <li style="--i:0">White Steamed Rice</li>
+          <li style="--i:1">Turmeric Basmati — aromatic spices</li>
+          <li style="--i:2">Various Pasta Dishes</li>
+          <li style="--i:3">Potato Gratin</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════
+       STEP 04 — CHOOSE YOUR SIDE
+  ══════════════════════════ -->
+  <section class="mstep mstep-dark" id="step-04">
+    <div class="mstep-bknum" aria-hidden="true">04</div>
+    <div class="mstep-inner mstep-inner-center">
+      <div class="mstep-label reveal">
+        <span class="mstep-eyebrow light">Step Four</span>
+        <h2 class="mstep-title light">Choose Your<br><em>Side</em></h2>
+        <p class="mstep-desc light">The finishing touch. All made by hand, every single day — because the sides matter just as much.</p>
+      </div>
+    </div>
+    <div class="msides-strip">
+      <div class="mside-card reveal" style="--i:0">
+        <div class="mside-img"><img src="img/menu/ea4824e8.jpg" alt="Spicy peas"></div>
+        <span class="mside-name">Spicy Peas</span>
+        <span class="mside-note">Chilli &amp; garlic</span>
+      </div>
+      <div class="mside-card reveal" style="--i:1">
+        <div class="mside-img"><img src="img/menu/35dd8e24.jpg" alt="Mushy peas"></div>
+        <span class="mside-name">Mushy Peas</span>
+        <span class="mside-note">Soft &amp; seasoned</span>
+      </div>
+      <div class="mside-card reveal" style="--i:2">
+        <div class="mside-img"><img src="img/menu/838a753b.jpg" alt="Coleslaw"></div>
+        <span class="mside-name">Coleslaw</span>
+        <span class="mside-note">Creamy house slaw</span>
+      </div>
+      <div class="mside-card reveal" style="--i:3">
+        <div class="mside-img mside-placeholder">🥗</div>
+        <span class="mside-name">Seasonal Salad</span>
+        <span class="mside-note">Fresh &amp; vibrant</span>
+      </div>
+      <div class="mside-card reveal" style="--i:4">
+        <div class="mside-img mside-placeholder">🥕</div>
+        <span class="mside-name">Roast Veg</span>
+        <span class="mside-note">Seasonal choice</span>
+      </div>
+      <div class="mside-card reveal" style="--i:5">
+        <div class="mside-img"><img src="img/menu/0fcf83ac.jpg" alt="Potato wedges"></div>
+        <span class="mside-name">Wedges</span>
+        <span class="mside-note">Hot &amp; seasoned</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PRICE MOMENT ── -->
+  <section class="mprice-section">
+    <div class="mprice-inner reveal">
+      <span class="meyebrow">The full package</span>
+      <div class="mprice-amount">₫130,000</div>
+      <p class="mprice-sub">Protein · Flavour · Carb · Side — everything included.</p>
+      <div class="mprice-free">🚚 Free delivery on group orders</div>
+    </div>
+  </section>
+
+  <!-- ── EXTRAS & SPECIALS ── -->
+  <section class="mextra-section">
+    <div class="mextra-inner">
+
+      <div class="mextra-panel reveal-left">
+        <span class="meyebrow">Add-Ons</span>
+        <h3 class="mextra-heading">A Little <em>Extra</em></h3>
+        <p class="mextra-subhead">Additions to your full meal</p>
+        <div class="mextra-list">
+          <div class="mextra-row"><span>Extra chicken portion</span><span class="mextra-price">₫40,000</span></div>
+          <div class="mextra-row"><span>Extra peas / coleslaw / rice</span><span class="mextra-price">₫15,000</span></div>
+          <div class="mextra-row"><span>Extra potato / roast veg / boiled veg</span><span class="mextra-price">₫20,000</span></div>
+          <div class="mextra-row"><span>Fried egg / boiled egg</span><span class="mextra-price">₫10,000</span></div>
+        </div>
+        <p class="mextra-footnote">Request specific salad &amp; roast veg options when ordering — seasonal choices available.</p>
+      </div>
+
+      <div class="mspecial-panel reveal-right">
+        <span class="meyebrow">Special Menu</span>
+        <h3 class="mextra-heading">Beyond the <em>Chicken</em></h3>
+        <div class="mspecial-img">
+          <img src="img/menu/7475fafa.jpg" alt="Homemade Bolognaise">
+          <div class="mspecial-img-label">Homemade Bolognaise</div>
+        </div>
+        <div class="mspecial-list">
+          <div class="mspecial-row">
+            <div><span class="mspecial-name">Bolognaise Lunch</span><span class="mspecial-desc">200g bolognaise only</span></div>
+            <span class="mspecial-price">₫70,000</span>
+          </div>
+          <div class="mspecial-row">
+            <div><span class="mspecial-name">Bolognaise &amp; Rice</span><span class="mspecial-desc">200g beef &amp; pork with rice</span></div>
+            <span class="mspecial-price">₫80,000</span>
+          </div>
+          <div class="mspecial-row">
+            <div><span class="mspecial-name">Box — 500g</span><span class="mspecial-desc">Bolognaise only</span></div>
+            <span class="mspecial-price">₫160,000</span>
+          </div>
+          <div class="mspecial-row">
+            <div><span class="mspecial-name">Family — 1kg</span><span class="mspecial-desc">2 boxes · bolognaise only</span></div>
+            <span class="mspecial-price">₫300,000</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── GOOD TO KNOW ── -->
+  <section class="minfo-section">
+    <div class="minfo-inner">
+      <div class="minfo-header reveal">
+        <span class="meyebrow">Good to Know</span>
+        <h2 class="minfo-heading">Before You <em>Order</em></h2>
+      </div>
+      <div class="minfo-tiles">
+        <div class="minfo-tile reveal" style="--i:0">
+          <div class="minfo-num">01</div>
+          <div class="minfo-rule"></div>
+          <h4 class="minfo-title">Group &amp; <em>Bulk Orders</em></h4>
+          <p>Catering for a party or family gathering? We offer <strong>free delivery</strong> when you order more than one meal at a time.</p>
+        </div>
+        <div class="minfo-tile reveal" style="--i:1">
+          <div class="minfo-num">02</div>
+          <div class="minfo-rule"></div>
+          <h4 class="minfo-title">Always <em>Fresh</em></h4>
+          <p>Cooked from fresh ingredients — never frozen. <strong>Order the day before</strong> for the best results and to give us time to prepare.</p>
+        </div>
+        <div class="minfo-tile reveal" style="--i:2">
+          <div class="minfo-num">03</div>
+          <div class="minfo-rule"></div>
+          <h4 class="minfo-title">Dietary &amp; <em>Custom Twists</em></h4>
+          <p>Allergies, preferences or a creative request? <strong>We're flexible</strong> — just let us know when ordering and we'll tailor your meal.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW TO ORDER ── -->
+  <section class="morder-section">
+    <div class="morder-inner reveal">
+      <span class="meyebrow light">Ready to order?</span>
+      <h2 class="morder-heading">How to <em>Reach Us</em></h2>
+      <p class="morder-sub">Phone, WhatsApp, Zalo or Facebook — we're here daily. Delivery across Danang and Hoi An.</p>
+
+      <div class="morder-contact">
+        <div class="morder-details">
+          <div class="morder-phone">+84 987 390 140</div>
+          <a href="https://web.facebook.com/Lovelyovendanang" class="morder-link" target="_blank" rel="noopener">facebook.com/lovelyovendanang</a>
+          <span class="morder-link">lovelyoven.com</span>
+          <span class="morder-tag">Orders taken daily · Danang &amp; Hoi An</span>
+        </div>
+        <div class="morder-qr">
+          <div class="morder-qr-box"><img src="img/menu/e6158562.png" alt="Zalo QR code"></div>
+          <span>Scan for Zalo</span>
+        </div>
+      </div>
+
+      <button class="pdf-download-btn" onclick="window.print()">↓ Download Menu as PDF</button>
+    </div>
+  </section>
+
+</div><!-- end .menu-screen -->
+
+
+<!-- ══════════════════════════════════════════
+     PRINT PAGES — hidden on screen, PDF only
+══════════════════════════════════════════ -->
+<div class="print-pages">
 
 <!-- ═══════════ PAGE 1 — FRONT ═══════════ -->
 <div class="page">
-
-  <!-- Header -->
   <div class="p1-header">
     <div>
-      <div class="brand-name" style="font-size: 42.6667px">Lovely <em><span style="color: rgb(242, 200, 128); font-size: 42.66px">Oven</span></em></div>
+      <div class="brand-name" style="font-size:42.6667px">Lovely <em><span style="color:rgb(242,200,128);font-size:42.66px">Oven</span></em></div>
       <div class="brand-sub">Home-cooked · Danang &amp; Hoi An</div>
     </div>
-    <div class="header-badge" style="padding: 5px 14px">FRESH INGREDIENTS, COOKED WITH LOVE · EVERY SINGLE TIME</div>
+    <div class="header-badge" style="padding:5px 14px">FRESH INGREDIENTS, COOKED WITH LOVE · EVERY SINGLE TIME</div>
   </div>
-
-  <!-- Hero photo -->
   <div class="p1-hero">
     <img src="img/menu/menu-top.jpg" alt="Chicken plate with sides">
     <div class="p1-hero-overlay" style="background:linear-gradient(to right,rgba(30,44,34,0.62) 0%,rgba(30,44,34,0.0) 55%)"></div>
@@ -70,8 +367,6 @@
       <p>Fresh ingredients, cooked daily from our home oven. No shortcuts — ever.</p>
     </div>
   </div>
-
-  <!-- Build your meal steps -->
   <div class="p1-steps">
     <div class="steps-header">
       <span class="steps-label">How to order</span>
@@ -83,298 +378,132 @@
         <div class="step-num">1</div>
         <div class="step-title">Choose Your Protein</div>
         <ul class="step-options">
-          <li>1/4 Chicken</li>
-          <li>Boneless Thigh</li>
-          <li>Drumsticks</li>
-          <li>Chicken Breast</li>
-          <li>Cottage Pie</li>
-          <li>Chilli Con Carne</li>
-          <li>Bolognaise (Beef / Pork)</li>
+          <li>1/4 Chicken</li><li>Boneless Thigh</li><li>Drumsticks</li><li>Chicken Breast</li><li>Cottage Pie</li><li>Chilli Con Carne</li><li>Bolognaise (Beef / Pork)</li>
         </ul>
       </div>
       <div class="step-card">
         <div class="step-num">2</div>
         <div class="step-title">Choose Flavour</div>
         <ul class="step-options">
-          <li>Peri Peri</li>
-          <li>Salt &amp; Pepper</li>
-          <li>Chilli &amp; Lime</li>
-          <li>BBQ</li>
+          <li>Peri Peri</li><li>Salt &amp; Pepper</li><li>Chilli &amp; Lime</li><li>BBQ</li>
         </ul>
       </div>
       <div class="step-card">
         <div class="step-num">3</div>
         <div class="step-title">Choose Your Carb</div>
         <ul class="step-options">
-          <li>White steamed</li>
-          <li>Basmati: turmeric &amp; aromatic spices</li>
-          <li>Various Pasta dishes</li>
-          <li>Potato Gratin</li>
+          <li>White steamed</li><li>Basmati: turmeric &amp; aromatic spices</li><li>Various Pasta dishes</li><li>Potato Gratin</li>
         </ul>
       </div>
       <div class="step-card">
         <div class="step-num">4</div>
         <div class="step-title">Choose a Side</div>
         <ul class="step-options">
-          <li>Spicy or mushy peas</li>
-          <li>Seasonal salad</li>
-          <li>Creamy coleslaw</li>
-          <li>Choice of roast veg</li>
-          <li>Potato wedges&nbsp;</li>
+          <li>Spicy or mushy peas</li><li>Seasonal salad</li><li>Creamy coleslaw</li><li>Choice of roast veg</li><li>Potato wedges</li>
         </ul>
       </div>
     </div>
   </div>
-
-  <!-- Flavours band -->
   <div class="p1-flavours">
     <div class="flavours-label">Our Signature Marinades</div>
     <div class="flavours-row">
-      <div class="flavour-card">
-        <span class="flavour-icon">🔥</span>
-        <span class="flavour-name">Peri Peri</span>
-        <span class="flavour-note">Fiery · Smoky · Bold</span>
-      </div>
-      <div class="flavour-card">
-        <span class="flavour-icon">🧂</span>
-        <span class="flavour-name">Salt &amp; Pepper</span>
-        <span class="flavour-note">Classic · Clean</span>
-      </div>
-      <div class="flavour-card">
-        <span class="flavour-icon flavour-icon-pair">🌶️🍋‍🟩</span>
-        <span class="flavour-name">Chilli &amp; Lime</span>
-        <span class="flavour-note">Zingy · Fresh</span>
-      </div>
-      <div class="flavour-card">
-        <span class="flavour-icon">🍗</span>
-        <span class="flavour-name">BBQ</span>
-        <span class="flavour-note">Sweet · Smoky · Rich</span>
-      </div>
+      <div class="flavour-card"><span class="flavour-icon">🔥</span><span class="flavour-name">Peri Peri</span><span class="flavour-note">Fiery · Smoky · Bold</span></div>
+      <div class="flavour-card"><span class="flavour-icon">🧂</span><span class="flavour-name">Salt &amp; Pepper</span><span class="flavour-note">Classic · Clean</span></div>
+      <div class="flavour-card"><span class="flavour-icon flavour-icon-pair">🌶️🍋‍🟩</span><span class="flavour-name">Chilli &amp; Lime</span><span class="flavour-note">Zingy · Fresh</span></div>
+      <div class="flavour-card"><span class="flavour-icon">🍗</span><span class="flavour-name">BBQ</span><span class="flavour-note">Sweet · Smoky · Rich</span></div>
     </div>
     <div class="spice-note">Peri Peri available in <span>mild, medium or hot</span> — other flavours served as-is</div>
   </div>
-
-  <!-- Meal photos -->
   <div class="p1-meals">
-    <div class="meal-photo">
-      <img src="img/menu/6727ca01.jpg" alt="Chicken Pillau Mango Salad">
-      <div class="meal-photo-overlay" style="background-position: center center; background-size: auto; margin: 1px 0px 0px"></div>
-      <div class="meal-photo-label">
-        <span>Peri Peri</span>
-        <strong>1/4 Chicken, Pillau &amp; Mango Salad</strong>
-      </div>
-    </div>
-    <div class="meal-photo">
-      <img src="img/menu/e4c199f5.jpg" alt="Boneless chicken thigh with 3 sides and pilau rice">
-      <div class="meal-photo-overlay"></div>
-      <div class="meal-photo-label">
-        <span>BBQ</span>
-        <strong>Boneless Thigh</strong>
-      </div>
-    </div>
-    <div class="meal-photo">
-      <img src="img/menu/67523121.jpg" alt="Peri Peri drumsticks with wedges, coleslaw, pilau rice and peri peri sauce">
-      <div class="meal-photo-overlay"></div>
-      <div class="meal-photo-label">
-        <span>Peri Peri</span>
-        <strong>Drumsticks &amp; Wedges</strong>
-      </div>
-    </div>
+    <div class="meal-photo"><img src="img/menu/6727ca01.jpg" alt="Chicken Pillau Mango Salad"><div class="meal-photo-overlay"></div><div class="meal-photo-label"><span>Peri Peri</span><strong>1/4 Chicken, Pillau &amp; Mango Salad</strong></div></div>
+    <div class="meal-photo"><img src="img/menu/e4c199f5.jpg" alt="Boneless chicken thigh"><div class="meal-photo-overlay"></div><div class="meal-photo-label"><span>BBQ</span><strong>Boneless Thigh</strong></div></div>
+    <div class="meal-photo"><img src="img/menu/67523121.jpg" alt="Peri Peri drumsticks"><div class="meal-photo-overlay"></div><div class="meal-photo-label"><span>Peri Peri</span><strong>Drumsticks &amp; Wedges</strong></div></div>
   </div>
-
-  <!-- Bottom tagline -->
   <div class="p1-tagline">
     <p>"Enjoy a full home-cooked meal, fresh from the lovely oven."</p>
     <strong>See over for sides, specials &amp; pricing →</strong>
   </div>
-
 </div><!-- end page 1 -->
-
 
 <!-- ═══════════ PAGE 2 — BACK ═══════════ -->
 <div class="page">
-
-  <!-- Header -->
   <div class="p2-header">
     <div>
-      <div class="p2-header-brand" style="font-size: 42.6667px">Lovely <em><span style="color: rgb(242, 200, 128); font-size: 42.66px">Oven</span></em></div>
-      <div class="brand-sub" style="margin: 0px">Home-cooked · Danang &amp; Hoi An</div>
+      <div class="p2-header-brand" style="font-size:42.6667px">Lovely <em><span style="color:rgb(242,200,128);font-size:42.66px">Oven</span></em></div>
+      <div class="brand-sub" style="margin:0">Home-cooked · Danang &amp; Hoi An</div>
     </div>
-    <div class="header-badge" style="padding: 5px 14px">SIDES, SPECIALS &amp; EXTRAS</div>
+    <div class="header-badge" style="padding:5px 14px">SIDES, SPECIALS &amp; EXTRAS</div>
   </div>
-
-  <!-- Sides -->
   <div class="p2-sides">
     <div class="sec-header">
       <span class="sec-label">The sides</span>
       <span class="sec-title">Handmade <em>Sides</em></span>
     </div>
     <div class="sides-grid">
-      <div class="side-item">
-        <div class="side-circle">
-          <img src="img/menu/23b6f5e8.jpg" alt="Basmati rice">
-        </div>
-        <div class="side-name">Turmeric Basmati</div>
-        <div class="side-sub">Aromatic spiced rice</div>
-      </div>
-      <div class="side-item">
-        <div class="side-circle">
-          <img src="img/menu/838a753b.jpg" alt="Coleslaw">
-        </div>
-        <div class="side-name">Coleslaw</div>
-        <div class="side-sub">Creamy house slaw</div>
-      </div>
-      <div class="side-item">
-        <div class="side-circle">
-          <img src="img/menu/ea4824e8.jpg" alt="Spicy peas">
-        </div>
-        <div class="side-name">Spicy Peas</div>
-        <div class="side-sub">Chilli &amp; garlic</div>
-      </div>
-      <div class="side-item">
-        <div class="side-circle">
-          <img src="img/menu/35dd8e24.jpg" alt="Mushy peas">
-        </div>
-        <div class="side-name">Mushy Peas</div>
-        <div class="side-sub">Soft &amp; seasoned</div>
-      </div>
-      <div class="side-item">
-        <div class="side-circle">
-          <img src="img/menu/0fcf83ac.jpg" alt="Potato wedges">
-        </div>
-        <div class="side-name">Wedges</div>
-        <div class="side-sub">Hot &amp; seasoned</div>
-      </div>
+      <div class="side-item"><div class="side-circle"><img src="img/menu/23b6f5e8.jpg" alt="Basmati rice"></div><div class="side-name">Turmeric Basmati</div><div class="side-sub">Aromatic spiced rice</div></div>
+      <div class="side-item"><div class="side-circle"><img src="img/menu/838a753b.jpg" alt="Coleslaw"></div><div class="side-name">Coleslaw</div><div class="side-sub">Creamy house slaw</div></div>
+      <div class="side-item"><div class="side-circle"><img src="img/menu/ea4824e8.jpg" alt="Spicy peas"></div><div class="side-name">Spicy Peas</div><div class="side-sub">Chilli &amp; garlic</div></div>
+      <div class="side-item"><div class="side-circle"><img src="img/menu/35dd8e24.jpg" alt="Mushy peas"></div><div class="side-name">Mushy Peas</div><div class="side-sub">Soft &amp; seasoned</div></div>
+      <div class="side-item"><div class="side-circle"><img src="img/menu/0fcf83ac.jpg" alt="Potato wedges"></div><div class="side-name">Wedges</div><div class="side-sub">Hot &amp; seasoned</div></div>
     </div>
   </div>
-
-  <!-- Two-column section -->
   <div class="p2-cols">
-
-    <!-- Special menu left col -->
     <div>
       <div class="special-card">
-        <div class="special-photo">
-          <img src="img/menu/7475fafa.jpg" alt="Homemade bolognaise meal prep">
-        </div>
+        <div class="special-photo"><img src="img/menu/7475fafa.jpg" alt="Homemade bolognaise"></div>
         <div class="special-body">
           <div class="special-sec-label">Special Menu</div>
           <div class="special-title">Beyond the <em>Chicken</em></div>
-
-          <div class="price-row">
-            <div>
-              <div class="price-item-name">Bolognaise Lunch</div>
-              <span class="price-item-desc">200g bolognaise only</span>
-            </div>
-            <div class="price-amount">₫70,000</div>
-          </div>
-          <div class="price-row">
-            <div>
-              <div class="price-item-name">Bolognaise &amp; Rice</div>
-              <span class="price-item-desc">200g beef &amp; pork bolognaise with rice</span>
-            </div>
-            <div class="price-amount">₫80,000</div>
-          </div>
-          <div class="price-row">
-            <div>
-              <div class="price-item-name">Box — 500g</div>
-              <span class="price-item-desc">Bolognaise only&nbsp;</span>
-            </div>
-            <div class="price-amount">₫160,000</div>
-          </div>
-          <div class="price-row">
-            <div>
-              <div class="price-item-name">Family — 1kg</div>
-              <span class="price-item-desc">Bolognaise only - 2 boxes</span>
-            </div>
-            <div class="price-amount">₫300,000</div>
-          </div>
+          <div class="price-row"><div><div class="price-item-name">Bolognaise Lunch</div><span class="price-item-desc">200g bolognaise only</span></div><div class="price-amount">₫70,000</div></div>
+          <div class="price-row"><div><div class="price-item-name">Bolognaise &amp; Rice</div><span class="price-item-desc">200g beef &amp; pork bolognaise with rice</span></div><div class="price-amount">₫80,000</div></div>
+          <div class="price-row"><div><div class="price-item-name">Box — 500g</div><span class="price-item-desc">Bolognaise only</span></div><div class="price-amount">₫160,000</div></div>
+          <div class="price-row"><div><div class="price-item-name">Family — 1kg</div><span class="price-item-desc">Bolognaise only - 2 boxes</span></div><div class="price-amount">₫300,000</div></div>
         </div>
       </div>
     </div>
-
-    <!-- Right col: extras + cookies + contact -->
     <div class="right-col">
-
       <div class="extras-card">
-        <div class="extras-title">Add-Ons &amp; Extras&nbsp; &nbsp; &nbsp;&nbsp;(additional to Full meal)</div>
+        <div class="extras-title">Add-Ons &amp; Extras &nbsp;(additional to Full meal)</div>
         <div class="extras-grid">
-          <div class="extra-row">
-            <span class="extra-name">Extra chicken portion</span>
-            <span class="extra-price">₫40k</span>
-          </div>
-          <div class="extra-row">
-            <span class="extra-name">Extra peas / coleslaw / rice</span>
-            <span class="extra-price">₫15k</span>
-          </div>
-          <div class="extra-row">
-            <span class="extra-name">Extra potato / roast veg / boiled veg</span>
-            <span class="extra-price">₫20k</span>
-          </div>
-          <div class="extra-row">
-            <span class="extra-name">Fried egg / boiled egg
-</span>
-            <span class="extra-price">₫10k</span>
-          </div>
+          <div class="extra-row"><span class="extra-name">Extra chicken portion</span><span class="extra-price">₫40k</span></div>
+          <div class="extra-row"><span class="extra-name">Extra peas / coleslaw / rice</span><span class="extra-price">₫15k</span></div>
+          <div class="extra-row"><span class="extra-name">Extra potato / roast veg / boiled veg</span><span class="extra-price">₫20k</span></div>
+          <div class="extra-row"><span class="extra-name">Fried egg / boiled egg</span><span class="extra-price">₫10k</span></div>
         </div>
-        <div class="extras-note"><strong>Note</strong>Request the specific salad &amp; roast veg required when ordering — seasonal options available.</div>
+        <div class="extras-note"><strong>Note</strong> Request the specific salad &amp; roast veg required when ordering — seasonal options available.</div>
       </div>
-
       <div class="contact-card">
-        <h4 style="font-size: 18px">How to Order</h4>
+        <h4 style="font-size:18px">How to Order</h4>
         <div class="contact-card-body">
           <div class="contact-line"><strong>+84 987 390 140</strong><br>
             <a href="https://web.facebook.com/Lovelyovendanang" class="contact-link">facebook.com/lovelyovendanang</a><br>
             <span class="contact-link">lovelyoven.com</span><br>
-            <span class="contact-sub" style="color: rgb(255, 255, 255); margin: 10px 0px 0px">Orders taken daily · Danang &amp; Hoi An</span>
+            <span class="contact-sub" style="color:rgb(255,255,255);margin:10px 0 0">Orders taken daily · Danang &amp; Hoi An</span>
           </div>
           <div class="contact-qr">
             <div class="contact-qr-box"><img src="img/menu/e6158562.png" alt="Zalo QR"></div>
-            <div class="contact-qr-label" style="color: rgb(255, 255, 255)">Zalo</div>
+            <div class="contact-qr-label" style="color:rgb(255,255,255)">Zalo</div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
-
-  <!-- Bottom info band -->
   <div class="p2-info-band">
     <div class="info-band-label">Good to Know</div>
     <div class="info-band-row">
-
-      <div class="info-tile">
-        <div class="info-tile-num">01</div>
-        <div class="info-tile-rule"></div>
-        <div class="info-tile-title">Group &amp; <em>Bulk Orders</em></div>
-        <div class="info-tile-body">Catering for a party, office or family gathering? Let us know in advance — we offer <strong>free delivery</strong> when you order more than one meal at a time.</div>
-      </div>
-
-      <div class="info-tile">
-        <div class="info-tile-num">02</div>
-        <div class="info-tile-rule"></div>
-        <div class="info-tile-title">Always <em>Fresh</em></div>
-        <div class="info-tile-body">Cooked from fresh ingredients — never from frozen. For the best results, <strong>order the day before</strong> to give us time to prepare.</div>
-      </div>
-
-      <div class="info-tile">
-        <div class="info-tile-num">03</div>
-        <div class="info-tile-rule"></div>
-        <div class="info-tile-title">Dietary &amp; <em>Custom Twists</em></div>
-        <div class="info-tile-body">Got allergies, preferences or a creative request? Let us know when ordering — <strong>we're flexible</strong> and happy to tailor your meal.</div>
-      </div>
-
+      <div class="info-tile"><div class="info-tile-num">01</div><div class="info-tile-rule"></div><div class="info-tile-title">Group &amp; <em>Bulk Orders</em></div><div class="info-tile-body">Catering for a party, office or family gathering? Let us know in advance — we offer <strong>free delivery</strong> when you order more than one meal at a time.</div></div>
+      <div class="info-tile"><div class="info-tile-num">02</div><div class="info-tile-rule"></div><div class="info-tile-title">Always <em>Fresh</em></div><div class="info-tile-body">Cooked from fresh ingredients — never from frozen. For the best results, <strong>order the day before</strong> to give us time to prepare.</div></div>
+      <div class="info-tile"><div class="info-tile-num">03</div><div class="info-tile-rule"></div><div class="info-tile-title">Dietary &amp; <em>Custom Twists</em></div><div class="info-tile-body">Got allergies, preferences or a creative request? Let us know when ordering — <strong>we're flexible</strong> and happy to tailor your meal.</div></div>
     </div>
   </div>
-
-  <!-- Footer -->
   <div class="p2-footer">
     <p>"Fresh ingredients, cooked with love — every single time."</p>
     <strong>Lovely Oven · Danang &amp; Hoi An</strong>
   </div>
-
 </div><!-- end page 2 -->
-</div>
+
+</div><!-- end .print-pages -->
+
 
 <!-- ── SEO Tags ── -->
 <div class="menu-tags-footer">
@@ -417,7 +546,7 @@
   </div>
 </footer>
 
-<!-- ── Scroll to Top Button ── -->
+<!-- ── Scroll to Top ── -->
 <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- ── Cookie Banner ── -->
@@ -431,5 +560,21 @@
 </div>
 
 <script src="script.js"></script>
+<script>
+/* ── Scroll Reveal ── */
+(function () {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+    observer.observe(el);
+  });
+})();
+</script>
 </body>
 </html>
