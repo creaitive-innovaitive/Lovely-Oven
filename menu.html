@@ -564,10 +564,25 @@
 <script>
 /* ── Scroll Reveal ── */
 (function () {
+  function lockVisible(el) {
+    el.style.opacity = '1';
+    el.style.transform = 'none';
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
+        const el = entry.target;
+        el.classList.add('is-visible');
+        observer.unobserve(el);
+
+        // Lock final state so clicks can't trigger a flicker on slow devices
+        const animated = getComputedStyle(el).animationName !== 'none';
+        if (animated) {
+          el.addEventListener('animationend', () => lockVisible(el), { once: true });
+        } else {
+          el.addEventListener('transitionend', () => lockVisible(el), { once: true });
+        }
       }
     });
   }, { threshold: 0.12 });
