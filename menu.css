@@ -1421,6 +1421,102 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
   font-style: italic;
 }
 
+/* ── Extras / Set Meal rows — selected state ── */
+.mextra-row[data-group], .mspecial-sub-row[data-group] {
+  transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+.mextra-row[data-group]:hover {
+  border-color: var(--green);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.mspecial-sub-row[data-group]:hover {
+  background: rgba(255,255,255,0.06);
+  border-radius: 6px;
+}
+.mextra-row.order-selected {
+  border-color: var(--green);
+  background: rgba(77,130,98,0.07);
+  box-shadow: 0 2px 10px rgba(77,130,98,0.12);
+}
+.mspecial-sub-row.order-selected {
+  background: rgba(255,255,255,0.12);
+  border-radius: 6px;
+}
+
+/* ── Quantity controls (inline on rows) ── */
+.lo-qty-ctrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+.lo-qty-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--green);
+  background: transparent;
+  color: var(--green);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.lo-qty-btn:hover { background: var(--green); color: #fff; }
+.mspecial-sub-row .lo-qty-btn { border-color: var(--gold); color: var(--gold); }
+.mspecial-sub-row .lo-qty-btn:hover { background: var(--gold); color: #fff; }
+.lo-qty-num {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  min-width: 1.2em;
+  text-align: center;
+  color: var(--charcoal);
+}
+.mspecial-sub-row .lo-qty-num { color: #fff; }
+
+/* ── Extras chip in bar ── */
+.lo-chip-extras {
+  background: rgba(255,255,255,0.18);
+}
+
+/* ── Section titles in modal ── */
+.lo-section-title {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+  padding: 1rem 0 0.35rem;
+  border-top: 1px solid var(--rule);
+  margin-top: 0.25rem;
+}
+.lo-section-title:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+
+/* ── Subtotal row (per section) ── */
+.lo-sum-subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0 0.25rem;
+  border-top: 1px dashed var(--rule);
+  margin-top: 0.25rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.82rem;
+  color: var(--charcoal-soft);
+}
+.lo-sum-subtotal strong {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--green);
+}
+
 /* Keep bar hidden in print */
 @media print {
   .lo-bar, .lo-modal-overlay { display: none !important; }
