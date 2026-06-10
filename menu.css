@@ -757,6 +757,13 @@ html {
   gap: 1rem;
 }
 .mspecial-row:last-child { border-bottom: none; }
+.mspecial-group { padding: 0.7rem 0; border-bottom: 1px solid var(--rule); }
+.mspecial-group:last-child { border-bottom: none; }
+.mspecial-group-name { font-family: 'Jost', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--charcoal); margin-bottom: 0.4rem; }
+.mspecial-group-name em { font-style: italic; color: var(--terra); }
+.mspecial-sub-row { display: flex; justify-content: space-between; align-items: center; padding: 0.15rem 0; }
+.mspecial-sub-label { font-family: 'Jost', sans-serif; font-size: 0.8rem; color: var(--charcoal-soft); }
+.mspecial-sub-price { font-family: 'Jost', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--green); white-space: nowrap; }
 .mspecial-name {
   display: block;
   font-family: 'Jost', sans-serif;
@@ -1625,9 +1632,13 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .side-sub { font-size:7pt; color:var(--charcoal-soft); margin-top:1px; }
 .p2-cols { padding:0 12mm; display:grid; grid-template-columns:1fr 1fr; gap:6mm; }
 .special-card { background:#EFE8D8; border-radius:10px; overflow:hidden; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-.special-photo { height:39mm; overflow:hidden; }
-.special-photo img { width:100%; height:100%; object-fit:cover; object-position:center 25%; }
 .special-body { padding:4mm; }
+.price-group { margin-bottom:2.5mm; }
+.price-group:last-child { margin-bottom:0; }
+.price-group-name { font-size:7.5pt; font-weight:600; color:var(--terra); padding-bottom:1mm; border-bottom:1px solid rgba(192,92,40,0.2); margin-bottom:0.5mm; }
+.price-group-name em { font-style:italic; }
+.price-sub-row { display:flex; justify-content:space-between; align-items:baseline; padding:0.8mm 0; font-size:7.5pt; color:var(--charcoal-soft); }
+.price-sub-row .price-amount { font-size:7.5pt; font-weight:600; color:var(--green); white-space:nowrap; }
 .special-sec-label { font-size:6.5pt; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--terra); margin-bottom:1mm; }
 .special-title { font-family:'Playfair Display',serif; font-size:12pt; font-weight:600; color:var(--charcoal); margin-bottom:3mm; }
 .special-title em { font-style:italic; color:var(--terra); }
