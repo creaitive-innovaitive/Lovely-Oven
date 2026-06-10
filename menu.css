@@ -1595,7 +1595,7 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .step-options li:has(em) { padding-left:0; color:var(--charcoal-soft); font-size:8.5pt; }
 .steps-turnover { font-size:8pt; color:var(--terra); font-style:italic; text-align:right; padding:3mm 0 1mm; }
 .p1-flavours { background:#EFE8D8; padding:6mm 12mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-.flavours-label { font-family:'Playfair Display',serif; font-size:12pt; font-weight:600; color:var(--charcoal); margin-bottom:1mm; }
+.flavours-label { font-family:'Playfair Display',serif; font-size:12pt; font-weight:600; color:var(--charcoal); margin-bottom:4mm; }
 .flavours-reminder { font-size:8.5pt; color:var(--charcoal-soft); font-style:italic; margin-bottom:3mm; }
 .flavours-row { display:grid; grid-template-columns:repeat(4,1fr); gap:2mm; }
 .flavour-card { background:#fff; border-radius:6px; padding:3mm; text-align:center; position:relative; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
