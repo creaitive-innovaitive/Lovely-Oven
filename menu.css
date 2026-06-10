@@ -1580,8 +1580,11 @@ a.morder-link:hover { color: var(--gold-light); }
 .step-options { list-style:none; }
 .step-options li { font-size:9pt; color:var(--charcoal-soft); padding-left:14px; position:relative; line-height:1.7; }
 .step-options li::before { content:''; position:absolute; left:2px; top:0.65em; width:5px; height:5px; border-radius:50%; background:var(--green); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.step-options li:has(em)::before { display:none; }
+.step-options li:has(em) { padding-left:0; color:var(--charcoal-soft); font-size:8.5pt; }
 .p1-flavours { background:#EFE8D8; padding:6mm 12mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-.flavours-label { font-family:'Playfair Display',serif; font-size:12pt; font-weight:600; color:var(--charcoal); margin-bottom:3mm; }
+.flavours-label { font-family:'Playfair Display',serif; font-size:12pt; font-weight:600; color:var(--charcoal); margin-bottom:1mm; }
+.flavours-reminder { font-size:8.5pt; color:var(--charcoal-soft); font-style:italic; margin-bottom:3mm; }
 .flavours-row { display:grid; grid-template-columns:repeat(4,1fr); gap:2mm; }
 .flavour-card { background:#fff; border-radius:6px; padding:3mm; text-align:center; position:relative; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .flavour-icon { position:absolute; top:2px; right:6px; font-size:24px; line-height:1; display:block; }
