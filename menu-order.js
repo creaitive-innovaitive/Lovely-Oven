@@ -7,18 +7,32 @@
 (function () {
 
   /* ── Config ─────────────────────────────────────────── */
-  const WHATSAPP_NUMBER = '84987390140';   // international, no +
-  const ZALO_NUMBER     = '0987390140';    // local format
+  const WHATSAPP_NUMBER = '84987390140';
+  const ZALO_NUMBER     = '0987390140';
 
   /* ── Order state ─────────────────────────────────────── */
-  const ORDER = { protein: null, flavour: null, spiceLevel: null, carb: null, side: null };
+  // Chicken meal: one item requiring all 4 steps
+  // extras / setMeals: quantity-based, each keyed by item value
+  const ORDER = {
+    protein: null, flavour: null, spiceLevel: null, carb: null, side: null,
+    extras:   {},  // { key: { label, price, qty } }
+    setMeals: {}   // { key: { label, price, qty } }
+  };
 
   const STEPS = [
-    { key: 'protein', label: 'Protein', icon: '🍗' },
-    { key: 'flavour', label: 'Flavour', icon: '🔥' },
-    { key: 'carb',    label: 'Carb',    icon: '🌾' },
-    { key: 'side',    label: 'Side',    icon: '🥗' },
+    { key: 'protein', label: 'Cut',      icon: '🍗' },
+    { key: 'flavour', label: 'Marinade', icon: '🔥' },
+    { key: 'carb',    label: 'Carb',     icon: '🌾' },
+    { key: 'side',    label: 'Side',     icon: '🥗' },
   ];
+
+  /* ── Helpers ──────────────────────────────────────────── */
+  function getTotalQty() {
+    let n = 0;
+    Object.values(ORDER.extras).forEach(v => n += v.qty);
+    Object.values(ORDER.setMeals).forEach(v => n += v.qty);
+    return n;
+  }
 
   /* ── Init ────────────────────────────────────────────── */
   function init() {
@@ -30,28 +44,32 @@
   /* ── Attach click handlers to all selectable items ───── */
   function attachHandlers() {
     document.querySelectorAll('[data-group]').forEach(el => {
-      el.addEventListener('click', handleSelect);
+      const g = el.dataset.group;
+      if (g === 'extra' || g === 'setmeal') {
+        el.addEventListener('click', handleQtySelect);
+      } else {
+        el.addEventListener('click', handleSelect);
+      }
     });
   }
 
+  /* Radio-style handler for chicken 4-step flow */
   function handleSelect(e) {
-    const el   = e.currentTarget;
+    if (e.target.closest('.lo-qty-ctrl')) return;
+    const el    = e.currentTarget;
     const group = el.dataset.group;
     const value = el.dataset.value;
 
-    // Deselect all siblings in this group
     document.querySelectorAll(`[data-group="${group}"]`).forEach(item => {
       item.classList.remove('order-selected');
     });
 
-    // Toggle: clicking again deselects
     if (ORDER[group] === value) {
       ORDER[group] = null;
       if (group === 'flavour') ORDER.spiceLevel = null;
     } else {
       ORDER[group] = value;
       el.classList.add('order-selected');
-      // Clear spice level if switching away from Peri Peri
       if (group === 'flavour' && value !== 'Peri Peri') {
         ORDER.spiceLevel = null;
       }
@@ -60,12 +78,63 @@
     updateBar();
   }
 
+  /* Quantity-style handler for extras and set meals */
+  function handleQtySelect(e) {
+    if (e.target.closest('.lo-qty-ctrl')) return;
+    const el    = e.currentTarget;
+    const group = el.dataset.group;
+    const key   = el.dataset.value;
+    const label = el.dataset.label || key;
+    const price = parseInt(el.dataset.price || '0', 10);
+    const store = group === 'setmeal' ? ORDER.setMeals : ORDER.extras;
+
+    if (!store[key]) store[key] = { label, price, qty: 0 };
+    store[key].qty += 1;
+    el.classList.add('order-selected');
+    renderQtyCtrl(el, store[key].qty, group, key, store);
+    updateBar();
+  }
+
+  function changeQty(el, group, key, store, delta) {
+    if (!store[key]) return;
+    store[key].qty = Math.max(0, store[key].qty + delta);
+    if (store[key].qty === 0) {
+      delete store[key];
+      el.classList.remove('order-selected');
+      const ctrl = el.querySelector('.lo-qty-ctrl');
+      if (ctrl) ctrl.remove();
+    } else {
+      const num = el.querySelector('.lo-qty-num');
+      if (num) num.textContent = store[key].qty;
+    }
+    updateBar();
+  }
+
+  function renderQtyCtrl(el, qty, group, key, store) {
+    let ctrl = el.querySelector('.lo-qty-ctrl');
+    if (!ctrl) {
+      ctrl = document.createElement('div');
+      ctrl.className = 'lo-qty-ctrl';
+      ctrl.innerHTML =
+        `<button class="lo-qty-btn" aria-label="Remove one">−</button>` +
+        `<span class="lo-qty-num">${qty}</span>` +
+        `<button class="lo-qty-btn" aria-label="Add one">+</button>`;
+      ctrl.children[0].addEventListener('click', e => { e.stopPropagation(); changeQty(el, group, key, store, -1); });
+      ctrl.children[2].addEventListener('click', e => { e.stopPropagation(); changeQty(el, group, key, store, +1); });
+      el.appendChild(ctrl);
+    } else {
+      ctrl.querySelector('.lo-qty-num').textContent = qty;
+    }
+  }
+
   /* ── Floating order bar ──────────────────────────────── */
   function updateBar() {
     const bar = document.getElementById('loBar');
     if (!bar) return;
 
-    const hasAny = STEPS.some(s => ORDER[s.key]);
+    const hasChicken = STEPS.some(s => ORDER[s.key]);
+    const totalQty   = getTotalQty();
+    const hasAny     = hasChicken || totalQty > 0;
     bar.classList.toggle('lo-bar-visible', hasAny);
 
     STEPS.forEach(s => {
@@ -74,7 +143,6 @@
       if (ORDER[s.key]) {
         let text = ORDER[s.key];
         if (s.key === 'flavour' && ORDER.spiceLevel) text += ` (${ORDER.spiceLevel})`;
-        // Shorten long names for the bar
         if (text.length > 18) text = text.substring(0, 16) + '…';
         chip.textContent = text;
         chip.classList.add('lo-chip-filled');
@@ -84,11 +152,24 @@
       }
     });
 
-    const allChosen = STEPS.every(s => ORDER[s.key]);
+    // Extras/setmeal count chip — only shows when items are selected
+    const extChip = bar.querySelector('[data-bar-step="extras"]');
+    if (extChip) {
+      if (totalQty > 0) {
+        extChip.innerHTML = `<span class="lo-chip-icon">🛒</span>+${totalQty}`;
+        extChip.classList.add('lo-chip-filled');
+        extChip.style.display = '';
+      } else {
+        extChip.style.display = 'none';
+      }
+    }
+
+    const allChickenChosen = STEPS.every(s => ORDER[s.key]);
+    const orderComplete    = allChickenChosen || (!hasChicken && totalQty > 0);
     const btn = document.getElementById('loBarBtn');
     if (btn) {
-      btn.textContent = allChosen ? 'Send Order →' : 'Review Order';
-      btn.classList.toggle('lo-btn-ready', allChosen);
+      btn.textContent = orderComplete ? 'Send Order →' : 'Review Order';
+      btn.classList.toggle('lo-btn-ready', orderComplete);
     }
   }
 
@@ -103,7 +184,6 @@
   };
 
   window.loCloseModal = function (e) {
-    // Called directly (close btn) or by overlay click
     if (e && e.target !== document.getElementById('loModal')) return;
     const modal = document.getElementById('loModal');
     if (modal) modal.classList.remove('lo-modal-open');
@@ -114,39 +194,83 @@
     const el = document.getElementById('loSummary');
     if (!el) return;
 
-    const allChosen = STEPS.every(s => ORDER[s.key]);
-    const missing   = STEPS.filter(s => !ORDER[s.key]).map(s => s.label);
+    const allChosen  = STEPS.every(s => ORDER[s.key]);
+    const hasChicken = STEPS.some(s => ORDER[s.key]);
+    const missing    = STEPS.filter(s => !ORDER[s.key]).map(s => s.label);
+    const setKeys    = Object.keys(ORDER.setMeals);
+    const extKeys    = Object.keys(ORDER.extras);
 
     let html = '';
 
-    // Incomplete warning
-    if (!allChosen) {
-      html += `<div class="lo-incomplete">
-        <span>⚠️</span> You haven't chosen a <strong>${missing.join(', ')}</strong> yet — you can still send a partial order or a question.
-      </div>`;
+    /* ── Chicken meal ── */
+    if (hasChicken) {
+      html += `<div class="lo-section-title">🍗 Chicken Meal</div>`;
+
+      if (!allChosen) {
+        html += `<div class="lo-incomplete">
+          <span>⚠️</span> Still need: <strong>${missing.join(', ')}</strong>
+        </div>`;
+      }
+
+      STEPS.forEach(s => {
+        const val   = ORDER[s.key];
+        const spice = (s.key === 'flavour' && ORDER.spiceLevel) ? ` (${ORDER.spiceLevel})` : '';
+        html += `
+          <div class="lo-sum-row ${val ? 'lo-row-done' : 'lo-row-empty'}">
+            <span class="lo-sum-icon">${s.icon}</span>
+            <div class="lo-sum-text">
+              <span class="lo-sum-label">${s.label}</span>
+              <span class="lo-sum-val">${val ? val + spice : '<em>Not chosen yet</em>'}</span>
+            </div>
+            ${val ? '<span class="lo-sum-tick">✓</span>' : ''}
+          </div>
+          ${s.key === 'flavour' && val === 'Peri Peri' ? spicePicker() : ''}`;
+      });
+
+      if (allChosen) {
+        html += `<div class="lo-sum-subtotal"><span>Chicken meal</span><strong>₫130,000</strong></div>`;
+      }
     }
 
-    // Summary rows
-    STEPS.forEach(s => {
-      const val   = ORDER[s.key];
-      const spice = (s.key === 'flavour' && ORDER.spiceLevel) ? ` (${ORDER.spiceLevel})` : '';
-      html += `
-        <div class="lo-sum-row ${val ? 'lo-row-done' : 'lo-row-empty'}">
-          <span class="lo-sum-icon">${s.icon}</span>
+    /* ── Set Meals ── */
+    if (setKeys.length > 0) {
+      html += `<div class="lo-section-title">🍲 Set Meals</div>`;
+      let setTotal = 0;
+      setKeys.forEach(k => {
+        const item = ORDER.setMeals[k];
+        const line = item.price * item.qty;
+        setTotal += line;
+        html += `<div class="lo-sum-row lo-row-done">
+          <span class="lo-sum-icon">🍲</span>
           <div class="lo-sum-text">
-            <span class="lo-sum-label">${s.label}</span>
-            <span class="lo-sum-val">${val ? val + spice : '<em>Not chosen yet</em>'}</span>
+            <span class="lo-sum-label">${item.label}</span>
+            <span class="lo-sum-val">× ${item.qty}</span>
           </div>
-          ${val ? '<span class="lo-sum-tick">✓</span>' : ''}
-        </div>
-        ${s.key === 'flavour' && val === 'Peri Peri' ? spicePicker() : ''}`;
-    });
+          <span class="lo-sum-tick">₫${line.toLocaleString()}</span>
+        </div>`;
+      });
+      html += `<div class="lo-sum-subtotal"><span>Set Meals</span><strong>₫${setTotal.toLocaleString()}</strong></div>`;
+    }
 
-    // Price total
-    html += `<div class="lo-sum-total">
-      <span>Full meal</span>
-      <strong>₫130,000</strong>
-    </div>`;
+    /* ── Extras ── */
+    if (extKeys.length > 0) {
+      html += `<div class="lo-section-title">➕ Extras</div>`;
+      let extTotal = 0;
+      extKeys.forEach(k => {
+        const item = ORDER.extras[k];
+        const line = item.price * item.qty;
+        extTotal += line;
+        html += `<div class="lo-sum-row lo-row-done">
+          <span class="lo-sum-icon">➕</span>
+          <div class="lo-sum-text">
+            <span class="lo-sum-label">${item.label}</span>
+            <span class="lo-sum-val">× ${item.qty}</span>
+          </div>
+          <span class="lo-sum-tick">₫${line.toLocaleString()}</span>
+        </div>`;
+      });
+      html += `<div class="lo-sum-subtotal"><span>Extras</span><strong>₫${extTotal.toLocaleString()}</strong></div>`;
+    }
 
     el.innerHTML = html;
 
@@ -157,11 +281,8 @@
         ORDER.spiceLevel = btn.dataset.spice;
         el.querySelectorAll('.lo-spice-btn').forEach(b => b.classList.remove('lo-spice-active'));
         btn.classList.add('lo-spice-active');
-        // Update bar chip
         const barChip = document.querySelector('[data-bar-step="flavour"]');
-        if (barChip) {
-          barChip.textContent = `Peri Peri (${ORDER.spiceLevel})`;
-        }
+        if (barChip) barChip.textContent = `Peri Peri (${ORDER.spiceLevel})`;
       });
     });
   }
@@ -177,19 +298,52 @@
 
   /* ── Build the message text ──────────────────────────── */
   function buildMessage() {
-    const name  = (document.getElementById('loName')?.value  || '').trim();
-    const notes = (document.getElementById('loNotes')?.value || '').trim();
-    const spice = ORDER.spiceLevel ? ` (${ORDER.spiceLevel})` : '';
+    const name     = (document.getElementById('loName')?.value  || '').trim();
+    const notes    = (document.getElementById('loNotes')?.value || '').trim();
+    const spice    = ORDER.spiceLevel ? ` (${ORDER.spiceLevel})` : '';
+    const hasChicken = STEPS.some(s => ORDER[s.key]);
+    const setKeys  = Object.keys(ORDER.setMeals);
+    const extKeys  = Object.keys(ORDER.extras);
 
     let msg = `🍽️ New Order — Lovely Oven\n\n`;
-    msg += `🍗 Protein:  ${ORDER.protein || '—'}\n`;
-    msg += `🔥 Flavour:  ${ORDER.flavour  ? ORDER.flavour + spice : '—'}\n`;
-    msg += `🌾 Carb:     ${ORDER.carb     || '—'}\n`;
-    msg += `🥗 Side:     ${ORDER.side     || '—'}\n`;
-    msg += `\n💰 Total:  ₫130,000\n`;
-    if (name)  msg += `\n👤 Name:   ${name}`;
-    if (notes) msg += `\n📝 Notes:  ${notes}`;
-    msg += `\n\n— Sent from lovelyoven.com`;
+
+    if (hasChicken) {
+      msg += `🍗 CHICKEN MEAL\n`;
+      msg += `   Cut:      ${ORDER.protein || '—'}\n`;
+      msg += `   Marinade: ${ORDER.flavour ? ORDER.flavour + spice : '—'}\n`;
+      msg += `   Carb:     ${ORDER.carb || '—'}\n`;
+      msg += `   Side:     ${ORDER.side || '—'}\n`;
+      if (STEPS.every(s => ORDER[s.key])) msg += `   Subtotal: ₫130,000\n`;
+      msg += '\n';
+    }
+
+    if (setKeys.length > 0) {
+      msg += `🍲 SET MEALS\n`;
+      let total = 0;
+      setKeys.forEach(k => {
+        const item = ORDER.setMeals[k];
+        const line = item.price * item.qty;
+        total += line;
+        msg += `   ${item.label} × ${item.qty}  ₫${line.toLocaleString()}\n`;
+      });
+      msg += `   Subtotal: ₫${total.toLocaleString()}\n\n`;
+    }
+
+    if (extKeys.length > 0) {
+      msg += `➕ EXTRAS\n`;
+      let total = 0;
+      extKeys.forEach(k => {
+        const item = ORDER.extras[k];
+        const line = item.price * item.qty;
+        total += line;
+        msg += `   ${item.label} × ${item.qty}  ₫${line.toLocaleString()}\n`;
+      });
+      msg += `   Subtotal: ₫${total.toLocaleString()}\n\n`;
+    }
+
+    if (name)  msg += `👤 Name:   ${name}\n`;
+    if (notes) msg += `📝 Notes:  ${notes}\n`;
+    msg += `\n— Sent from lovelyoven.com`;
     return msg;
   }
 
@@ -200,10 +354,9 @@
   };
 
   window.loSendZalo = function () {
-    const msg  = buildMessage();
-    const btn  = document.getElementById('loZaloBtn');
+    const msg = buildMessage();
+    const btn = document.getElementById('loZaloBtn');
 
-    // Copy to clipboard
     navigator.clipboard.writeText(msg).then(() => {
       if (btn) {
         btn.innerHTML = '<span class="lo-send-icon">✓</span> Copied! Opening Zalo…';
@@ -214,11 +367,9 @@
         }, 3500);
       }
     }).catch(() => {
-      // Fallback: show message in a prompt so they can copy manually
       window.prompt('Copy this message and paste it into Zalo:', msg);
     });
 
-    // Open Zalo chat after a short delay so the copy toast shows first
     setTimeout(() => {
       window.open(`https://zalo.me/${ZALO_NUMBER}`, '_blank');
     }, 400);
@@ -227,19 +378,18 @@
   /* ── Inject HTML ─────────────────────────────────────── */
   function injectUI() {
 
-    /* Floating order bar */
     const barHTML = `
 <div class="lo-bar" id="loBar">
   <div class="lo-bar-chips">
-    <div class="lo-chip" data-bar-step="protein"><span class="lo-chip-icon">🍗</span>Protein</div>
-    <div class="lo-chip" data-bar-step="flavour"><span class="lo-chip-icon">🔥</span>Flavour</div>
+    <div class="lo-chip" data-bar-step="protein"><span class="lo-chip-icon">🍗</span>Cut</div>
+    <div class="lo-chip" data-bar-step="flavour"><span class="lo-chip-icon">🔥</span>Marinade</div>
     <div class="lo-chip" data-bar-step="carb"><span class="lo-chip-icon">🌾</span>Carb</div>
     <div class="lo-chip" data-bar-step="side"><span class="lo-chip-icon">🥗</span>Side</div>
+    <div class="lo-chip lo-chip-extras" data-bar-step="extras" style="display:none"></div>
   </div>
   <button class="lo-bar-btn" id="loBarBtn" onclick="loOpenModal()">Review Order</button>
 </div>`;
 
-    /* Order modal */
     const modalHTML = `
 <div class="lo-modal-overlay" id="loModal" onclick="loCloseModal(event)">
   <div class="lo-modal">
