@@ -1522,7 +1522,7 @@ a.morder-link:hover { color: var(--gold-light); }
 /* ── PAGE 1 ── */
 .p1-header {
   background: linear-gradient(135deg, #3A6B45 0%, #1E2C22 100%);
-  padding: 10mm 12mm 9mm;
+  padding: 7mm 12mm 6mm;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1558,7 +1558,7 @@ a.morder-link:hover { color: var(--gold-light); }
   white-space: nowrap;
 }
 .p1-hero {
-  height: 72mm;
+  height: 64mm;
   position: relative;
   overflow: hidden;
 }
