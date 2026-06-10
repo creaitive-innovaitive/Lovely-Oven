@@ -895,7 +895,9 @@ html {
   margin-bottom: 0.75rem;
 }
 .morder-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 7px;
   font-family: 'Jost', sans-serif;
   font-size: 0.88rem;
   color: rgba(255,255,255,0.65);
@@ -904,6 +906,8 @@ html {
   transition: color 0.2s;
 }
 a.morder-link:hover { color: var(--gold-light); }
+a.morder-link:hover .morder-icon { opacity: 0.9; }
+.morder-icon { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.65; transition: opacity 0.2s; }
 .morder-tag {
   display: block;
   font-family: 'Jost', sans-serif;
