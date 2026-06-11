@@ -272,6 +272,15 @@
       html += `<div class="lo-sum-subtotal"><span>Extras</span><strong>₫${extTotal.toLocaleString()}</strong></div>`;
     }
 
+    /* ── Grand total ── */
+    let grandTotal = 0;
+    if (allChosen) grandTotal += 130000;
+    Object.values(ORDER.setMeals).forEach(v => grandTotal += v.price * v.qty);
+    Object.values(ORDER.extras).forEach(v => grandTotal += v.price * v.qty);
+    if (grandTotal > 0) {
+      html += `<div class="lo-sum-total"><span>Total</span><strong>₫${grandTotal.toLocaleString()}</strong></div>`;
+    }
+
     el.innerHTML = html;
 
     // Wire up spice buttons
