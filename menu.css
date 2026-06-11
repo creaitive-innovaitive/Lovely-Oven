@@ -1748,7 +1748,7 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .price-item-name { font-size:8.5pt; color:var(--charcoal); font-weight:500; }
 .price-item-desc { font-size:7pt; color:var(--charcoal-soft); display:block; margin-top:1px; }
 .price-amount { font-size:9pt; font-weight:600; color:var(--green); white-space:nowrap; flex-shrink:0; margin-left:6px; }
-.p2-meal-images { display:flex; gap:2mm; overflow:hidden; min-height:38mm; }
+.p2-meal-images { display:flex; gap:2mm; overflow:hidden; min-height:38mm; max-height:55mm; }
 .p2-meal-img { flex:1; overflow:hidden; border-radius:8px; position:relative; }
 .p2-meal-img img { width:100%; height:100%; object-fit:cover; display:block; }
 .p2-meal-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.68) 0%,rgba(0,0,0,0.1) 55%,transparent 75%); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
