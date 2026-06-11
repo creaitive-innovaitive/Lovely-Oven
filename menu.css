@@ -1730,7 +1730,8 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .side-circle img { width:100%; height:100%; object-fit:cover; display:block; }
 .side-name { font-family:'Playfair Display',serif; font-size:8.5pt; font-weight:600; color:var(--charcoal); line-height:1.2; }
 .side-sub { font-size:7pt; color:var(--charcoal-soft); margin-top:1px; }
-.p2-cols { padding:5mm 12mm 0; display:grid; grid-template-columns:1fr 1fr; gap:6mm; align-items:stretch; }
+/* 2×2 grid: row1 = Set Meals | Extras, row2 = Photos | How to Order */
+.p2-cols { padding:5mm 12mm 0; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto 1fr; gap:4mm 6mm; }
 .special-card { background:#EFE8D8; border-radius:10px; overflow:hidden; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .special-body { padding:4mm; }
 .price-group { margin-bottom:2.5mm; }
@@ -1747,17 +1748,14 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .price-item-name { font-size:8.5pt; color:var(--charcoal); font-weight:500; }
 .price-item-desc { font-size:7pt; color:var(--charcoal-soft); display:block; margin-top:1px; }
 .price-amount { font-size:9pt; font-weight:600; color:var(--green); white-space:nowrap; flex-shrink:0; margin-left:6px; }
-/* Left column of p2-cols — flex so images fill remaining space */
-.left-col { display:flex; flex-direction:column; }
-.p2-meal-images { display:flex; gap:2mm; flex:1; overflow:hidden; margin-top:4mm; min-height:0; }
+.p2-meal-images { display:flex; gap:2mm; overflow:hidden; min-height:0; }
 .p2-meal-img { flex:1; overflow:hidden; border-radius:8px; position:relative; }
 .p2-meal-img img { width:100%; height:100%; object-fit:cover; display:block; }
 .p2-meal-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.68) 0%,rgba(0,0,0,0.1) 55%,transparent 75%); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .p2-meal-label { position:absolute; bottom:5px; left:6px; right:6px; color:#fff; padding:4px 6px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .p2-meal-label span { font-size:6pt; opacity:0.7; text-transform:uppercase; letter-spacing:0.1em; display:block; }
 .p2-meal-label strong { font-family:'Playfair Display',serif; font-size:9pt; font-weight:600; display:block; line-height:1.2; }
-.right-col { display:flex; flex-direction:column; }
-.extras-card { background:#EFE8D8; border-left:4px solid var(--green); border-radius:10px; padding:4mm; margin-bottom:4mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.extras-card { background:#EFE8D8; border-left:4px solid var(--green); border-radius:10px; padding:4mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .extras-title { font-family:'Playfair Display',serif; font-size:11pt; font-weight:600; color:var(--charcoal); margin-bottom:3mm; }
 .extras-grid { display:grid; grid-template-columns:1fr; gap:2mm; }
 .extra-row { background:#fff; border-radius:6px; padding:2.5mm 3mm; display:flex; justify-content:space-between; align-items:center; }
@@ -1765,8 +1763,7 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .extra-price { font-size:8pt; font-weight:600; color:var(--green); }
 .extras-note { margin-top:3mm; font-size:7.5pt; color:var(--charcoal-soft); line-height:1.5; font-style:italic; }
 .extras-note strong { color:var(--green); font-style:normal; font-weight:600; margin-right:4px; }
-/* flex:1 makes it grow to fill remaining right-col space, matching the image height on the left */
-.contact-card { flex:1; background:linear-gradient(135deg,#3A6B45 0%,#1E2C22 100%); border-radius:10px; padding:4mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.contact-card { background:linear-gradient(135deg,#3A6B45 0%,#1E2C22 100%); border-radius:10px; padding:4mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .contact-card h4 { font-family:'Playfair Display',serif; font-size:11pt; font-weight:600; color:#fff; margin-bottom:3mm; }
 .contact-card-body { display:grid; grid-template-columns:1fr auto; gap:4mm; align-items:center; }
 .contact-line { font-size:8pt; color:rgba(255,255,255,0.6); line-height:1.8; }
