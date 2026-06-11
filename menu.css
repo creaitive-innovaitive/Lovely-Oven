@@ -952,6 +952,16 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 }
 
 /* ── PDF Download Button ── */
+.download-btns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.desktop-only { display: inline-flex; }
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+}
 .pdf-download-btn {
   display: inline-flex;
   align-items: center;
@@ -971,6 +981,32 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .pdf-download-btn:hover {
   background: var(--terra-light);
   transform: translateY(-2px);
+}
+.img-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.8rem 2rem;
+  background: transparent;
+  color: var(--terra);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  border: 2px solid var(--terra);
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+.img-download-btn:hover {
+  background: var(--terra);
+  color: #fff;
+  transform: translateY(-2px);
+}
+.img-download-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
 }
 
 /* ============================================================
@@ -1597,6 +1633,12 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
   }
 
   body { background: none !important; }
+
+  /* Force the print viewport to match A4 width so mobile doesn't wrap to 4 pages */
+  html, body {
+    width: 210mm;
+    overflow: visible;
+  }
 
   @page {
     size: A4 portrait;

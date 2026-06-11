@@ -10,6 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="menu.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
 <body>
 
@@ -350,7 +351,10 @@
         </div>
       </div>
 
-      <button class="pdf-download-btn" onclick="window.print()">↓ Download Menu as PDF</button>
+      <div class="download-btns">
+        <button class="pdf-download-btn" onclick="downloadPDF()">↓ Download Menu (PDF)</button>
+        <button class="img-download-btn desktop-only" onclick="downloadAsImage()">↓ Download Menu (Image)</button>
+      </div>
     </div>
   </section>
 
@@ -626,6 +630,61 @@
     observer.observe(el);
   });
 })();
+
+/* ── PDF download (mobile-aware) ── */
+function downloadPDF() {
+  window.print();
+}
+
+/* ── Image download (desktop only) ── */
+async function downloadAsImage() {
+  const btn = document.querySelector('.img-download-btn');
+  const original = btn.textContent;
+  btn.textContent = 'Preparing…';
+  btn.disabled = true;
+
+  const printPages = document.querySelector('.print-pages');
+
+  // Temporarily reveal print pages off-screen so html2canvas can render them
+  printPages.style.cssText = 'display:block;position:fixed;top:0;left:-9999px;width:794px;z-index:-1;';
+
+  try {
+    const pages = document.querySelectorAll('.page');
+    const PW = 794, PH = 1123, SCALE = 2;
+
+    const combined = document.createElement('canvas');
+    combined.width  = PW * SCALE;
+    combined.height = PH * pages.length * SCALE;
+    const ctx = combined.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, combined.width, combined.height);
+
+    for (let i = 0; i < pages.length; i++) {
+      const c = await html2canvas(pages[i], {
+        scale: SCALE,
+        width: PW,
+        height: PH,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        backgroundColor: '#FDF6E8',
+      });
+      ctx.drawImage(c, 0, PH * i * SCALE);
+    }
+
+    const link = document.createElement('a');
+    link.download = 'Lovely-Oven-Menu.jpg';
+    link.href = combined.toDataURL('image/jpeg', 0.93);
+    link.click();
+  } catch (e) {
+    alert('Could not create image — please use the PDF download instead.');
+    console.error(e);
+  }
+
+  printPages.style.cssText = '';
+  btn.textContent = original;
+  btn.disabled = false;
+}
 </script>
 </body>
 </html>
