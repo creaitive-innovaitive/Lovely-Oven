@@ -1633,6 +1633,8 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
     width: calc(100% + 2px);
     height: 100%;
     object-fit: cover;
+    transform: scale(1.18);
+    transform-origin: center center;
   }
 }
 
