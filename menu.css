@@ -1756,7 +1756,7 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .p2-meal-label { position:absolute; bottom:5px; left:6px; right:6px; color:#fff; padding:4px 6px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .p2-meal-label span { font-size:6pt; opacity:0.7; text-transform:uppercase; letter-spacing:0.1em; display:block; }
 .p2-meal-label strong { font-family:'Playfair Display',serif; font-size:9pt; font-weight:600; display:block; line-height:1.2; }
-.right-col {}
+.right-col { display:flex; flex-direction:column; }
 .extras-card { background:#EFE8D8; border-left:4px solid var(--green); border-radius:10px; padding:4mm; margin-bottom:4mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .extras-title { font-family:'Playfair Display',serif; font-size:11pt; font-weight:600; color:var(--charcoal); margin-bottom:3mm; }
 .extras-grid { display:grid; grid-template-columns:1fr; gap:2mm; }
@@ -1765,7 +1765,8 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .extra-price { font-size:8pt; font-weight:600; color:var(--green); }
 .extras-note { margin-top:3mm; font-size:7.5pt; color:var(--charcoal-soft); line-height:1.5; font-style:italic; }
 .extras-note strong { color:var(--green); font-style:normal; font-weight:600; margin-right:4px; }
-.contact-card { background:linear-gradient(135deg,#3A6B45 0%,#1E2C22 100%); border-radius:10px; padding:4mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+/* flex:1 makes it grow to fill remaining right-col space, matching the image height on the left */
+.contact-card { flex:1; background:linear-gradient(135deg,#3A6B45 0%,#1E2C22 100%); border-radius:10px; padding:4mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .contact-card h4 { font-family:'Playfair Display',serif; font-size:11pt; font-weight:600; color:#fff; margin-bottom:3mm; }
 .contact-card-body { display:grid; grid-template-columns:1fr auto; gap:4mm; align-items:center; }
 .contact-line { font-size:8pt; color:rgba(255,255,255,0.6); line-height:1.8; }
