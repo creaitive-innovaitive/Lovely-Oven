@@ -1701,6 +1701,9 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .flavour-note { font-size:8pt; color:var(--charcoal-soft); margin-top:2px; display:block; }
 .spice-note { margin-top:3mm; font-size:8.5pt; color:var(--charcoal-soft); }
 .spice-note span { color:var(--green); font-weight:600; }
+/* p1-sides replaces p1-meals — Handmade Sides section on page 1 */
+.p1-sides { padding:5mm 12mm 4mm; }
+.p1-sides .sec-header { margin-bottom:4mm; }
 .p1-meals { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; height:48mm; }
 .meal-photo { position:relative; overflow:hidden; }
 .meal-photo img { width:100%; height:100%; object-fit:cover; display:block; }
@@ -1727,7 +1730,7 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .side-circle img { width:100%; height:100%; object-fit:cover; display:block; }
 .side-name { font-family:'Playfair Display',serif; font-size:8.5pt; font-weight:600; color:var(--charcoal); line-height:1.2; }
 .side-sub { font-size:7pt; color:var(--charcoal-soft); margin-top:1px; }
-.p2-cols { padding:0 12mm; display:grid; grid-template-columns:1fr 1fr; gap:6mm; }
+.p2-cols { padding:0 12mm; display:grid; grid-template-columns:1fr 1fr; gap:6mm; align-items:stretch; }
 .special-card { background:#EFE8D8; border-radius:10px; overflow:hidden; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .special-body { padding:4mm; }
 .price-group { margin-bottom:2.5mm; }
@@ -1744,6 +1747,11 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .price-item-name { font-size:8.5pt; color:var(--charcoal); font-weight:500; }
 .price-item-desc { font-size:7pt; color:var(--charcoal-soft); display:block; margin-top:1px; }
 .price-amount { font-size:9pt; font-weight:600; color:var(--green); white-space:nowrap; flex-shrink:0; margin-left:6px; }
+/* Left column of p2-cols — flex so images fill remaining space */
+.left-col { display:flex; flex-direction:column; }
+.p2-meal-images { display:flex; gap:2mm; flex:1; overflow:hidden; border-radius:10px; margin-top:4mm; min-height:0; }
+.p2-meal-img { flex:1; overflow:hidden; border-radius:8px; }
+.p2-meal-img img { width:100%; height:100%; object-fit:cover; display:block; }
 .right-col {}
 .extras-card { background:#EFE8D8; border-left:4px solid var(--green); border-radius:10px; padding:4mm; margin-bottom:4mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .extras-title { font-family:'Playfair Display',serif; font-size:11pt; font-weight:600; color:var(--charcoal); margin-bottom:3mm; }
