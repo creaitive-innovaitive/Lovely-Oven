@@ -644,9 +644,14 @@ async function downloadAsImage() {
   btn.disabled = true;
 
   const printPages = document.querySelector('.print-pages');
-
-  // Temporarily reveal print pages off-screen so html2canvas can render them
   printPages.style.cssText = 'display:block;position:fixed;top:0;left:-9999px;width:794px;z-index:-1;';
+
+  // html2canvas can't handle object-fit+transform on the hero img — temporarily
+  // swap it to a plain cover fill with object-position shifted left to avoid the
+  // white band on the right edge of the source photo.
+  const heroImg = printPages.querySelector('.p1-hero img');
+  const heroOrig = heroImg.style.cssText;
+  heroImg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:30% 60%;display:block;';
 
   try {
     const pages = document.querySelectorAll('.page');
@@ -656,7 +661,7 @@ async function downloadAsImage() {
     combined.width  = PW * SCALE;
     combined.height = PH * pages.length * SCALE;
     const ctx = combined.getContext('2d');
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#FDF6E8';
     ctx.fillRect(0, 0, combined.width, combined.height);
 
     for (let i = 0; i < pages.length; i++) {
@@ -681,6 +686,7 @@ async function downloadAsImage() {
     console.error(e);
   }
 
+  heroImg.style.cssText = heroOrig;
   printPages.style.cssText = '';
   btn.textContent = original;
   btn.disabled = false;
