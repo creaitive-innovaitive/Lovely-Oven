@@ -646,6 +646,23 @@ async function downloadAsImage() {
   const printPages = document.querySelector('.print-pages');
   printPages.style.cssText = 'display:block;position:fixed;top:0;left:-9999px;width:794px;z-index:-1;';
 
+  // @media print rules don't apply during screen rendering, so .page has no
+  // fixed height and absolute-positioned footers go to the wrong place.
+  // Inject the critical print dimensions as regular styles for the duration.
+  const PW = 794, PH = 1123, SCALE = 2;
+  const tempStyle = document.createElement('style');
+  tempStyle.id = 'canvas-render-tmp';
+  tempStyle.textContent = `
+    .page {
+      width: ${PW}px !important;
+      height: ${PH}px !important;
+      overflow: hidden !important;
+      position: relative !important;
+      box-sizing: border-box !important;
+    }
+  `;
+  document.head.appendChild(tempStyle);
+
   // html2canvas can't apply object-fit:cover on an absolutely-positioned img.
   // Pre-draw the hero image to a <canvas> with correct cover-crop maths, then
   // swap it in so html2canvas renders the canvas element instead.
@@ -671,7 +688,6 @@ async function downloadAsImage() {
 
   try {
     const pages = document.querySelectorAll('.page');
-    const PW = 794, PH = 1123, SCALE = 2;
 
     const combined = document.createElement('canvas');
     combined.width  = PW * SCALE;
@@ -704,6 +720,7 @@ async function downloadAsImage() {
 
   heroContainer.removeChild(heroCanvas);
   heroImg.style.display = '';
+  document.getElementById('canvas-render-tmp').remove();
   printPages.style.cssText = '';
   btn.textContent = original;
   btn.disabled = false;
