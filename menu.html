@@ -663,23 +663,36 @@ async function downloadAsImage() {
   });
 
   // html2canvas can't apply object-fit:cover on an abs-positioned img.
-  // Pre-draw the hero image to a <canvas> with correct cover-crop, swap it in.
+  // Pre-draw images that use object-fit:cover — html2canvas ignores that property.
+  // Helper: replace an <img> with a <canvas> drawn with cover-crop at given px size.
+  async function swapWithCanvas(img, w, h, posX = 0.5, posY = 0.5) {
+    await new Promise(r => img.complete ? r() : (img.onload = r));
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.style.cssText = img.style.cssText || '';
+    c.style.width = w + 'px'; c.style.height = h + 'px'; c.style.display = 'block';
+    const ctx = c.getContext('2d');
+    const s = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+    ctx.drawImage(img,
+      (w - img.naturalWidth  * s) * posX,
+      (h - img.naturalHeight * s) * posY,
+      img.naturalWidth * s, img.naturalHeight * s);
+    img.style.display = 'none';
+    img.parentNode.insertBefore(c, img);
+    return c;
+  }
+
+  // Hero image (64mm tall, shift 30% horizontal to avoid white right edge)
   const heroContainer = printPages.querySelector('.p1-hero');
   const heroImg = heroContainer.querySelector('img');
-  const CW = 794, CH = Math.round(64 * 96 / 25.4); // 64mm at 96 dpi ≈ 241 px
-  await new Promise(r => heroImg.complete ? r() : (heroImg.onload = r));
-
-  const heroCanvas = document.createElement('canvas');
-  heroCanvas.width = CW; heroCanvas.height = CH;
+  const CW = 794, CH = Math.round(64 * 96 / 25.4);
+  const heroCanvas = await swapWithCanvas(heroImg, CW, CH, 0.3, 0.6);
   heroCanvas.style.cssText = `position:absolute;top:0;left:0;width:${CW}px;height:${CH}px;display:block;`;
-  const hCtx = heroCanvas.getContext('2d');
-  const iW = heroImg.naturalWidth, iH = heroImg.naturalHeight;
-  const sc = Math.max(CW / iW, CH / iH);
-  const ox = (CW - iW * sc) * 0.3;
-  const oy = (CH - iH * sc) * 0.6;
-  hCtx.drawImage(heroImg, ox, oy, iW * sc, iH * sc);
-  heroImg.style.display = 'none';
-  heroContainer.insertBefore(heroCanvas, heroImg);
+
+  // Side circle images (28mm × 28mm circles)
+  const SD = Math.round(28 * 96 / 25.4); // ≈ 106 px
+  const sideImgs = Array.from(printPages.querySelectorAll('.side-circle img'));
+  const sideCanvases = await Promise.all(sideImgs.map(img => swapWithCanvas(img, SD, SD, 0.5, 0.5)));
 
   try {
     // Combined canvas: 2 pages + cut-line separator strip between them
@@ -742,8 +755,9 @@ async function downloadAsImage() {
     console.error(e);
   }
 
-  heroContainer.removeChild(heroCanvas);
-  heroImg.style.display = '';
+  // Restore all swapped images
+  heroCanvas.remove(); heroImg.style.display = '';
+  sideCanvases.forEach((c, i) => { c.remove(); sideImgs[i].style.display = ''; });
   pageEls.forEach((p, i) => {
     if (savedPageStyles[i]) p.setAttribute('style', savedPageStyles[i]);
     else p.removeAttribute('style');
