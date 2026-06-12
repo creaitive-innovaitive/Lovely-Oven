@@ -564,6 +564,7 @@ html {
   gap: 0.6rem;
   text-align: center;
   cursor: default;
+  width: 200px;
 }
 .mside-card.is-visible {
   animation: sideUp 0.55s ease both;
