@@ -646,12 +646,28 @@ async function downloadAsImage() {
   const printPages = document.querySelector('.print-pages');
   printPages.style.cssText = 'display:block;position:fixed;top:0;left:-9999px;width:794px;z-index:-1;';
 
-  // html2canvas can't handle object-fit+transform on the hero img — temporarily
-  // swap it to a plain cover fill with object-position shifted left to avoid the
-  // white band on the right edge of the source photo.
-  const heroImg = printPages.querySelector('.p1-hero img');
-  const heroOrig = heroImg.style.cssText;
-  heroImg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:30% 60%;display:block;';
+  // html2canvas can't apply object-fit:cover on an absolutely-positioned img.
+  // Pre-draw the hero image to a <canvas> with correct cover-crop maths, then
+  // swap it in so html2canvas renders the canvas element instead.
+  const heroContainer = printPages.querySelector('.p1-hero');
+  const heroImg = heroContainer.querySelector('img');
+  const CW = 794, CH = Math.round(64 * 96 / 25.4); // 64mm at 96 dpi ≈ 241 px
+
+  await new Promise(r => heroImg.complete ? r() : (heroImg.onload = r));
+
+  const heroCanvas = document.createElement('canvas');
+  heroCanvas.width = CW;
+  heroCanvas.height = CH;
+  heroCanvas.style.cssText = `position:absolute;inset:0;width:100%;height:${CH}px;display:block;`;
+  const hCtx = heroCanvas.getContext('2d');
+  const iW = heroImg.naturalWidth, iH = heroImg.naturalHeight;
+  const s  = Math.max(CW / iW, CH / iH);
+  const ox = (CW - iW * s) * 0.3; // object-position 30% horizontal (avoids white right edge)
+  const oy = (CH - iH * s) * 0.6; // object-position 60% vertical
+  hCtx.drawImage(heroImg, ox, oy, iW * s, iH * s);
+
+  heroImg.style.display = 'none';
+  heroContainer.insertBefore(heroCanvas, heroImg);
 
   try {
     const pages = document.querySelectorAll('.page');
@@ -686,7 +702,8 @@ async function downloadAsImage() {
     console.error(e);
   }
 
-  heroImg.style.cssText = heroOrig;
+  heroContainer.removeChild(heroCanvas);
+  heroImg.style.display = '';
   printPages.style.cssText = '';
   btn.textContent = original;
   btn.disabled = false;
