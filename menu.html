@@ -643,61 +643,55 @@ async function downloadAsImage() {
   btn.textContent = 'Preparing…';
   btn.disabled = true;
 
-  const printPages = document.querySelector('.print-pages');
-  printPages.style.cssText = 'display:block;position:fixed;top:0;left:-9999px;width:794px;z-index:-1;';
-
-  // @media print rules don't apply during screen rendering, so .page has no
-  // fixed height and absolute-positioned footers go to the wrong place.
-  // Inject the critical print dimensions as regular styles for the duration.
   const PW = 794, PH = 1123, SCALE = 2;
-  const tempStyle = document.createElement('style');
-  tempStyle.id = 'canvas-render-tmp';
-  tempStyle.textContent = `
-    .page {
-      width: ${PW}px !important;
-      height: ${PH}px !important;
-      overflow: hidden !important;
-      position: relative !important;
-      box-sizing: border-box !important;
-    }
-  `;
-  document.head.appendChild(tempStyle);
+  const SEP = 24; // px gap between pages showing cut line
 
-  // html2canvas can't apply object-fit:cover on an absolutely-positioned img.
-  // Pre-draw the hero image to a <canvas> with correct cover-crop maths, then
-  // swap it in so html2canvas renders the canvas element instead.
+  const printPages = document.querySelector('.print-pages');
+  printPages.style.cssText = 'display:block;position:absolute;top:-9999px;left:-9999px;width:794px;';
+
+  // @media print styles don't apply on screen — set dimensions directly on
+  // each .page element so absolute-positioned footers land at the right place.
+  const pageEls = Array.from(document.querySelectorAll('.page'));
+  const savedPageStyles = pageEls.map(p => p.getAttribute('style') || '');
+  pageEls.forEach(p => {
+    p.style.width          = PW + 'px';
+    p.style.height         = PH + 'px';
+    p.style.overflow       = 'hidden';
+    p.style.position       = 'relative';
+    p.style.boxSizing      = 'border-box';
+    p.style.pageBreakAfter = 'auto';
+  });
+
+  // html2canvas can't apply object-fit:cover on an abs-positioned img.
+  // Pre-draw the hero image to a <canvas> with correct cover-crop, swap it in.
   const heroContainer = printPages.querySelector('.p1-hero');
   const heroImg = heroContainer.querySelector('img');
   const CW = 794, CH = Math.round(64 * 96 / 25.4); // 64mm at 96 dpi ≈ 241 px
-
   await new Promise(r => heroImg.complete ? r() : (heroImg.onload = r));
 
   const heroCanvas = document.createElement('canvas');
-  heroCanvas.width = CW;
-  heroCanvas.height = CH;
-  heroCanvas.style.cssText = `position:absolute;inset:0;width:100%;height:${CH}px;display:block;`;
+  heroCanvas.width = CW; heroCanvas.height = CH;
+  heroCanvas.style.cssText = `position:absolute;top:0;left:0;width:${CW}px;height:${CH}px;display:block;`;
   const hCtx = heroCanvas.getContext('2d');
   const iW = heroImg.naturalWidth, iH = heroImg.naturalHeight;
-  const s  = Math.max(CW / iW, CH / iH);
-  const ox = (CW - iW * s) * 0.3; // object-position 30% horizontal (avoids white right edge)
-  const oy = (CH - iH * s) * 0.6; // object-position 60% vertical
-  hCtx.drawImage(heroImg, ox, oy, iW * s, iH * s);
-
+  const sc = Math.max(CW / iW, CH / iH);
+  const ox = (CW - iW * sc) * 0.3;
+  const oy = (CH - iH * sc) * 0.6;
+  hCtx.drawImage(heroImg, ox, oy, iW * sc, iH * sc);
   heroImg.style.display = 'none';
   heroContainer.insertBefore(heroCanvas, heroImg);
 
   try {
-    const pages = document.querySelectorAll('.page');
-
+    // Combined canvas: 2 pages + cut-line separator strip between them
     const combined = document.createElement('canvas');
     combined.width  = PW * SCALE;
-    combined.height = PH * pages.length * SCALE;
+    combined.height = PH * pageEls.length * SCALE + SEP;
     const ctx = combined.getContext('2d');
-    ctx.fillStyle = '#FDF6E8';
+    ctx.fillStyle = '#e0dbd0';
     ctx.fillRect(0, 0, combined.width, combined.height);
 
-    for (let i = 0; i < pages.length; i++) {
-      const c = await html2canvas(pages[i], {
+    for (let i = 0; i < pageEls.length; i++) {
+      const c = await html2canvas(pageEls[i], {
         scale: SCALE,
         width: PW,
         height: PH,
@@ -706,8 +700,38 @@ async function downloadAsImage() {
         logging: false,
         backgroundColor: '#FDF6E8',
       });
-      ctx.drawImage(c, 0, PH * i * SCALE);
+      ctx.drawImage(c, 0, PH * i * SCALE + (i > 0 ? SEP : 0));
     }
+
+    // Draw the cut-line separator between page 1 and page 2
+    const cutY = PH * SCALE;
+    ctx.fillStyle = '#c8c0b0';
+    ctx.fillRect(0, cutY, combined.width, SEP);
+    // Dashed scissor line
+    ctx.save();
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([12, 8]);
+    ctx.beginPath();
+    ctx.moveTo(28, cutY + SEP / 2);
+    ctx.lineTo(combined.width - 28, cutY + SEP / 2);
+    ctx.stroke();
+    ctx.restore();
+    // Scissor icon ✂ at the left
+    ctx.save();
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillStyle = '#666';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✂', 6, cutY + SEP / 2);
+    ctx.restore();
+    // "CUT HERE" label centred
+    ctx.save();
+    ctx.font = '700 11px sans-serif';
+    ctx.fillStyle = '#777';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('CUT HERE', combined.width / 2, cutY + SEP / 2);
+    ctx.restore();
 
     const link = document.createElement('a');
     link.download = 'Lovely-Oven-Menu.jpg';
@@ -720,7 +744,10 @@ async function downloadAsImage() {
 
   heroContainer.removeChild(heroCanvas);
   heroImg.style.display = '';
-  document.getElementById('canvas-render-tmp').remove();
+  pageEls.forEach((p, i) => {
+    if (savedPageStyles[i]) p.setAttribute('style', savedPageStyles[i]);
+    else p.removeAttribute('style');
+  });
   printPages.style.cssText = '';
   btn.textContent = original;
   btn.disabled = false;
