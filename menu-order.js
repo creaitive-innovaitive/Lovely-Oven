@@ -22,7 +22,7 @@
   const STEPS = [
     { key: 'protein', label: 'Cut',      icon: '🍗' },
     { key: 'flavour', label: 'Marinade', icon: '🔥' },
-    { key: 'carb',    label: 'Carb',     icon: '🌾' },
+    { key: 'carb',    label: 'Carb',     icon: '🍚' },
     { key: 'side',    label: 'Side',     icon: '🥗' },
   ];
 
@@ -392,7 +392,7 @@
   <div class="lo-bar-chips">
     <div class="lo-chip" data-bar-step="protein"><span class="lo-chip-icon">🍗</span>Cut</div>
     <div class="lo-chip" data-bar-step="flavour"><span class="lo-chip-icon">🔥</span>Marinade</div>
-    <div class="lo-chip" data-bar-step="carb"><span class="lo-chip-icon">🌾</span>Carb</div>
+    <div class="lo-chip" data-bar-step="carb"><span class="lo-chip-icon">🍚</span>Carb</div>
     <div class="lo-chip" data-bar-step="side"><span class="lo-chip-icon">🥗</span>Side</div>
     <div class="lo-chip lo-chip-extras" data-bar-step="extras" style="display:none"></div>
   </div>
