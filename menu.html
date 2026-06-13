@@ -665,14 +665,14 @@ async function downloadAsImage() {
   // html2canvas can't apply object-fit:cover on an abs-positioned img.
   // Pre-draw images that use object-fit:cover — html2canvas ignores that property.
   // Helper: replace an <img> with a <canvas> drawn with cover-crop at given px size.
-  async function swapWithCanvas(img, w, h, posX = 0.5, posY = 0.5) {
+  async function swapWithCanvas(img, w, h, posX = 0.5, posY = 0.5, zoom = 1) {
     await new Promise(r => img.complete ? r() : (img.onload = r));
     const c = document.createElement('canvas');
     c.width = w; c.height = h;
     c.style.cssText = img.style.cssText || '';
     c.style.width = w + 'px'; c.style.height = h + 'px'; c.style.display = 'block';
     const ctx = c.getContext('2d');
-    const s = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+    const s = Math.max(w / img.naturalWidth, h / img.naturalHeight) * zoom;
     ctx.drawImage(img,
       (w - img.naturalWidth  * s) * posX,
       (h - img.naturalHeight * s) * posY,
@@ -686,7 +686,7 @@ async function downloadAsImage() {
   const heroContainer = printPages.querySelector('.p1-hero');
   const heroImg = heroContainer.querySelector('img');
   const CW = 794, CH = Math.round(64 * 96 / 25.4);
-  const heroCanvas = await swapWithCanvas(heroImg, CW, CH, 0.3, 0.6);
+  const heroCanvas = await swapWithCanvas(heroImg, CW, CH, 0.3, 0.6, 1.18);
   heroCanvas.style.cssText = `position:absolute;top:0;left:0;width:${CW}px;height:${CH}px;display:block;`;
 
   // Side circle images (28mm × 28mm circles)
