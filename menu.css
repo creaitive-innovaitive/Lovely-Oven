@@ -163,6 +163,15 @@ html {
   print-color-adjust: exact;
 }
 .mhero-price-pill strong { font-weight: 700; }
+.mhero-download-btn {
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.mhero-download-btn:hover {
+  background: var(--terra-dark, #a8532f);
+  transform: translateY(-1px);
+}
 .mhero-cue {
   display: flex;
   flex-direction: column;
