@@ -727,12 +727,17 @@ html {
 }
 
 /* Specials panel */
+.mspecial-img-row {
+  display: flex;
+  gap: 0.6rem;
+  margin: 1.2rem 0 1.5rem;
+}
 .mspecial-img {
   position: relative;
   border-radius: 14px;
   overflow: hidden;
   height: 200px;
-  margin: 1.2rem 0 1.5rem;
+  flex: 1;
   box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
 .mspecial-img img {
@@ -748,11 +753,12 @@ html {
   left: 0;
   right: 0;
   background: linear-gradient(to top, rgba(20,14,6,0.75), transparent);
-  padding: 1rem 1rem 0.75rem;
+  padding: 1rem 0.7rem 0.75rem;
   font-family: 'Playfair Display', serif;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   font-style: italic;
   color: rgba(255,255,255,0.85);
+  line-height: 1.25;
 }
 .mspecial-list {
   display: flex;
