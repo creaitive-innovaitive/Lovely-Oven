@@ -163,6 +163,14 @@ html {
   print-color-adjust: exact;
 }
 .mhero-price-pill strong { font-weight: 700; }
+.mhero-download-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+.mhero-download-row .mhero-price-pill { margin-bottom: 0; }
 .mhero-download-btn {
   border: none;
   cursor: pointer;

@@ -54,7 +54,10 @@
       <div class="mhero-eyebrow">Danang &amp; Hoi An</div>
       <h1 class="mhero-title">Real food,<br><em>made with love.</em></h1>
       <p class="mhero-sub">Fresh ingredients, cooked daily from our home oven.<br>No shortcuts — ever.</p>
-      <button class="mhero-price-pill mhero-download-btn" onclick="downloadPDF()">↓ Download Menu</button>
+      <div class="mhero-download-row">
+        <button class="mhero-price-pill mhero-download-btn" onclick="downloadPDF()">↓ Menu (PDF)</button>
+        <button class="mhero-price-pill mhero-download-btn desktop-only" onclick="downloadAsImage(this)">↓ Menu (JPG)</button>
+      </div>
       <div class="mhero-cue">
         <span>Build your meal</span>
         <div class="mhero-arrow">↓</div>
@@ -362,7 +365,7 @@
 
       <div class="download-btns">
         <button class="pdf-download-btn" onclick="downloadPDF()">↓ Download Menu (PDF)</button>
-        <button class="img-download-btn desktop-only" onclick="downloadAsImage()">↓ Download Menu (Image)</button>
+        <button class="img-download-btn desktop-only" onclick="downloadAsImage(this)">↓ Download Menu (Image)</button>
       </div>
     </div>
   </section>
@@ -646,8 +649,8 @@ function downloadPDF() {
 }
 
 /* ── Image download (desktop only) ── */
-async function downloadAsImage() {
-  const btn = document.querySelector('.img-download-btn');
+async function downloadAsImage(btn) {
+  btn = btn || document.querySelector('.img-download-btn');
   const original = btn.textContent;
   btn.textContent = 'Preparing…';
   btn.disabled = true;
