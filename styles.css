@@ -1573,7 +1573,7 @@ footer {
   clip-path: polygon(0 6vh, calc(62% + 16vw) 6vh, calc(38% + 16vw) 100%, 0 100%);
 }
 .hero-half-veg {
-  background-image: url('img/specials/veg-hero-15.jpg');
+  background-image: url('img/specials/veg-hero-16.jpg');
   background-position: 0% 40%;
   /* shifted 20vw right so the dish sits further right; clip compensates to keep the divider put */
   inset: 0 -20vw 0 20vw;
