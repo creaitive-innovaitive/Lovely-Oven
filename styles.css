@@ -213,9 +213,7 @@ nav {
 /* ── Hero ── */
 .hero {
   min-height: 100vh;
-  background-image: url('img/menu/menu-top.jpg');
-  background-size: cover;
-  background-position: center;
+  background: var(--dark);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -229,7 +227,7 @@ nav {
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.48);
+  background: none;
 }
 
 /* Lantern decorations */
@@ -370,7 +368,7 @@ nav {
 }
 
 .hero-cta {
-  margin-top: 2.5rem;
+  margin-top: 1.75rem;
   position: relative;
   z-index: 1;
   animation: fadeUp 0.8s 0.5s ease both;
@@ -1031,7 +1029,7 @@ footer {
 /* ── Nutrition Page ── */
 .nutrition-hero {
   min-height: 55vh;
-  background-image: url('img/menu/menu-top.jpg');
+  background-image: url('img/menu-sides/menu-top.jpg');
   background-size: cover;
   background-position: center 40%;
   display: flex;
@@ -1119,7 +1117,7 @@ footer {
 /* ── Social Page ── */
 .social-hero {
   min-height: 55vh;
-  background-image: url('img/menu/menu-top.jpg');
+  background-image: url('img/menu-sides/menu-top.jpg');
   background-size: cover;
   background-position: center 30%;
   display: flex;
@@ -1518,3 +1516,112 @@ footer {
 @media (max-width: 560px) {
   .dish-cards { grid-template-columns: 1fr; }
 }
+
+/* ── Dietary options ── */
+.diet-pills {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem;
+  margin-top: 1.1rem; position: relative; z-index: 1;
+  animation: fadeUp 0.8s 0.7s ease both;
+}
+.diet-pill {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid rgba(250,243,232,0.45);
+  border-radius: 999px;
+  color: var(--parchment);
+  text-decoration: none;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+  background: rgba(28,40,32,0.35);
+  transition: all 0.25s;
+}
+.diet-pill:hover { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+
+.diet-section { background: var(--olive-light); padding: 5rem 2rem; scroll-margin-top: 70px; }
+.diet-inner { max-width: 1100px; margin: 0 auto; }
+.diet-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem; margin-top: 2.5rem;
+}
+.diet-card {
+  background: #fff; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 4px 18px rgba(28,40,32,0.10);
+  display: flex; flex-direction: column;
+}
+.diet-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+.diet-card-body { padding: 1.1rem 1.25rem 1.4rem; }
+.diet-card-body h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0.5rem 0 0.4rem; color: var(--ink); }
+.diet-card-body p { font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); }
+.diet-tag {
+  display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px;
+  background: var(--olive-dark); color: #fff;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.diet-tag-sea { background: #2F6F8F; }
+.diet-card-fish { background: var(--olive-darker); }
+.diet-card-fish h3, .diet-card-fish p { color: var(--parchment); }
+.diet-fish-icon { font-size: 4rem; text-align: center; padding: 2rem 0 0.5rem; }
+.diet-note { text-align: center; margin-top: 1.75rem; font-size: 0.9rem; color: var(--text-muted); }
+@media (max-width: 600px) { .diet-section { padding: 3.5rem 1.25rem; } }
+
+/* ── Hero split: chicken top-left, plant-based bottom-right ── */
+.hero-split { position: absolute; inset: 0; }
+.hero-half { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.hero-half-chicken {
+  background-image: url('img/specials/chicken-hero-4.jpg');
+  /* shifted 16vw left and 5vh down; element overhangs the top so the shift never exposes a gap; clip compensates */
+  inset: -6vh 16vw 0 -16vw;
+  background-position: 50% calc(50% + 5vh);
+  clip-path: polygon(0 6vh, calc(62% + 16vw) 6vh, calc(38% + 16vw) 100%, 0 100%);
+}
+.hero-half-veg {
+  background-image: url('img/specials/veg-hero-15.jpg');
+  background-position: 0% 40%;
+  /* shifted 20vw right so the dish sits further right; clip compensates to keep the divider put */
+  inset: 0 -20vw 0 20vw;
+  clip-path: polygon(calc(62% - 20vw) 0, 100% 0, 100% 100%, calc(38% - 20vw) 100%);
+}
+.hero-split-line { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; }
+.hero-split-line line { filter: drop-shadow(0 0 6px rgba(0,0,0,0.45)); }
+.hero-split-line .split-gold { stroke: var(--accent); stroke-width: 16; }
+.hero-split-line .split-green { stroke: var(--olive-dark); stroke-width: 7; }
+.hero-split-label {
+  position: absolute; z-index: 1;
+  font-family: 'Jost', sans-serif; font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--parchment);
+  padding: 0.45rem 1rem; background: rgba(28,40,32,0.65);
+  border: 1px solid var(--accent); border-radius: 999px;
+}
+.hero-split-label-a { bottom: 2rem; left: 2rem; }
+.hero-split-label-b { bottom: 2rem; right: 2rem; }
+@media (max-width: 600px) {
+  .hero-split-label { font-size: 0.65rem; letter-spacing: 0.15em; }
+  .hero-split-label-a { left: 1rem; bottom: 1rem; }
+  .hero-split-label-b { right: 1rem; bottom: 1rem; }
+}
+.hero-eyebrow, .hero-title, .hero-divider, .hero-sub, .hero-cta, .diet-pills { position: relative; z-index: 2; }
+.hero-title, .hero-sub, .hero-eyebrow { text-shadow: 0 2px 14px rgba(0,0,0,0.65); }
+.hero-half::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+.hero-half-veg::after { background: rgba(0,0,0,0.1); }
+.diet-section-alt { background: var(--olive); }
+.diet-grid-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.diet-tag-warm { background: #A0522D; }
+
+.order-bar {
+  background: var(--olive-darker); color: var(--parchment);
+  padding: 2.25rem 2rem; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
+  border-top: 1px solid rgba(196,163,90,0.3);
+}
+.order-bar p { max-width: 760px; font-size: 0.95rem; line-height: 1.6; }
+.order-bar strong { color: var(--accent); }
+
+/* Hero text legibility over the photos: normal weight, soft backing panel */
+.hero-eyebrow, .hero-sub {
+  background: rgba(28,40,32,0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: 10px;
+  padding: 0.55rem 1.1rem;
+}
+.hero-eyebrow { display: inline-block; font-weight: 500; font-size: 0.72rem; color: var(--accent); }
+.hero-sub { font-weight: 300; font-size: clamp(1rem, 2vw, 1.2rem); color: rgba(255,255,255,0.92); padding: 0.8rem 1.4rem; }
+.hero-sub { background: rgba(28,40,32,0.28); text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 2px 12px rgba(0,0,0,0.6); }
