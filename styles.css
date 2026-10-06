@@ -1546,7 +1546,7 @@ footer {
   box-shadow: 0 4px 18px rgba(28,40,32,0.10);
   display: flex; flex-direction: column;
 }
-.diet-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+.diet-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
 .diet-card-body { padding: 1.1rem 1.25rem 1.4rem; }
 .diet-card-body h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0.5rem 0 0.4rem; color: var(--ink); }
 .diet-card-body p { font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); }
@@ -1648,4 +1648,18 @@ footer {
   .diet-pill { font-size: 0.68rem; padding: 0.45rem 0.8rem; }
   .diet-grid, .diet-grid-3 { grid-template-columns: 1fr; }
   .order-bar { padding: 1.75rem 1.25rem; }
+}
+@media (max-width: 600px) {
+  .diet-grid { gap: 1rem; margin-top: 1.75rem; }
+  .diet-card-body { padding: 0.9rem 1rem 1.1rem; }
+  .diet-card-fish .diet-fish-icon { font-size: 2.5rem; padding: 1.25rem 0 0.25rem; }
+}
+@media (max-width: 600px) {
+  .diet-card { flex-direction: row; align-items: stretch; }
+  .diet-card img { width: 38%; aspect-ratio: 4/3; height: auto; align-self: flex-start; flex-shrink: 0; }
+  .diet-card-body { flex: 1; padding: 0.75rem 0.9rem; }
+  .diet-card-body h3 { font-size: 1.05rem; margin: 0.35rem 0 0.25rem; }
+  .diet-card-body p { font-size: 0.8rem; line-height: 1.4; }
+  .diet-tag { font-size: 0.6rem; padding: 0.15rem 0.55rem; }
+  .diet-card-fish .diet-fish-icon { width: 36%; display: flex; align-items: center; justify-content: center; padding: 0; font-size: 2.5rem; }
 }
