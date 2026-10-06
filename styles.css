@@ -1625,3 +1625,27 @@ footer {
 .hero-eyebrow { display: inline-block; font-weight: 500; font-size: 0.72rem; color: var(--accent); }
 .hero-sub { font-weight: 300; font-size: clamp(1rem, 2vw, 1.2rem); color: rgba(255,255,255,0.92); padding: 0.8rem 1.4rem; }
 .hero-sub { background: rgba(28,40,32,0.28); text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 2px 12px rgba(0,0,0,0.6); }
+
+/* ── Phone fixes ── */
+@media (max-width: 600px) {
+  .hero-half-chicken {
+    inset: -6vh 6vw 0 -6vw;
+    background-position: 50% 50%;
+    clip-path: polygon(0 6vh, calc(62% + 6vw) 6vh, calc(38% + 6vw) 100%, 0 100%);
+  }
+  .hero-half-veg {
+    inset: 0 -8vw 0 8vw;
+    clip-path: polygon(calc(62% - 8vw) 0, 100% 0, 100% 100%, calc(38% - 8vw) 100%);
+  }
+  .hero-eyebrow { font-size: 0.62rem; letter-spacing: 0.14em; padding: 0.5rem 0.8rem; }
+  .hero-eyebrow::before, .hero-eyebrow::after { margin: 0 0.4em; }
+  .hero-sub { font-size: 0.95rem; padding: 0.7rem 1rem; }
+  .hero-split-label { font-size: 0.55rem; letter-spacing: 0.08em; padding: 0.35rem 0.6rem; }
+  .hero-split-label-a { left: 0.6rem; bottom: 0.9rem; }
+  .hero-split-label-b { right: 0.6rem; bottom: 2.9rem; }
+  .hero { padding-bottom: 6rem; }
+  .diet-pills { gap: 0.4rem; }
+  .diet-pill { font-size: 0.68rem; padding: 0.45rem 0.8rem; }
+  .diet-grid, .diet-grid-3 { grid-template-columns: 1fr; }
+  .order-bar { padding: 1.75rem 1.25rem; }
+}
