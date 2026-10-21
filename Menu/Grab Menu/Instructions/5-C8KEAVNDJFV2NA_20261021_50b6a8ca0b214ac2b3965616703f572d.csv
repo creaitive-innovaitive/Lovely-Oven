@@ -1,0 +1,79 @@
+﻿*CategoryName,*ItemName,*Price,*AvailableStatus,AvailabilitySchedule,Description,Photo1,Photo2,Photo3,Photo4,OptionGroup1,OptionGroup2,OptionGroup3,OptionGroup4
+"[Please refrain from deleting or editing the 1st and 2nd row]
+Category Name 
+The category this item belongs to. 
+This column can't be empty and must stay under 60 characters.","Item Name 
+The name of the item. 
+This column can't be empty and must stay under 80 characters.","Price 
+The price of the item in local currency. 
+This column can't be empty.","Availability Status 
+Availability of the item. 
+Only the following value is valid:
+- AVAILABLE 
+- UNAVAILABLE_TODAY
+- UNAVAILABLE_PERMANENTLY","(Optional) Availability Schedule 
+The name of scheduled availability for this item. Availability Schedule controls the service hours within a week of the categories and items under it.
+If you leave it blank, will use the default schedule which will be available all time.
+If you fill in a name, will locate the exisiting schedule with the name.","(Optional) Description 
+Explanation of the item. 
+This column should be under 300 characters.","(Optional) Photo 1 
+File name of the photo, including the format (.png or .jpg only). 
+Please upload the photo files to the /images directory. 
+Only 4 photos are allowed per item name. Max file size per image <=2MB.","(Optional) Photo 2 
+File name of the photo, including the format (.png or .jpg only). 
+Please upload the photo files to the /images directory. 
+Only 4 photos are allowed per item name. Max file size per image <=2MB.","(Optional) Photo 3 
+File name of the photo, including the format (.png or .jpg only). 
+Please upload the photo files to the /images directory. 
+Only 4 photos are allowed per item name. Max file size per image <=2MB.","(Optional) Photo 4 
+File name of the photo, including the format (.png or .jpg only). 
+Please upload the photo files to the /images directory. 
+Only 4 photos are allowed per item name. Max file size per image <=2MB.","(Optional) Option group 1 
+Option group and options applicable to this item. 
+To link multiple option groups to one item, add a new column of OptionGroup (Example: OptionGroup2, OptionGroup3). 
+
+Please include the following value and use the following format to create a valid value:
+-Option group name
+- Minimum selection
+- Maximum selection
+- First option name
+- Price of the first option
+- Second option name
+- Price of the second option
+
+Format: Name##MinSelection-MaxSelection##OptionName1:Price#OptionName2:Price
+Example: Size##1-1##Large:5#Regular:3#Small:2",,(Optional) Option group 3,(Optional) Option group 4
+Build Your Own Chicken Meal,Chicken Quarter Meal,130000,AVAILABLE,,"Fresh chicken, cooked in our home oven, never frozen. Includes your choice of marinade, carb and one side. Peri Peri comes mild, medium or hot.",chicken-quarter.jpg,,,,Marinade##1-1##Peri Peri:0#Salt & Pepper:0#Chilli & Lime:0#BBQ:0,Peri Peri Heat##0-1##Mild:0#Medium:0#Hot:0,Carb##1-1##White Steamed Rice:0#Turmeric Basmati:0,Side##1-1##Spicy Peas:0#Mushy Peas:0#Wedges:0#Roast Veg:0#Mango Salad:0#Seasonal Salad:0#Coleslaw:0,Extras##0-6##Extra chicken portion:40000#Extra peas / coleslaw / rice:15000#Extra potato / roast veg:20000#Fried egg:10000#Boiled egg:10000#Potato Gratin:50000
+Build Your Own Chicken Meal,Chicken Thigh (Boneless) Meal,130000,AVAILABLE,,"Fresh chicken, cooked in our home oven, never frozen. Includes your choice of marinade, carb and one side. Peri Peri comes mild, medium or hot.",chicken-thigh.jpg,,,,Marinade##1-1##Peri Peri:0#Salt & Pepper:0#Chilli & Lime:0#BBQ:0,Peri Peri Heat##0-1##Mild:0#Medium:0#Hot:0,Carb##1-1##White Steamed Rice:0#Turmeric Basmati:0,Side##1-1##Spicy Peas:0#Mushy Peas:0#Wedges:0#Roast Veg:0#Mango Salad:0#Seasonal Salad:0#Coleslaw:0,Extras##0-6##Extra chicken portion:40000#Extra peas / coleslaw / rice:15000#Extra potato / roast veg:20000#Fried egg:10000#Boiled egg:10000#Potato Gratin:50000
+Build Your Own Chicken Meal,Chicken Drumsticks Meal,130000,AVAILABLE,,"Fresh chicken, cooked in our home oven, never frozen. Includes your choice of marinade, carb and one side. Peri Peri comes mild, medium or hot.",chicken-drumsticks.jpg,,,,Marinade##1-1##Peri Peri:0#Salt & Pepper:0#Chilli & Lime:0#BBQ:0,Peri Peri Heat##0-1##Mild:0#Medium:0#Hot:0,Carb##1-1##White Steamed Rice:0#Turmeric Basmati:0,Side##1-1##Spicy Peas:0#Mushy Peas:0#Wedges:0#Roast Veg:0#Mango Salad:0#Seasonal Salad:0#Coleslaw:0,Extras##0-6##Extra chicken portion:40000#Extra peas / coleslaw / rice:15000#Extra potato / roast veg:20000#Fried egg:10000#Boiled egg:10000#Potato Gratin:50000
+Build Your Own Chicken Meal,Chicken Breast Meal,130000,AVAILABLE,,"Fresh chicken, cooked in our home oven, never frozen. Includes your choice of marinade, carb and one side. Peri Peri comes mild, medium or hot.",chicken-breast.jpg,,,,Marinade##1-1##Peri Peri:0#Salt & Pepper:0#Chilli & Lime:0#BBQ:0,Peri Peri Heat##0-1##Mild:0#Medium:0#Hot:0,Carb##1-1##White Steamed Rice:0#Turmeric Basmati:0,Side##1-1##Spicy Peas:0#Mushy Peas:0#Wedges:0#Roast Veg:0#Mango Salad:0#Seasonal Salad:0#Coleslaw:0,Extras##0-6##Extra chicken portion:40000#Extra peas / coleslaw / rice:15000#Extra potato / roast veg:20000#Fried egg:10000#Boiled egg:10000#Potato Gratin:50000
+Vegan & Vegetarian,Aloo Gobi (Vegan),130000,AVAILABLE,,"Potato, cauliflower and peppers in a lightly spiced sauce, with basmati rice. 100% vegan. Cooked to order.",aloo-gobi.jpg,,,,,,,
+Vegan & Vegetarian,Moong Dal (Vegan),130000,AVAILABLE,,Creamy mung beans simmered with warm spices and a golden turmeric finish. 100% vegan. Cooked to order.,moong-dal.jpg,,,,,,,
+Vegan & Vegetarian,Raja Masala (Vegan),130000,AVAILABLE,,"Red kidney beans in a rich, tangy onion-tomato sauce, with rice. 100% vegan. Cooked to order.",raja-masala.jpg,,,,,,,
+Set Meals,Bolognaise 200g (Beef & Pork),70000,AVAILABLE,,200g of homemade bolognaise made with beef and pork. Add rice if you like.,bolognaise.jpg,,,,Rice##0-1##Add Rice:10000,,,
+Set Meals,Bolognaise 200g (Beef),80000,AVAILABLE,,200g of homemade bolognaise made with beef. Add rice if you like.,bolognaise.jpg,,,,Rice##0-1##Add Rice:10000,,,
+Set Meals,Chilli Con Carne 200g (Beef & Pork),70000,AVAILABLE,,200g of homemade chilli con carne made with beef and pork. Add rice if you like.,chilli-con-carne.jpg,,,,Rice##0-1##Add Rice:10000,,,
+Set Meals,Chilli Con Carne 200g (Beef),80000,AVAILABLE,,200g of homemade chilli con carne made with beef. Add rice if you like.,chilli-con-carne.jpg,,,,Rice##0-1##Add Rice:10000,,,
+Set Meals,Beef Ragout - Medium Bowl,90000,AVAILABLE,,Slow-cooked beef ragout. Add rice or banh mi if you like.,beef-ragout.jpg,,,,Rice or Banh Mi##0-1##Add Rice:10000#Add Banh Mi:10000,,,
+Set Meals,Beef Ragout - Big Bowl,120000,AVAILABLE,,"Slow-cooked beef ragout, big bowl. Add rice or banh mi if you like.",beef-ragout.jpg,,,,Rice or Banh Mi##0-1##Add Rice:10000#Add Banh Mi:10000,,,
+Set Meals,Cottage Pie & 1 Side,100000,AVAILABLE,,Homemade cottage pie with your choice of one side.,cottage-pie.jpg,,,,Side##1-1##Spicy Peas:0#Mushy Peas:0#Wedges:0#Roast Veg:0#Mango Salad:0#Seasonal Salad:0#Coleslaw:0,,,
+Boxes to Share (No Rice),Bolognaise 500g Box (Beef & Pork),160000,AVAILABLE,,"500g of homemade bolognaise made with beef & pork, boxed, no rice.",bolognaise.jpg,,,,,,,
+Boxes to Share (No Rice),Bolognaise 500g Box (Beef),185000,AVAILABLE,,"500g of homemade bolognaise made with beef, boxed, no rice.",bolognaise.jpg,,,,,,,
+Boxes to Share (No Rice),Bolognaise 1kg Box (Beef & Pork),300000,AVAILABLE,,"1kg of homemade bolognaise made with beef & pork, boxed, no rice.",bolognaise.jpg,,,,,,,
+Boxes to Share (No Rice),Bolognaise 1kg Box (Beef),350000,AVAILABLE,,"1kg of homemade bolognaise made with beef, boxed, no rice.",bolognaise.jpg,,,,,,,
+Boxes to Share (No Rice),Chilli Con Carne 500g Box (Beef & Pork),160000,AVAILABLE,,"500g of homemade chilli con carne made with beef & pork, boxed, no rice.",chilli-con-carne.jpg,,,,,,,
+Boxes to Share (No Rice),Chilli Con Carne 500g Box (Beef),185000,AVAILABLE,,"500g of homemade chilli con carne made with beef, boxed, no rice.",chilli-con-carne.jpg,,,,,,,
+Boxes to Share (No Rice),Chilli Con Carne 1kg Box (Beef & Pork),300000,AVAILABLE,,"1kg of homemade chilli con carne made with beef & pork, boxed, no rice.",chilli-con-carne.jpg,,,,,,,
+Boxes to Share (No Rice),Chilli Con Carne 1kg Box (Beef),350000,AVAILABLE,,"1kg of homemade chilli con carne made with beef, boxed, no rice.",chilli-con-carne.jpg,,,,,,,
+Add-Ons,Extra Chicken Portion,40000,AVAILABLE,,,,,,,,,,
+Add-Ons,Extra Peas,15000,AVAILABLE,,Spicy or mushy.,,,,,,,,
+Add-Ons,Extra Coleslaw,15000,AVAILABLE,,,,,,,,,,
+Add-Ons,Extra Rice,15000,AVAILABLE,,White steamed or turmeric basmati.,,,,,,,,
+Add-Ons,Seasonal Salad - Small,30000,AVAILABLE,,,,,,,,,,
+Add-Ons,Seasonal Salad - Large,50000,AVAILABLE,,,,,,,,,,
+Add-Ons,Mango Salad - Small,30000,AVAILABLE,,,,,,,,,,
+Add-Ons,Mango Salad - Large,50000,AVAILABLE,,,,,,,,,,
+Add-Ons,Extra Potato / Roast Veg / Boiled Veg,20000,AVAILABLE,,,,,,,,,,
+Add-Ons,Fried Egg,10000,AVAILABLE,,,,,,,,,,
+Add-Ons,Boiled Egg,10000,AVAILABLE,,,,,,,,,,
+Add-Ons,Potato Gratin,50000,AVAILABLE,,,,,,,,,,

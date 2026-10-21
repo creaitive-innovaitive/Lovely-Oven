@@ -1,0 +1,1 @@
+Access our Help Center (help.grab.com/merchant/vi-vn/24772842778393) to get detailed instruction on how to add and edit your menu items in bulk.
