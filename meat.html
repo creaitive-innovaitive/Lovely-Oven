@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chicken & Meat — Lovely Oven</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="logo-ring"><img src="img/Logos/LovelyOvenLogo.svg" alt="Lovely Oven Logo" class="logo-img"></span>
+    <span class="logo-text"><span class="logo-lovely">Lovely</span><span class="logo-oven"> Oven</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/meat">Chicken &amp; Meat</a></li>
+    <li><a href="/vegetarian">Vegetarian &amp; Vegan</a></li>
+    <li><a href="/menu">Menu</a></li>
+    <li><a href="/nutrition">Nutrition</a></li>
+    <li><a href="/social">Social</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMobile()" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ── Mobile Menu ── -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close-btn" onclick="toggleMobile()">✕</button>
+  <a href="/" onclick="toggleMobile()">Home</a>
+  <a href="/meat" onclick="toggleMobile()">Chicken &amp; Meat</a>
+  <a href="/vegetarian" onclick="toggleMobile()">Vegetarian &amp; Vegan</a>
+  <a href="/menu" onclick="toggleMobile()">Menu</a>
+  <a href="/nutrition" onclick="toggleMobile()">Nutrition</a>
+  <a href="/social" onclick="toggleMobile()">Social</a>
+</div>
+
+<!-- ── Page header ── -->
+<section class="page-hero page-hero-meat">
+  <p class="hero-eyebrow">Chicken · Beef · Pork</p>
+  <h1 class="page-hero-title">Chicken <em>&amp;</em> Meat</h1>
+  <p class="hero-sub">Oven-cooked chicken, plus slow-cooked chilli, cottage pie and beef ragout. Fresh ingredients, never frozen.</p>
+</section>
+
+<!-- ── Meat favourites ── -->
+<section class="diet-section diet-section-alt" id="favourites">
+  <div class="diet-inner">
+    <p class="section-label" style="justify-content:center;">Most Popular Dishes</p>
+    <h2 class="section-title" style="color:var(--ink); text-align:center;">Chicken, chilli, pie <span>&amp; ragout</span></h2>
+    <div class="diet-grid">
+      <article class="diet-card">
+        <img src="img/specials/chicken-meal.jpg" alt="Oven-cooked chicken thighs with rice and coleslaw" loading="lazy">
+        <div class="diet-card-body"><span class="diet-tag diet-tag-warm">Oven-cooked</span><h3>Chicken</h3><p>Boneless thigh, oven-cooked. Pick your flavour, carb and side.</p></div>
+      </article>
+      <article class="diet-card">
+        <img src="img/specials/chilli-con-carne.jpg" alt="Chilli con carne with rice" loading="lazy">
+        <div class="diet-card-body"><span class="diet-tag diet-tag-warm">Gluten free</span><h3>Chilli Con Carne</h3><p>Minced beef and pork slow-cooked with kidney beans in a smoky chilli, cumin and paprika blend.</p></div>
+      </article>
+      <article class="diet-card">
+        <img src="img/specials/cottage-pie.jpg" alt="Cottage pie with a side" loading="lazy">
+        <div class="diet-card-body"><span class="diet-tag diet-tag-warm">Gluten free</span><h3>Cottage Pie</h3><p>Rich minced beef under golden mash, served with one side.</p></div>
+      </article>
+      <article class="diet-card">
+        <img src="img/specials/beef-ragout.jpg" alt="Beef ragout in a bowl" loading="lazy">
+        <div class="diet-card-body"><span class="diet-tag diet-tag-warm">Slow-cooked</span><h3>Beef Ragout</h3><p>Tender beef, carrot and potato in a rich, savoury sauce. Medium or big bowl.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div class="order-bar">
+  <p>Cooked fresh, never frozen. Build your own plate with your choice of cut, flavour, carb and sides, or message us on Zalo and WhatsApp <strong>+84 987 390 140</strong>.</p>
+  <span class="btn-ring"><a href="/menu" class="btn-primary"><span>Build your meal</span></a></span>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand-name"><span class="logo-lovely">Lovely</span><span class="logo-oven"> Oven</span></div>
+        <p>Home cooked, Fresh & Healthy.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/meat">Chicken &amp; Meat</a></li>
+    <li><a href="/vegetarian">Vegetarian &amp; Vegan</a></li>
+    <li><a href="/menu">Menu</a></li>
+          <li><a href="/nutrition">Nutrition</a></li>
+          <li><a href="/social">Social</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Social</h4>
+        <ul>
+          <li><a href="https://www.instagram.com/lovelyovendanang" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.facebook.com/Lovelyovendanang" target="_blank" rel="noopener">Facebook</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Lovely Oven. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ── Scroll to Top Button ── -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ── Cookie Banner ── -->
+<div class="cookie-banner" id="cookieBanner">
+  <p><strong>Bánh quy — but not the edible kind.</strong> We use cookies to make your experience even more delicious. By accepting, you agree we can do just that.</p>
+  <div class="cookie-btns">
+    <button class="cookie-btn accept" onclick="dismissCookie()">Yes, I'm Happy</button>
+    <button class="cookie-btn" onclick="dismissCookie()">No Thanks</button>
+    <button class="cookie-btn" onclick="dismissCookie()">Manage Cookies</button>
+  </div>
+</div>
+
+<!-- ── Navigation Popup ── -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <p class="popup-eyebrow">Navigation</p>
+    <h2 class="popup-title">Where would you like to go?</h2>
+    <p class="popup-body">Explore the stories, food, and people that make Lovely Oven what it is.</p>
+    <ul class="popup-nav">
+      <li><a href="/" onclick="closePopup()">Home</a></li>
+      <li><a href="/meat" onclick="closePopup()">Chicken &amp; Meat</a></li>
+      <li><a href="/vegetarian" onclick="closePopup()">Vegetarian &amp; Vegan</a></li>
+      <li><a href="/menu" onclick="closePopup()">Menu</a></li>
+      <li><a href="/nutrition" onclick="closePopup()">Nutrition</a></li>
+      <li><a href="/social" onclick="closePopup()">Social</a></li>
+    </ul>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
