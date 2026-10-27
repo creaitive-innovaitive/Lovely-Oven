@@ -22,6 +22,8 @@
   </a>
   <ul class="nav-links">
     <li><a href="/">Home</a></li>
+    <li><a href="/meat">Chicken &amp; Meat</a></li>
+    <li><a href="/vegetarian">Vegetarian &amp; Vegan</a></li>
     <li><a href="/menu">Menu</a></li>
     <li><a href="/nutrition">Nutrition</a></li>
     <li><a href="/social">Social</a></li>
@@ -35,6 +37,8 @@
 <div class="mobile-menu" id="mobileMenu">
   <button class="close-btn" onclick="toggleMobile()">✕</button>
   <a href="/" onclick="toggleMobile()">Home</a>
+  <a href="/meat" onclick="toggleMobile()">Chicken &amp; Meat</a>
+  <a href="/vegetarian" onclick="toggleMobile()">Vegetarian &amp; Vegan</a>
   <a href="/menu" onclick="toggleMobile()">Menu</a>
   <a href="/nutrition" onclick="toggleMobile()">Nutrition</a>
   <a href="/social" onclick="toggleMobile()">Social</a>
@@ -136,8 +140,8 @@
 
     <div class="mstep-photos reveal">
       <div class="mstep-photo">
-        <img src="img/menu-sides/6727ca01.jpg" alt="Peri Peri ¼ Chicken with Pillau and Mango Salad">
-        <div class="mstep-photo-label"><span>Peri Peri</span><strong>¼ Chicken · Pillau &amp; Mango Salad</strong></div>
+        <img src="img/menu-sides/6727ca01.jpg" alt="Peri Peri ¼ Chicken with Pillau">
+        <div class="mstep-photo-label"><span>Peri Peri</span><strong>¼ Chicken · Pillau</strong></div>
       </div>
       <div class="mstep-photo">
         <img src="img/menu-sides/e4c199f5.jpg" alt="BBQ Boneless Thigh">
@@ -240,21 +244,6 @@
         <span class="mside-name">Wedges</span>
         <span class="mside-note">Hot &amp; seasoned</span>
       </div>
-      <div class="mside-card reveal" data-group="side" data-value="Roast Veg" style="--i:3">
-        <div class="mside-img mside-placeholder">🥕</div>
-        <span class="mside-name">Roast Veg</span>
-        <span class="mside-note">Seasonal choice</span>
-      </div>
-      <div class="mside-card reveal" data-group="side" data-value="Mango Salad" style="--i:4">
-        <div class="mside-img mside-placeholder">🥭</div>
-        <span class="mside-name">Mango Salad</span>
-        <span class="mside-note">Sweet &amp; fresh</span>
-      </div>
-      <div class="mside-card reveal" data-group="side" data-value="Seasonal Salad" style="--i:5">
-        <div class="mside-img mside-placeholder">🥗</div>
-        <span class="mside-name">Seasonal Salad</span>
-        <span class="mside-note">Fresh &amp; vibrant</span>
-      </div>
       <div class="mside-card reveal" data-group="side" data-value="Coleslaw" style="--i:6">
         <div class="mside-img"><img src="img/menu-sides/838a753b.jpg" alt="Coleslaw"></div>
         <span class="mside-name">Coleslaw</span>
@@ -284,16 +273,11 @@
         <div class="mextra-list">
           <div class="mextra-row" data-group="extra" data-value="Extra chicken portion" data-label="Extra chicken portion" data-price="40000"><span>Extra chicken portion</span><span class="mextra-price">₫40,000</span></div>
           <div class="mextra-row" data-group="extra" data-value="Extra peas / coleslaw / rice" data-label="Extra peas / coleslaw / rice" data-price="15000"><span>Extra peas / coleslaw / rice</span><span class="mextra-price">₫15,000</span></div>
-          <div class="mextra-row" data-group="extra" data-value="Seasonal Salad — small" data-label="Seasonal Salad — small" data-price="30000"><span>Seasonal Salad — small</span><span class="mextra-price">₫30,000</span></div>
-          <div class="mextra-row" data-group="extra" data-value="Seasonal Salad — large" data-label="Seasonal Salad — large" data-price="50000"><span>Seasonal Salad — large</span><span class="mextra-price">₫50,000</span></div>
-          <div class="mextra-row" data-group="extra" data-value="Mango Salad — small" data-label="Mango Salad — small" data-price="30000"><span>Mango Salad — small</span><span class="mextra-price">₫30,000</span></div>
-          <div class="mextra-row" data-group="extra" data-value="Mango Salad — large" data-label="Mango Salad — large" data-price="50000"><span>Mango Salad — large</span><span class="mextra-price">₫50,000</span></div>
-          <div class="mextra-row" data-group="extra" data-value="Extra potato / roast veg / boiled veg" data-label="Extra potato / roast veg / boiled veg" data-price="20000"><span>Extra potato / roast veg / boiled veg</span><span class="mextra-price">₫20,000</span></div>
+          <div class="mextra-row" data-group="extra" data-value="Extra potato" data-label="Extra potato" data-price="20000"><span>Extra potato</span><span class="mextra-price">₫20,000</span></div>
           <div class="mextra-row" data-group="extra" data-value="Fried egg / boiled egg" data-label="Fried egg / boiled egg" data-price="10000"><span>Fried egg / boiled egg</span><span class="mextra-price">₫10,000</span></div>
           <div class="mextra-row" data-group="extra" data-value="Potato Gratin" data-label="Potato Gratin" data-price="50000"><span>Potato Gratin</span><span class="mextra-price">₫50,000</span></div>
         </div>
-        <p class="mextra-footnote">Request specific salad &amp; roast veg options when ordering — seasonal choices available.</p>
-      </div>
+              </div>
 
       <div class="mspecial-panel reveal-right">
         <span class="meyebrow">Special Menu</span>
@@ -454,7 +438,7 @@
         <div class="step-num">4</div>
         <div class="step-title">Choose 1 Side</div>
         <ul class="step-options">
-          <li>Spicy or mushy peas</li><li>Seasonal salad</li><li>Mango salad</li><li>Creamy coleslaw</li><li>Seasonal Roast Veg</li><li>Potato wedges</li>
+          <li>Spicy or mushy peas</li><li>Creamy coleslaw</li><li>Potato wedges</li>
         </ul>
       </div>
     </div>
@@ -532,9 +516,7 @@
         <div class="extras-grid">
           <div class="extra-row"><span class="extra-name">Extra chicken portion</span><span class="extra-price">₫40k</span></div>
           <div class="extra-row"><span class="extra-name">Extra peas / coleslaw / rice</span><span class="extra-price">₫15k</span></div>
-          <div class="extra-row"><span class="extra-name">Seasonal Salad — small / large</span><span class="extra-price">₫30k / ₫50k</span></div>
-          <div class="extra-row"><span class="extra-name">Mango Salad — small / large</span><span class="extra-price">₫30k / ₫50k</span></div>
-          <div class="extra-row"><span class="extra-name">Extra potato / roast veg / boiled veg</span><span class="extra-price">₫20k</span></div>
+          <div class="extra-row"><span class="extra-name">Extra potato</span><span class="extra-price">₫20k</span></div>
           <div class="extra-row"><span class="extra-name">Fried egg / boiled egg</span><span class="extra-price">₫10k</span></div>
           <div class="extra-row"><span class="extra-name">Potato Gratin</span><span class="extra-price">₫50k</span></div>
         </div>
@@ -606,7 +588,9 @@
         <h4>Explore</h4>
         <ul>
           <li><a href="/">Home</a></li>
-          <li><a href="/menu">Menu</a></li>
+          <li><a href="/meat">Chicken &amp; Meat</a></li>
+    <li><a href="/vegetarian">Vegetarian &amp; Vegan</a></li>
+    <li><a href="/menu">Menu</a></li>
           <li><a href="/nutrition">Nutrition</a></li>
           <li><a href="/social">Social</a></li>
         </ul>
