@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order — Lovely Oven</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="menu.css">
+  <link rel="stylesheet" href="order.css">
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a href="/" class="nav-logo">
+    <span class="logo-ring"><img src="img/Logos/LovelyOvenLogo.svg" alt="Lovely Oven Logo" class="logo-img"></span>
+    <span class="logo-text"><span class="logo-lovely">Lovely</span><span class="logo-oven"> Oven</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/menu">Menu</a></li>
+    <li><a href="/order">Order</a></li>
+    <li><a href="/nutrition">Nutrition</a></li>
+    <li><a href="/social">Social</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMobile()" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ── Mobile Menu ── -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close-btn" onclick="toggleMobile()">✕</button>
+  <a href="/" onclick="toggleMobile()">Home</a>
+  <a href="/menu" onclick="toggleMobile()">Menu</a>
+  <a href="/order" onclick="toggleMobile()">Order</a>
+  <a href="/nutrition" onclick="toggleMobile()">Nutrition</a>
+  <a href="/social" onclick="toggleMobile()">Social</a>
+</div>
+
+
+<main class="order-page">
+  <header class="o-head">
+    <div class="o-head-inner">
+      <span class="logo-ring o-logo"><img src="img/Logos/LovelyOvenLogo.svg" alt="Lovely Oven" class="logo-img"></span>
+      <div>
+        <h1>Lovely Oven <em>- by Mika</em></h1>
+        <p>A Taste of Home · Fresh, never frozen · Order the day before for best results</p>
+      </div>
+      <ul class="o-head-notes">
+        <li><strong>FPT Urban area</strong> free delivery</li>
+        <li><strong>Danang / Hoi An</strong> book on Grab</li>
+      </ul>
+    </div>
+  </header>
+
+  <nav class="o-tabs" aria-label="Menu sections">
+    <a href="#o-chicken">Chicken meal</a><a href="#o-veg">Vegan &amp; vegetarian</a><a href="#o-set">Set meals</a><a href="#o-box">Boxes to share</a><a href="#o-add">Add-ons</a>
+  </nav>
+
+  <div class="o-wrap">
+    <section class="o-sec o-build" id="o-chicken">
+      <h2>Build Your Own Chicken Meal <span class="o-badge">₫130,000</span></h2>
+      <p class="o-sub">Fresh boneless chicken thigh, cooked in our home oven. Includes your choice of marinade, carb and one side. Peri Peri comes mild, medium or hot.</p>
+      <div class="o-build-grid">
+        <img class="o-build-img" src="img/Homepage images/web/chicken-meal.jpg" alt="Chicken thigh meal" loading="lazy">
+        <div class="o-steps">
+          <div class="o-step"><b>1 · Cut</b><div><span class="o-chip" data-group="protein" data-value="Chicken Thigh (Boneless)">Chicken Thigh (Boneless)</span></div></div>
+          <div class="o-step"><b>2 · Marinade</b><div><span class="o-chip" data-group="flavour" data-value="Peri Peri">Peri Peri</span><span class="o-chip" data-group="flavour" data-value="Salt & Pepper">Salt & Pepper</span><span class="o-chip" data-group="flavour" data-value="Chilli & Lime">Chilli & Lime</span><span class="o-chip" data-group="flavour" data-value="BBQ">BBQ</span></div></div>
+          <div class="o-step"><b>3 · Carb</b><div><span class="o-chip" data-group="carb" data-value="White Steamed Rice">White Steamed Rice</span><span class="o-chip" data-group="carb" data-value="Turmeric Basmati">Turmeric Basmati</span></div></div>
+          <div class="o-step"><b>4 · Side</b><div><span class="o-chip" data-group="side" data-value="Coleslaw">Coleslaw</span><span class="o-chip" data-group="side" data-value="Wedges">Wedges</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="o-cols">
+    <div class="o-col">
+    <section class="o-sec" id="o-veg"><h2>Vegan &amp; Vegetarian</h2><p class="o-sub">Cooked to order. Pescatarian on request.</p>
+      <div class="o-item" data-group="setmeal" data-value="Aloo Gobi (Vegan)" data-label="Aloo Gobi (Vegan)" data-price="100000">
+        <img class="o-thumb" src="img/specials/aloo-gobi.jpg" alt="" loading="lazy"><div class="o-info"><strong>Aloo Gobi <em>Vegan</em></strong><span>Potato, cauliflower and peppers in a lightly spiced sauce, with basmati rice.</span></div><span class="o-price">₫100,000</span>
+      </div>
+      <div class="o-item" data-group="setmeal" data-value="Moong Dal (Vegan)" data-label="Moong Dal (Vegan)" data-price="100000">
+        <img class="o-thumb" src="img/specials/moong-dal.jpg" alt="" loading="lazy"><div class="o-info"><strong>Moong Dal <em>Vegan</em></strong><span>Creamy mung beans, warm spices and a golden turmeric finish.</span></div><span class="o-price">₫100,000</span>
+      </div>
+      <div class="o-item" data-group="setmeal" data-value="Raja Masala (Vegan)" data-label="Raja Masala (Vegan)" data-price="100000">
+        <img class="o-thumb" src="img/specials/raja-masala.jpg" alt="" loading="lazy"><div class="o-info"><strong>Raja Masala <em>Vegan</em></strong><span>Red kidney beans in a rich, tangy onion-tomato sauce, with rice.</span></div><span class="o-price">₫100,000</span>
+      </div>
+    </section>
+    <section class="o-sec" id="o-set"><h2>Set Meals</h2>
+      <div class="o-item" data-group="setmeal" data-value="Bolognaise 200g" data-label="Bolognaise 200g (Beef & Pork)" data-price="70000">
+        <img class="o-thumb" src="img/menu-sides/7475fafa.jpg" alt="" loading="lazy"><div class="o-info"><strong>Bolognaise 200g</strong><span>Homemade, beef &amp; pork. Add rice +₫10,000.</span></div><span class="o-price">₫70,000</span>
+      </div>
+      <div class="o-item" data-group="setmeal" data-value="Chilli Con Carne 200g" data-label="Chilli Con Carne 200g (Beef & Pork)" data-price="70000">
+        <img class="o-thumb" src="img/specials/chilli-con-carne.jpg" alt="" loading="lazy"><div class="o-info"><strong>Chilli Con Carne 200g</strong><span>Homemade, beef &amp; pork. Add rice +₫10,000.</span></div><span class="o-price">₫70,000</span>
+      </div>
+      <div class="o-item" data-group="setmeal" data-value="Beef Ragout — Medium Bowl" data-label="Beef Ragout — Medium Bowl" data-price="90000">
+        <img class="o-thumb" src="img/specials/beef-ragout.jpg" alt="" loading="lazy"><div class="o-info"><strong>Beef Ragout · Medium bowl</strong><span>Slow-cooked beef ragout. Add rice +₫10,000.</span></div><span class="o-price">₫90,000</span>
+      </div>
+      <div class="o-item" data-group="setmeal" data-value="Beef Ragout — Big Bowl" data-label="Beef Ragout — Big Bowl" data-price="120000">
+        <img class="o-thumb" src="img/specials/beef-ragout.jpg" alt="" loading="lazy"><div class="o-info"><strong>Beef Ragout · Big bowl</strong><span>Slow-cooked beef ragout. Add rice +₫10,000.</span></div><span class="o-price">₫120,000</span>
+      </div>
+      <div class="o-item" data-group="setmeal" data-value="Cottage Pie & 1 side" data-label="Cottage Pie & 1 side" data-price="100000">
+        <img class="o-thumb" src="img/specials/cottage-pie.jpg" alt="" loading="lazy"><div class="o-info"><strong>Mika's Cottage Pie &amp; 1 side</strong><span>Homemade cottage pie with your choice of one side.</span></div><span class="o-price">₫100,000</span>
+      </div>
+    </section>
+    </div>
+    <div class="o-col">
+    <section class="o-sec" id="o-box"><h2>Boxes to Share <small>no rice</small></h2>
+      <div class="o-item" data-group="setmeal" data-value="Bolognaise box — 500g" data-label="Bolognaise box — 500g (Beef & Pork)" data-price="160000">
+        <div class="o-info"><strong>Bolognaise 500g box</strong><span>Beef &amp; pork, boxed, no rice.</span></div><span class="o-price">₫160,000</span>
+      </div>
+      <div class="o-item" data-group="setmeal" data-value="Bolognaise box — 1kg" data-label="Bolognaise box — 1kg (Beef & Pork)" data-price="300000">
+        <div class="o-info"><strong>Bolognaise 1kg box</strong><span>Beef &amp; pork, boxed, no rice.</span></div><span class="o-price">₫300,000</span>
+      </div>
+      <div class="o-item" data-group="setmeal" data-value="Chilli box — 500g" data-label="Chilli Con Carne box — 500g (Beef & Pork)" data-price="160000">
+        <div class="o-info"><strong>Chilli Con Carne 500g box</strong><span>Beef &amp; pork, boxed, no rice.</span></div><span class="o-price">₫160,000</span>
+      </div>
+      <div class="o-item" data-group="setmeal" data-value="Chilli box — 1kg" data-label="Chilli Con Carne box — 1kg (Beef & Pork)" data-price="300000">
+        <div class="o-info"><strong>Chilli Con Carne 1kg box</strong><span>Beef &amp; pork, boxed, no rice.</span></div><span class="o-price">₫300,000</span>
+      </div>
+    </section>
+    <section class="o-sec" id="o-add"><h2>Add-ons</h2>
+      <div class="o-item" data-group="extra" data-value="Extra coleslaw / rice" data-label="Extra coleslaw / rice" data-price="15000">
+        <div class="o-info"><strong>Extra coleslaw or rice</strong></div><span class="o-price">₫15,000</span>
+      </div>
+      <div class="o-item" data-group="extra" data-value="Extra potato" data-label="Extra potato" data-price="20000">
+        <div class="o-info"><strong>Extra potato</strong></div><span class="o-price">₫20,000</span>
+      </div>
+      <div class="o-item" data-group="extra" data-value="Fried egg" data-label="Fried egg" data-price="10000">
+        <div class="o-info"><strong>Fried egg</strong></div><span class="o-price">₫10,000</span>
+      </div>
+      <div class="o-item" data-group="extra" data-value="Boiled egg" data-label="Boiled egg" data-price="10000">
+        <div class="o-info"><strong>Boiled egg</strong></div><span class="o-price">₫10,000</span>
+      </div>
+    </section>
+    </div>
+    </div>
+    <p class="o-note">Tap an item to add it; use + / − to change the quantity. Your order goes to us on WhatsApp or Zalo and we confirm it with you.</p>
+  </div>
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand-name"><span class="logo-lovely">Lovely</span><span class="logo-oven"> Oven</span></div>
+        <p>Home cooked, Fresh & Healthy.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+    <li><a href="/menu">Menu</a></li>
+    <li><a href="/order">Order</a></li>
+          <li><a href="/nutrition">Nutrition</a></li>
+          <li><a href="/social">Social</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Social</h4>
+        <ul>
+          <li><a href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.facebook.com/Lovelyovendanang" target="_blank" rel="noopener">Facebook</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Lovely Oven. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ── Scroll to Top Button ── -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ── Cookie Banner ── -->
+<div class="cookie-banner" id="cookieBanner">
+  <p><strong>Bánh quy — but not the edible kind.</strong> We use cookies to make your experience even more delicious. By accepting, you agree we can do just that.</p>
+  <div class="cookie-btns">
+    <button class="cookie-btn accept" onclick="dismissCookie()">Yes, I'm Happy</button>
+    <button class="cookie-btn" onclick="dismissCookie()">No Thanks</button>
+    <button class="cookie-btn" onclick="dismissCookie()">Manage Cookies</button>
+  </div>
+</div>
+
+<!-- ── Navigation Popup ── -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <p class="popup-eyebrow">Navigation</p>
+    <h2 class="popup-title">Where would you like to go?</h2>
+    <p class="popup-body">Explore the stories, food, and people that make Lovely Oven what it is.</p>
+    <ul class="popup-nav">
+      <li><a href="/" onclick="closePopup()">Home</a></li>
+      <li><a href="/menu" onclick="closePopup()">Menu</a></li>
+      <li><a href="/order" onclick="closePopup()">Order</a></li>
+      <li><a href="/nutrition" onclick="closePopup()">Nutrition</a></li>
+      <li><a href="/social" onclick="closePopup()">Social</a></li>
+    </ul>
+  </div>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script src="script.js"></script>
+<script src="menu-order.js"></script>
+</body>
+</html>

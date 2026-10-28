@@ -1637,11 +1637,28 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
    PRINT PAGES — hidden on screen, shown for PDF only
    ============================================================ */
 
-.print-pages { display: none; }
+.print-pages { display: block; padding: 0 0 2rem; }
+.menu-toolbar { padding: 100px 1rem 1.25rem; text-align: center; background: var(--cream-dark); }
+.menu-toolbar h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 600; color: var(--charcoal, #2C4A35); }
+.menu-toolbar h1 em { color: var(--gold); }
+.menu-toolbar-btns { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; margin-top: 0.8rem; }
+.menu-toolbar-btns button, .menu-toolbar-btns a {
+  font-family: 'Jost', sans-serif; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  background: #2C4A35; color: #fff; border: 0; border-radius: 999px; padding: 0.6rem 1.2rem; cursor: pointer; text-decoration: none;
+}
+.menu-toolbar-btns a { background: var(--gold); color: #1C2820; }
+/* on screen each A4 page sits as a sheet; zoom is set by script on narrow screens */
+.print-pages { background: var(--cream-dark); }
+@media screen { .print-pages { zoom: var(--pz, 1); } }
+.print-pages .page {
+  width: 210mm; height: 297mm; margin: 0 auto 1.5rem; position: relative; overflow: hidden;
+  background-color: var(--cream); box-shadow: 0 6px 28px rgba(0,0,0,0.18);
+}
 
 @media print {
   /* Hide all screen content */
   .menu-screen,
+  .menu-toolbar,
   nav,
   .mobile-menu,
   .menu-tags-footer,

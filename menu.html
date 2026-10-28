@@ -22,9 +22,8 @@
   </a>
   <ul class="nav-links">
     <li><a href="/">Home</a></li>
-    <li><a href="/meat">Chicken &amp; Meat</a></li>
-    <li><a href="/vegetarian">Vegetarian &amp; Vegan</a></li>
     <li><a href="/menu">Menu</a></li>
+    <li><a href="/order">Order</a></li>
     <li><a href="/nutrition">Nutrition</a></li>
     <li><a href="/social">Social</a></li>
   </ul>
@@ -37,331 +36,23 @@
 <div class="mobile-menu" id="mobileMenu">
   <button class="close-btn" onclick="toggleMobile()">✕</button>
   <a href="/" onclick="toggleMobile()">Home</a>
-  <a href="/meat" onclick="toggleMobile()">Chicken &amp; Meat</a>
-  <a href="/vegetarian" onclick="toggleMobile()">Vegetarian &amp; Vegan</a>
   <a href="/menu" onclick="toggleMobile()">Menu</a>
+  <a href="/order" onclick="toggleMobile()">Order</a>
   <a href="/nutrition" onclick="toggleMobile()">Nutrition</a>
   <a href="/social" onclick="toggleMobile()">Social</a>
 </div>
 
 
-<!-- ══════════════════════════════════════════
-     SCREEN CONTENT — interactive menu journey
-══════════════════════════════════════════ -->
-<div class="menu-screen">
+<!-- ── Menu page: view-only, same layout as the PDF ── -->
+<div class="menu-toolbar">
+  <h1>Our <em>Menu</em></h1>
+  <div class="menu-toolbar-btns">
+    <button onclick="downloadPDF()">↓ Menu (PDF)</button>
+    <button class="desktop-only" onclick="downloadAsImage(this)">↓ Menu (JPG)</button>
+    <a href="/order">Order now →</a>
+  </div>
+</div>
 
-  <!-- ── HERO ── -->
-  <section class="mhero">
-    <img src="img/menu-sides/menu-top.jpg" alt="Fresh Lovely Oven chicken" class="mhero-bg">
-    <div class="mhero-overlay"></div>
-    <div class="mhero-content">
-      <div class="mhero-eyebrow">Danang &amp; Hoi An</div>
-      <h1 class="mhero-title">Real food,<br><em>made with love.</em></h1>
-      <p class="mhero-sub">Fresh ingredients, cooked daily from our home oven.<br>No shortcuts — ever.</p>
-      <div class="mhero-download-row">
-        <a href="#plant-based" class="mhero-price-pill mhero-download-btn" style="text-decoration:none">🌱 Vegan · Veggie · Pescatarian</a>
-        <button class="mhero-price-pill mhero-download-btn" onclick="downloadPDF()">↓ Menu (PDF)</button>
-        <button class="mhero-price-pill mhero-download-btn desktop-only" onclick="downloadAsImage(this)">↓ Menu (JPG)</button>
-      </div>
-      <div class="mhero-cue">
-        <span>Build your meal</span>
-        <div class="mhero-arrow">↓</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── PLANT-BASED & FISH ── -->
-  <section class="diet-section" id="plant-based">
-    <div class="diet-inner">
-      <span class="meyebrow" style="display:block;text-align:center;">Beyond chicken</span>
-      <h2 class="section-title" style="color:var(--ink); text-align:center;">Vegan, vegetarian <span>&amp; pescatarian</span></h2>
-    <div class="diet-grid">
-      <article class="diet-card">
-        <img src="img/specials/aloo-gobi.jpg" alt="Aloo Gobi with basmati rice" loading="lazy">
-        <div class="diet-card-body"><span class="diet-tag">100% Vegan</span><h3>Aloo Gobi</h3><p>Potato, cauliflower and peppers in a lightly spiced sauce, with basmati rice.</p></div>
-      </article>
-      <article class="diet-card">
-        <img src="img/specials/moong-dal.jpg" alt="Moong Dal with basmati rice" loading="lazy">
-        <div class="diet-card-body"><span class="diet-tag">100% Vegan</span><h3>Moong Dal</h3><p>Creamy mung beans simmered with warm spices and a golden turmeric finish.</p></div>
-      </article>
-      <article class="diet-card">
-        <img src="img/specials/raja-masala.jpg" alt="Raja Masala with rice and naan" loading="lazy">
-        <div class="diet-card-body"><span class="diet-tag">100% Vegan</span><h3>Raja Masala</h3><p>Red kidney beans in a rich, tangy onion-tomato sauce, with rice.</p></div>
-      </article>
-      <article class="diet-card diet-card-fish">
-        <div class="diet-fish-icon">🐟</div>
-        <div class="diet-card-body"><span class="diet-tag diet-tag-sea">Pescatarian</span><h3>No meat? Ask us.</h3><p>We cook pescatarian and vegetarian meals on request. Tell us when you order.</p></div>
-      </article>
-    </div>
-    <p class="diet-note">Plant-based dishes rotate and are cooked to order. Message us on Zalo <strong>+84 987 390 140</strong> to see what's on this week.</p>
-    </div>
-  </section>
-
-  <!-- ── JOURNEY INTRO ── -->
-  <section class="mjintro">
-    <div class="mjintro-inner reveal">
-      <span class="meyebrow">How it works</span>
-      <h2 class="mjintro-heading">Four steps to your<br><em>perfect plate.</em></h2>
-      <p>Tell us what you want and we'll cook it fresh. Four simple choices, one outstanding meal, delivered to your door.</p>
-      <div class="mjintro-steps">
-        <span><strong>01</strong> Protein</span>
-        <span class="mjintro-dash">—</span>
-        <span><strong>02</strong> Flavour</span>
-        <span class="mjintro-dash">—</span>
-        <span><strong>03</strong> Carb</span>
-        <span class="mjintro-dash">—</span>
-        <span><strong>04</strong> Side</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════
-       STEP 01 — CHOOSE YOUR PROTEIN
-  ══════════════════════════ -->
-  <section class="mstep mstep-light" id="step-01">
-    <div class="mstep-bknum" aria-hidden="true">01</div>
-    <div class="mstep-inner">
-
-      <div class="mstep-label reveal-left">
-        <span class="mstep-eyebrow">Step One</span>
-        <h2 class="mstep-title">Choose Your<br><em>Cut</em></h2>
-        <p class="mstep-desc">Start with your cut. Everything cooked fresh — never frozen. Chicken straight from the oven, or one of our hearty hand-made specials.</p>
-      </div>
-
-      <div class="mstep-options reveal-right">
-        <div class="moption-grid">
-          <div class="moption-card" data-group="protein" data-value="Chicken Thigh (Boneless)" style="--i:1"><span class="moption-icon">🍗</span><span class="moption-name">Chicken Thigh <em>(Boneless)</em></span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="mstep-photos reveal">
-      <div class="mstep-photo">
-        <img src="img/menu-sides/e4c199f5.jpg" alt="BBQ Boneless Thigh">
-        <div class="mstep-photo-label"><span>BBQ</span><strong>Boneless Thigh</strong></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════
-       STEP 02 — CHOOSE YOUR FLAVOUR
-  ══════════════════════════ -->
-  <section class="mstep mstep-dark" id="step-02">
-    <div class="mstep-bknum" aria-hidden="true">02</div>
-    <div class="mstep-inner mstep-inner-center">
-      <div class="mstep-label reveal">
-        <span class="mstep-eyebrow light">Step Two</span>
-        <h2 class="mstep-title light">Choose Your<br><em>Flavour</em></h2>
-        <p class="mstep-desc light">Each marinade is made in-house. Pick the mood that matches yours.</p>
-        <p class="mstep-spice-note reveal">Peri Peri available in <strong>mild, medium or hot</strong> — other flavours served as-is.</p>
-      </div>
-    </div>
-    <div class="mflavour-grid">
-      <div class="mflavour-card reveal" data-group="flavour" data-value="Peri Peri" style="--i:0">
-        <span class="mflavour-emoji">🔥</span>
-        <span class="mflavour-name">Peri Peri</span>
-        <span class="mflavour-note">Fiery · Smoky · Bold</span>
-      </div>
-      <div class="mflavour-card reveal" data-group="flavour" data-value="Salt & Pepper" style="--i:1">
-        <span class="mflavour-emoji">🧂</span>
-        <span class="mflavour-name">Salt &amp; Pepper</span>
-        <span class="mflavour-note">Classic · Clean</span>
-      </div>
-      <div class="mflavour-card reveal" data-group="flavour" data-value="Chilli & Lime" style="--i:2">
-        <span class="mflavour-emoji">🌶️</span>
-        <span class="mflavour-name">Chilli &amp; Lime</span>
-        <span class="mflavour-note">Zingy · Fresh</span>
-      </div>
-      <div class="mflavour-card reveal" data-group="flavour" data-value="BBQ" style="--i:3">
-        <span class="mflavour-emoji">🍖</span>
-        <span class="mflavour-name">BBQ</span>
-        <span class="mflavour-note">Sweet · Smoky · Rich</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════
-       STEP 03 — CHOOSE YOUR CARB
-  ══════════════════════════ -->
-  <section class="mstep mstep-light" id="step-03">
-    <div class="mstep-bknum" aria-hidden="true">03</div>
-    <div class="mstep-inner mstep-inner-split">
-
-      <div class="mstep-img-col reveal-left">
-        <img src="img/menu-sides/23b6f5e8.jpg" alt="Turmeric Basmati Rice">
-        <div class="mstep-img-badge">Made from scratch</div>
-      </div>
-
-      <div class="mstep-label mstep-label-r reveal-right">
-        <span class="mstep-eyebrow">Step Three</span>
-        <h2 class="mstep-title">Choose Your<br><em>Carb</em></h2>
-        <p class="mstep-desc">Every carb is made from scratch — nothing out of a packet, ever. Real food, the way it should be.</p>
-        <ul class="mcarb-list">
-          <li data-group="carb" data-value="White Steamed Rice" style="--i:0">White Steamed Rice</li>
-          <li data-group="carb" data-value="Turmeric Basmati" style="--i:1">Turmeric Basmati — aromatic spices</li>
-        </ul>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ══════════════════════════
-       STEP 04 — CHOOSE YOUR SIDE
-  ══════════════════════════ -->
-  <section class="mstep mstep-dark" id="step-04">
-    <div class="mstep-bknum" aria-hidden="true">04</div>
-    <div class="mstep-inner mstep-inner-center">
-      <div class="mstep-label reveal">
-        <span class="mstep-eyebrow light">Step Four</span>
-        <h2 class="mstep-title light">Choose Your<br><em>Side</em></h2>
-        <p class="mstep-desc light">The finishing touch. All made by hand, every single day — because the sides matter just as much.</p>
-      </div>
-    </div>
-    <div class="msides-strip">
-      <div class="mside-card reveal" data-group="side" data-value="Wedges" style="--i:2">
-        <div class="mside-img"><img src="img/menu-sides/Wedges.jpg" alt="Potato wedges"></div>
-        <span class="mside-name">Wedges</span>
-        <span class="mside-note">Hot &amp; seasoned</span>
-      </div>
-      <div class="mside-card reveal" data-group="side" data-value="Coleslaw" style="--i:6">
-        <div class="mside-img"><img src="img/ColdSlaw.jpg" alt="Coleslaw"></div>
-        <span class="mside-name">Coleslaw</span>
-        <span class="mside-note">Creamy house slaw</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── PRICE MOMENT ── -->
-  <section class="mprice-section">
-    <div class="mprice-inner reveal">
-      <span class="meyebrow">The full package</span>
-      <div class="mprice-amount">₫130,000</div>
-      <p class="mprice-sub">Protein · Flavour · Carb · Side — everything included.</p>
-      <div class="mprice-free">🚚 Free delivery on group orders</div>
-    </div>
-  </section>
-
-  <!-- ── EXTRAS & SPECIALS ── -->
-  <section class="mextra-section">
-    <div class="mextra-inner">
-
-      <div class="mextra-panel reveal-left">
-        <span class="meyebrow">Add-Ons</span>
-        <h3 class="mextra-heading">A Little <em>Extra</em></h3>
-        <p class="mextra-subhead">Additions to your full meal</p>
-        <div class="mextra-list">
-          <div class="mextra-row" data-group="extra" data-value="Extra coleslaw / rice" data-label="Extra coleslaw / rice" data-price="15000"><span>Extra coleslaw / rice</span><span class="mextra-price">₫15,000</span></div>
-          <div class="mextra-row" data-group="extra" data-value="Extra potato" data-label="Extra potato" data-price="20000"><span>Extra potato</span><span class="mextra-price">₫20,000</span></div>
-          <div class="mextra-row" data-group="extra" data-value="Fried egg / boiled egg" data-label="Fried egg / boiled egg" data-price="10000"><span>Fried egg / boiled egg</span><span class="mextra-price">₫10,000</span></div>
-        </div>
-              </div>
-
-      <div class="mspecial-panel reveal-right">
-        <span class="meyebrow">Special Menu</span>
-        <h3 class="mextra-heading">Special <em>Menu</em></h3>
-        <div class="mspecial-img-row">
-          <div class="mspecial-img">
-            <img src="img/menu-sides/7475fafa.jpg" alt="Homemade Bolognaise">
-            <div class="mspecial-img-label">Bolognaise &amp; Chilli Con Carne</div>
-          </div>
-          <div class="mspecial-img">
-            <img src="img/Beef Ragout.jpg" alt="Beef Ragout">
-            <div class="mspecial-img-label">Beef Ragout</div>
-          </div>
-          <div class="mspecial-img">
-            <img src="img/Cottage Pie.jpg" alt="Cottage Pie">
-            <div class="mspecial-img-label">Cottage Pie</div>
-          </div>
-        </div>
-        <div class="mspecial-list">
-          <div class="mspecial-group">
-            <div class="mspecial-group-name">Bolognaise / Chilli Con Carne <em>(+ ₫10,000 for rice)</em></div>
-            <div class="mspecial-sub-row" data-group="setmeal" data-value="Bol/Chilli — 200g Beef &amp; Pork" data-label="Bolognaise/Chilli — 200g Beef &amp; Pork" data-price="70000"><span class="mspecial-sub-label">200g of Beef &amp; Pork</span><span class="mspecial-sub-price">₫70,000</span></div>
-          </div>
-          <div class="mspecial-group">
-            <div class="mspecial-group-name">Beef Ragout <em>(+ ₫10,000 for rice)</em></div>
-            <div class="mspecial-sub-row" data-group="setmeal" data-value="Beef Ragout — Medium Bowl" data-label="Beef Ragout — Medium Bowl" data-price="90000"><span class="mspecial-sub-label">Medium Bowl</span><span class="mspecial-sub-price">₫90,000</span></div>
-            <div class="mspecial-sub-row" data-group="setmeal" data-value="Beef Ragout — Big Bowl" data-label="Beef Ragout — Big Bowl" data-price="120000"><span class="mspecial-sub-label">Big Bowl</span><span class="mspecial-sub-price">₫120,000</span></div>
-          </div>
-          <div class="mspecial-group">
-            <div class="mspecial-group-name">Bolognaise / Chilli Con Carne <em>(box, no rice)</em></div>
-            <div class="mspecial-sub-row" data-group="setmeal" data-value="Bol/Chilli box — 500g Beef &amp; Pork" data-label="Bolognaise/Chilli box — 500g Beef &amp; Pork" data-price="160000"><span class="mspecial-sub-label">500g of Beef &amp; Pork</span><span class="mspecial-sub-price">₫160,000</span></div>
-            <div class="mspecial-sub-row" data-group="setmeal" data-value="Bol/Chilli box — 1kg Beef &amp; Pork" data-label="Bolognaise/Chilli box — 1kg Beef &amp; Pork" data-price="300000"><span class="mspecial-sub-label">1kg of Beef &amp; Pork</span><span class="mspecial-sub-price">₫300,000</span></div>
-          </div>
-          <div class="mspecial-group">
-            <div class="mspecial-group-name">Cottage Pie &amp; 1 side</div>
-            <div class="mspecial-sub-row" data-group="setmeal" data-value="Cottage Pie &amp; 1 side" data-label="Cottage Pie &amp; 1 side" data-price="100000"><span class="mspecial-sub-label">Cottage Pie &amp; 1 side</span><span class="mspecial-sub-price">₫100,000</span></div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ── GOOD TO KNOW ── -->
-  <section class="minfo-section">
-    <div class="minfo-inner">
-      <div class="minfo-header reveal">
-        <span class="meyebrow">Good to Know</span>
-        <h2 class="minfo-heading">Before You <em>Order</em></h2>
-      </div>
-      <div class="minfo-tiles">
-        <div class="minfo-tile reveal" style="--i:0">
-          <div class="minfo-num">01</div>
-          <div class="minfo-rule"></div>
-          <h4 class="minfo-title">Group &amp; <em>Bulk Orders</em></h4>
-          <p>Catering for a party or family gathering? We offer <strong>free delivery</strong> when you order more than one meal at a time.</p>
-        </div>
-        <div class="minfo-tile reveal" style="--i:1">
-          <div class="minfo-num">02</div>
-          <div class="minfo-rule"></div>
-          <h4 class="minfo-title">Always <em>Fresh</em></h4>
-          <p>Cooked from fresh ingredients — never frozen. <strong>Order the day before</strong> for the best results and to give us time to prepare.</p>
-        </div>
-        <div class="minfo-tile reveal" style="--i:2">
-          <div class="minfo-num">03</div>
-          <div class="minfo-rule"></div>
-          <h4 class="minfo-title">Dietary &amp; <em>Custom Twists</em></h4>
-          <p>Allergies, preferences or a creative request? <strong>We're flexible</strong> — just let us know when ordering and we'll tailor your meal.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── HOW TO ORDER ── -->
-  <section class="morder-section">
-    <div class="morder-inner reveal">
-      <span class="meyebrow light">Ready to order?</span>
-      <h2 class="morder-heading">How to <em>Reach Us</em></h2>
-      <p class="morder-sub">Phone, WhatsApp, Zalo or Facebook — we're here daily. Delivery across Danang and Hoi An.</p>
-
-      <div class="morder-contact">
-        <div class="morder-details">
-          <div class="morder-phone">+84 987 390 140</div>
-          <a href="https://web.facebook.com/Lovelyovendanang" class="morder-link" target="_blank" rel="noopener"><svg class="morder-icon" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>facebook.com/lovelyovendanang</a>
-          <a href="https://www.instagram.com/lovelyoven/" class="morder-link" target="_blank" rel="noopener"><svg class="morder-icon" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>instagram.com/lovelyoven</a>
-          <a href="https://lovelyoven.com/menu" class="morder-link" target="_blank" rel="noopener"><svg class="morder-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>lovelyoven.com/menu</a>
-          <span class="morder-tag">Please provide as much detail as possible if you have any preferences for your meal 💚</span>
-        </div>
-        <div class="morder-qr">
-          <div class="morder-qr-box"><img src="img/menu-sides/e6158562.png" alt="Zalo QR code"></div>
-          <span>Scan for Zalo</span>
-        </div>
-      </div>
-
-      <div class="download-btns">
-        <button class="pdf-download-btn" onclick="downloadPDF()">↓ Download Menu (PDF)</button>
-        <button class="img-download-btn desktop-only" onclick="downloadAsImage(this)">↓ Download Menu (Image)</button>
-      </div>
-    </div>
-  </section>
-
-</div><!-- end .menu-screen -->
-
-
-<!-- ══════════════════════════════════════════
-     PRINT PAGES — hidden on screen, PDF only
-══════════════════════════════════════════ -->
 <div class="print-pages">
 
 <!-- ═══════════ PAGE 1 — FRONT ═══════════ -->
@@ -555,9 +246,8 @@
         <h4>Explore</h4>
         <ul>
           <li><a href="/">Home</a></li>
-          <li><a href="/meat">Chicken &amp; Meat</a></li>
-    <li><a href="/vegetarian">Vegetarian &amp; Vegan</a></li>
     <li><a href="/menu">Menu</a></li>
+    <li><a href="/order">Order</a></li>
           <li><a href="/nutrition">Nutrition</a></li>
           <li><a href="/social">Social</a></li>
         </ul>
@@ -590,7 +280,6 @@
 </div>
 
 <script src="script.js"></script>
-<script src="menu-order.js"></script>
 <script>
 /* ── Scroll Reveal ── */
 (function () {
@@ -622,6 +311,13 @@
   });
 })();
 
+/* ── Scale the A4 sheets down on narrow screens ── */
+function fitPages() {
+  document.documentElement.style.setProperty('--pz', Math.min(1, (document.documentElement.clientWidth - 16) / 794));
+}
+fitPages();
+window.addEventListener('resize', fitPages);
+
 /* ── PDF download (mobile-aware) ── */
 function downloadPDF() {
   window.print();
@@ -629,6 +325,7 @@ function downloadPDF() {
 
 /* ── Image download (desktop only) ── */
 async function downloadAsImage(btn) {
+  document.documentElement.style.setProperty('--pz', 1);
   btn = btn || document.querySelector('.img-download-btn');
   const original = btn.textContent;
   btn.textContent = 'Preparing…';
@@ -754,6 +451,7 @@ async function downloadAsImage(btn) {
     else p.removeAttribute('style');
   });
   printPages.style.cssText = '';
+  fitPages();
   btn.textContent = original;
   btn.disabled = false;
 }
