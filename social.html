@@ -18,6 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/social.css">
 </head>
 <body>
 
@@ -49,101 +50,78 @@
   <a href="/social" onclick="toggleMobile()">Social</a>
 </div>
 
-<!-- ── Page Hero ── -->
-<section class="social-hero">
-  <div class="social-hero-overlay"></div>
-  <div class="social-hero-content">
-    <p class="hero-eyebrow">Instagram · Facebook</p>
-    <h1 class="hero-title">
-      <span class="accent-line">Follow Our</span>
-      <span class="highlight"> Story.</span>
-    </h1>
-    <div class="hero-divider"></div>
-    <p class="hero-sub">Stay up to date with our latest dishes, daily specials, and behind-the-scenes moments straight from the Lovely Oven kitchen.</p>
+<!-- ── Hero ── -->
+<section class="soc-hero">
+  <div class="soc-hero-inner">
+    <p class="section-label">Instagram · Facebook</p>
+    <h1>Follow the <em>oven.</em></h1>
+    <p class="soc-hero-sub">Daily specials, fresh-from-the-oven moments and the stories behind every dish.</p>
   </div>
 </section>
 
-<!-- ── Facebook Section ── -->
-<section class="social-section">
-  <div class="social-inner">
-    <p class="section-label" style="justify-content:center;">Find Us Online</p>
-    <h2 class="section-title" style="text-align:center; color:var(--ink);">Latest from <em style="color:var(--accent)">Facebook</em></h2>
-    <p class="section-body" style="text-align:center; margin:0 auto 2.5rem;">We post daily specials, updates, and fresh-from-the-oven moments on our Facebook page. Follow along and never miss what's cooking.</p>
-
-    <!-- Facebook Page Plugin (iframe) -->
-    <div class="social-embed-wrapper">
-      <iframe
-        src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FLovelyovendanang&width=500&height=150&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true"
-        width="500"
-        height="150"
-        style="border:none;overflow:hidden;display:block;"
-        scrolling="no"
-        frameborder="0"
-        allowfullscreen="true"
-        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-      </iframe>
-    </div>
-
-    <div style="text-align:center; margin-top:2rem;">
-      <a href="https://www.facebook.com/Lovelyovendanang" target="_blank" rel="noopener" class="social-follow-btn social-follow-btn--fb">
-        <span>Follow on Facebook</span>
-      </a>
-    </div>
+<!-- ── Channels ── -->
+<section class="soc-channels">
+  <div class="soc-card">
+    <span class="soc-icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></span>
+    <h2>Instagram</h2>
+    <p class="soc-handle">@lovelyoven</p>
+    <p>Daily food shots, specials and a peek into our kitchen.</p>
+    <a class="soc-btn" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener">Follow on Instagram</a>
+  </div>
+  <div class="soc-card">
+    <span class="soc-icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span>
+    <h2>Facebook</h2>
+    <p class="soc-handle">Lovelyovendanang</p>
+    <p>Updates, announcements and messages from our Danang kitchen.</p>
+    <a class="soc-btn" href="https://web.facebook.com/Lovelyovendanang/" target="_blank" rel="noopener">Follow on Facebook</a>
   </div>
 </section>
 
-<!-- ── Instagram Section ── -->
-<section class="social-section social-section--alt">
-  <div class="social-inner">
-    <p class="section-label" style="justify-content:center;">Stay Connected</p>
-    <h2 class="section-title" style="text-align:center; color:var(--ink);">Find Us on <em style="color:var(--accent)">Instagram</em></h2>
-    <p class="section-body" style="text-align:center; margin:0 auto 2.5rem;">Our Instagram is where the behind-the-scenes magic happens — fresh ingredients, golden chicken, and the stories behind every dish.</p>
-
-    <div class="instagram-cta">
-      <span class="instagram-icon">📸</span>
-      <!-- UPDATE: Replace the handle below and the href with your Instagram profile URL -->
-      <h3>@lovelyoven</h3>
-      <p>Follow us for daily food shots, specials announcements, and a peek into our kitchen. Fresh content, every day.</p>
-      <a href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" class="social-follow-btn social-follow-btn--ig">
-        <span>Follow on Instagram</span>
-      </a>
+<!-- ── From our kitchen ── -->
+<section class="soc-kitchen">
+  <div class="home-head">
+    <p class="section-label">Fresh from the oven</p>
+    <h2 class="home-title">From Our <em>Kitchen</em></h2>
+  </div>
+  <div class="food-gallery">
+    <div class="g-row">
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Chicken thigh meal on Instagram"><img src="img/gallery/chicken-meal.jpg" alt="Chicken thigh meal" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Chicken pre-order boxes on Instagram"><img src="img/gallery/pre-order.jpg" alt="Chicken pre-order boxes" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Moong dal on Instagram"><img src="img/gallery/vegan.jpg" alt="Moong dal" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Aloo gobi on Instagram"><img src="img/gallery/aloo-gobi.jpg" alt="Aloo gobi" loading="lazy"></a>
+    </div>
+    <div class="g-row">
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Chilli con carne on Instagram"><img src="img/gallery/gluten-free.jpg" alt="Chilli con carne" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Raja masala on Instagram"><img src="img/gallery/raja-masala.jpg" alt="Raja masala" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Potato wedges on Instagram"><img src="img/gallery/wedges.jpg" alt="Potato wedges" loading="lazy"></a>
+    </div>
+    <div class="g-row">
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Lasagne on Instagram"><img src="img/gallery/lasagne.jpg" alt="Lasagne" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Mushy peas on Instagram"><img src="img/gallery/mushy-peas.jpg" alt="Mushy peas" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Beef ragout on Instagram"><img src="img/gallery/beef-ragout.jpg" alt="Beef ragout" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Coleslaw on Instagram"><img src="img/gallery/coleslaw.jpg" alt="Coleslaw" loading="lazy"></a>
     </div>
   </div>
+  <p class="soc-tag">Tap any photo to see more on Instagram. Tag <strong>@lovelyoven</strong> in your own meal photos and we may feature you.</p>
 </section>
 
-<!-- ── Zalo Section ── -->
-<section class="social-section">
-  <div class="social-inner">
-    <p class="section-label" style="justify-content:center;">Message Us</p>
-    <h2 class="section-title" style="text-align:center; color:var(--ink);">Find Us on <em style="color:var(--accent)">Zalo</em></h2>
-    <p class="section-body" style="text-align:center; margin:0 auto 2.5rem;">Place an order, ask a question, or just say hello — reach us directly on Zalo for the fastest response.</p>
-
-    <p style="text-align:center;">
-      <img src="img/payment/zalo-qr.png" alt="Zalo QR code" width="260">
-    </p>
-    <p style="text-align:center; margin-top:2rem;">
-      <a href="#" target="_blank" rel="noopener" class="social-follow-btn social-follow-btn--fb">
-        <span>Contact on Zalo</span>
-      </a>
-    </p>
+<!-- ── Chat ── -->
+<section class="soc-chat">
+  <div class="home-head">
+    <p class="section-label">Message us</p>
+    <h2 class="home-title">Chat <em>With Us</em></h2>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-zalo">
+      <img src="img/payment/zalo-qr.png" alt="Zalo QR code for Lovely Oven" loading="lazy">
+      <span>Scan to chat on Zalo</span>
+    </div>
+    <ul class="contact-links">
+      <li><a href="https://wa.me/84987390140" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span><strong>WhatsApp</strong>+84 987 390 140</span></a></li>
+      <li><a href="/order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span><strong>Order online</strong>Build your meal on the order page</span></a></li>
+    </ul>
   </div>
 </section>
-
-<!-- ── Green Ticker Band ── -->
-<div style="background:var(--olive-darker); padding:1rem 2rem; overflow:hidden; white-space:nowrap; border-top:1px solid rgba(196,163,90,0.15);">
-  <div class="chili-ticker" style="animation-duration:25s;">
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🌿 No artificial flavours</span>
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🥬 Locally sourced vegetables</span>
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🐓 Free-range poultry</span>
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">♻️ Zero food waste pledge</span>
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🌱 Supporting local farmers</span>
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🌿 No artificial flavours</span>
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🥬 Locally sourced vegetables</span>
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🐓 Free-range poultry</span>
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">♻️ Zero food waste pledge</span>
-    <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(250,243,232,0.9);">🌱 Supporting local farmers</span>
-  </div>
-</div>
 
 <!-- ── Footer ── -->
 <footer>
