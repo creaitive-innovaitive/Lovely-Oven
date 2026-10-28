@@ -1897,3 +1897,5 @@ footer {
 .home-sec .section-label::before, .home-sec .section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--border); }
 .food-sec .section-label::before, .food-sec .section-label::after,
 .contact-sec .section-label::before, .contact-sec .section-label::after { background: rgba(196,163,90,0.55); }
+
+.pay-card p.pay-list { white-space: nowrap; font-size: clamp(0.8rem, 1.4vw, 0.95rem); }
