@@ -173,6 +173,16 @@
     }
   }
 
+  /* ── Clear everything ────────────────────────────────── */
+  window.loClearSelection = function () {
+    ['protein', 'flavour', 'carb', 'side', 'spiceLevel'].forEach(k => { ORDER[k] = null; });
+    ORDER.extras = {};
+    ORDER.setMeals = {};
+    document.querySelectorAll('.order-selected').forEach(el => el.classList.remove('order-selected'));
+    document.querySelectorAll('.lo-qty-ctrl').forEach(el => el.remove());
+    updateBar();
+  };
+
   /* ── Modal ───────────────────────────────────────────── */
   window.loOpenModal = function () {
     buildSummary();
@@ -396,6 +406,7 @@
     <div class="lo-chip" data-bar-step="side"><span class="lo-chip-icon">🥗</span>Side</div>
     <div class="lo-chip lo-chip-extras" data-bar-step="extras" style="display:none"></div>
   </div>
+  <button class="lo-bar-clear" onclick="loClearSelection()">Clear selection</button>
   <button class="lo-bar-btn" id="loBarBtn" onclick="loOpenModal()">Review Order</button>
 </div>`;
 

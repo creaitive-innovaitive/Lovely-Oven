@@ -1191,6 +1191,22 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
   color: #fff;
   font-weight: 600;
 }
+.lo-bar-clear {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.85);
+  border-radius: 30px;
+  padding: 0.5rem 1rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+.lo-bar-clear:hover { background: rgba(255,255,255,0.15); color: #fff; }
+@media (max-width: 520px) { .lo-bar { gap: 0.5rem; padding: 0.7rem 0.75rem; } .lo-bar-chips { display: none; } .lo-bar-clear { margin-right: auto; } }
 .lo-bar-btn {
   flex-shrink: 0;
   padding: 0.6rem 1.25rem;
