@@ -1887,3 +1887,9 @@ footer {
   .loc-map { min-height: 60vh; }
   .contact-zalo { margin: 0 auto; }
 }
+
+/* Home section eyebrows: 20% larger, rule on both sides, visible on dark sections too */
+.home-sec .section-label { font-size: 0.816rem; }
+.home-sec .section-label::before, .home-sec .section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--border); }
+.food-sec .section-label::before, .food-sec .section-label::after,
+.contact-sec .section-label::before, .contact-sec .section-label::after { background: rgba(196,163,90,0.55); }
