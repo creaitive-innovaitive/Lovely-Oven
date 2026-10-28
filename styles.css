@@ -1852,6 +1852,9 @@ footer {
 .pay-card-text { justify-content: flex-start; }
 .pay-card-text .pay-methods { margin: auto 0; }
 .pay-card h3 { margin-top: auto; }
+.pay-soon { position: relative; width: 100%; }
+.pay-soon img { width: 100%; aspect-ratio: 1; height: auto; object-fit: cover; display: block; border-radius: 6px; }
+.pay-soon span { position: absolute; top: 0.7rem; left: 0.7rem; background: var(--accent); color: var(--ink); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.35rem 0.8rem; border-radius: 999px; }
 .pay-card p { min-height: 3em; }
 .pay-methods { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-bottom: 0.5rem; }
 .pay-methods span {
