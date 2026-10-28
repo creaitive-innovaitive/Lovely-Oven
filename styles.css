@@ -1850,11 +1850,12 @@ footer {
 .pay-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--ink); }
 .pay-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
 .pay-card-text { justify-content: flex-start; }
-.pay-card-text .pay-methods { margin: auto 0; }
 .pay-card h3 { margin-top: auto; }
-.pay-soon { position: relative; width: 100%; }
-.pay-soon img { width: 100%; aspect-ratio: 1; height: auto; object-fit: cover; display: block; border-radius: 6px; }
-.pay-soon span { position: absolute; top: 0.7rem; left: 0.7rem; background: var(--accent); color: var(--ink); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.35rem 0.8rem; border-radius: 999px; }
+.pay-soon { position: relative; width: 100%; flex: 1; min-height: 260px; border-radius: 6px; overflow: hidden; background: #fbfaf6; }
+.pay-soon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pay-soon-tag { position: absolute; top: 0.7rem; left: 0.7rem; background: var(--accent); color: var(--ink); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.35rem 0.8rem; border-radius: 999px; }
+.pay-soon .pay-methods { position: absolute; left: 0.6rem; right: 0.6rem; bottom: 0.7rem; margin: 0; gap: 0.4rem; }
+.pay-soon .pay-methods span { padding: 0.4rem 0.8rem; font-size: 0.72rem; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
 .pay-card p { min-height: 3em; }
 .pay-methods { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-bottom: 0.5rem; }
 .pay-methods span {
