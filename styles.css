@@ -1849,7 +1849,10 @@ footer {
 .pay-card img.pay-square { height: auto; aspect-ratio: 1; object-fit: cover; object-position: top; }
 .pay-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--ink); }
 .pay-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
-.pay-card-text { justify-content: center; }
+.pay-card-text { justify-content: flex-start; }
+.pay-card-text .pay-methods { margin: auto 0; }
+.pay-card h3 { margin-top: auto; }
+.pay-card p { min-height: 3em; }
 .pay-methods { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-bottom: 0.5rem; }
 .pay-methods span {
   padding: 0.55rem 1.1rem; border-radius: 999px; background: var(--olive-darker); color: var(--parchment);
