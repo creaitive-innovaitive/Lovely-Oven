@@ -1808,14 +1808,14 @@ footer {
 .food-sec { background: var(--olive-darker); padding-left: 0; padding-right: 0; }
 .food-sec .home-title { color: var(--parchment); }
 .food-head { text-align: center; margin-bottom: 2rem; }
-.food-gallery { --s: clamp(210px, 21vw, 300px); --g: 6px; padding: 0 1rem; }
+.food-gallery { --s: clamp(210px, 21vw, 300px); --g: 8px; padding: 0 1rem; }
 .g-row { display: flex; justify-content: center; gap: var(--g); margin-top: calc(var(--s) / -2 + var(--g) / 2); }
 .g-row:first-child { margin-top: 0; }
-.g-item { position: relative; margin: 0; width: var(--s); height: var(--s); flex: none; }
-.g-item img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); transition: transform 0.4s;
+.g-item {
+  position: relative; margin: 0; width: var(--s); height: var(--s); flex: none; overflow: hidden;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
 }
+.g-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
 .g-item:hover img { transform: scale(1.06); }
 
 .loc-sec { background: var(--parchment); }
@@ -1871,7 +1871,7 @@ footer {
   .home-sec { padding: 5rem 1.25rem 3rem; }
   .story-grid, .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
   .story-photo img { height: 50vh; }
-  .food-gallery { --s: calc((100vw - 12px - 3 * 4px) / 4); --g: 4px; padding: 0 6px; }
+  .food-gallery { --g: 4px; padding: 0 6px; }
   .food-sec { padding-left: 0; padding-right: 0; }
   .food-sec .home-head { padding: 0 1.25rem; }
   .pay-grid { grid-template-columns: 1fr; }
