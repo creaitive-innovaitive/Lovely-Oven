@@ -1845,6 +1845,7 @@ footer {
   box-shadow: 0 4px 18px rgba(28,40,32,0.1); display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
 }
 .pay-card img { width: 100%; height: min(42vh, 380px); object-fit: contain; border-radius: 6px; background: var(--parchment); }
+.pay-card img.pay-square { height: auto; aspect-ratio: 1; object-fit: cover; object-position: top; }
 .pay-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--ink); }
 .pay-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
 .pay-card-text { justify-content: center; }
