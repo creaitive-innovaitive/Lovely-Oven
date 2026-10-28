@@ -1808,7 +1808,7 @@ footer {
 .food-sec { background: var(--olive-darker); padding-left: 0; padding-right: 0; }
 .food-sec .home-title { color: var(--parchment); }
 .food-head { text-align: center; margin-bottom: 2rem; }
-.food-gallery { --s: clamp(140px, 14vw, 200px); --g: 6px; padding: 0 1rem; }
+.food-gallery { --s: clamp(210px, 21vw, 300px); --g: 6px; padding: 0 1rem; }
 .g-row { display: flex; justify-content: center; gap: var(--g); margin-top: calc(var(--s) / -2 + var(--g) / 2); }
 .g-row:first-child { margin-top: 0; }
 .g-item { position: relative; margin: 0; width: var(--s); height: var(--s); flex: none; }
@@ -1817,12 +1817,6 @@ footer {
   clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); transition: transform 0.4s;
 }
 .g-item:hover img { transform: scale(1.06); }
-.g-item figcaption {
-  position: absolute; left: 50%; bottom: 22%; transform: translateX(-50%); z-index: 1;
-  width: max-content; max-width: 62%; text-align: center; line-height: 1.2;
-  font-family: 'Jost', sans-serif; font-size: 0.55rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-  color: #fff; background: rgba(28,40,32,0.7); padding: 0.25rem 0.5rem; border-radius: 999px;
-}
 
 .loc-sec { background: var(--parchment); }
 .loc-layout {
@@ -1834,7 +1828,7 @@ footer {
   display: flex; flex-direction: column; justify-content: center; gap: 1.75rem;
 }
 .loc-info h3 { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.8rem, 2.6vw, 2.5rem); line-height: 1.1; }
-.loc-info h3 em { color: var(--accent); }
+.loc-info h3 em { display: block; font-size: 0.8em; color: var(--accent); }
 .loc-info ul { list-style: none; display: flex; flex-direction: column; gap: 1.1rem; }
 .loc-info li { display: flex; flex-direction: column; gap: 0.15rem; padding-left: 1rem; border-left: 2px solid var(--accent); font-size: 1.05rem; }
 .loc-info li strong { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
@@ -1878,7 +1872,6 @@ footer {
   .story-grid, .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
   .story-photo img { height: 50vh; }
   .food-gallery { --s: calc((100vw - 12px - 3 * 4px) / 4); --g: 4px; padding: 0 6px; }
-  .g-item figcaption { display: none; }
   .food-sec { padding-left: 0; padding-right: 0; }
   .food-sec .home-head { padding: 0 1.25rem; }
   .pay-grid { grid-template-columns: 1fr; }
