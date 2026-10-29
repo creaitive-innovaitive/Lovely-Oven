@@ -1913,3 +1913,13 @@ footer {
 .path-btn-veg { background: rgba(28,40,32,0.45); color: var(--parchment); border-color: rgba(250,247,242,0.7); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
 .path-btn-veg:hover { background: var(--parchment); color: var(--ink); border-color: var(--parchment); }
 @media (max-width: 600px) { .path-btn { min-width: 0; padding: 0.85rem 1.2rem; font-size: 1.1rem; } }
+
+/* Hero labels stay on one row on small screens */
+@media (max-width: 768px) {
+  .hero-split-label {
+    font-size: clamp(0.4rem, 2.15vw, 0.6rem); letter-spacing: 0.05em; padding: 0.35rem 0.55rem; white-space: nowrap;
+    bottom: calc(0.9rem + var(--banner-h, 0px));
+  }
+  .hero-split-label-a { left: 0.5rem; }
+  .hero-split-label-b { right: 0.5rem; }
+}
