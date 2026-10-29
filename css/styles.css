@@ -1899,3 +1899,17 @@ footer {
 .contact-sec .section-label::before, .contact-sec .section-label::after { background: rgba(196,163,90,0.55); }
 
 .pay-card p.pay-list { white-space: nowrap; font-size: clamp(0.8rem, 1.4vw, 0.95rem); }
+
+/* Hero buttons: plain, serif, no icons */
+.path-btn {
+  min-width: 210px; justify-content: center; text-align: center; gap: 0;
+  padding: 0.95rem 2rem; border-radius: 3px; border: 1px solid var(--accent);
+  font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  box-shadow: none; transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+.path-btn:hover { transform: none; box-shadow: none; }
+.path-btn-meat { background: var(--accent); color: var(--ink); }
+.path-btn-meat:hover { background: var(--parchment); border-color: var(--parchment); }
+.path-btn-veg { background: rgba(28,40,32,0.45); color: var(--parchment); border-color: rgba(250,247,242,0.7); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.path-btn-veg:hover { background: var(--parchment); color: var(--ink); border-color: var(--parchment); }
+@media (max-width: 600px) { .path-btn { min-width: 0; padding: 0.85rem 1.2rem; font-size: 1.1rem; } }
