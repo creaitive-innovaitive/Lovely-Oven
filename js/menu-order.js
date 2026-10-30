@@ -242,9 +242,9 @@
       }
     }
 
-    /* ── Set Meals ── */
+    /* ── Main Meals ── */
     if (setKeys.length > 0) {
-      html += `<div class="lo-section-title">🍲 Set Meals</div>`;
+      html += `<div class="lo-section-title">🍲 Main Meals</div>`;
       let setTotal = 0;
       setKeys.forEach(k => {
         const item = ORDER.setMeals[k];
@@ -259,7 +259,7 @@
           <span class="lo-sum-tick">₫${line.toLocaleString()}</span>
         </div>`;
       });
-      html += `<div class="lo-sum-subtotal"><span>Set Meals</span><strong>₫${setTotal.toLocaleString()}</strong></div>`;
+      html += `<div class="lo-sum-subtotal"><span>Main Meals</span><strong>₫${setTotal.toLocaleString()}</strong></div>`;
     }
 
     /* ── Extras ── */
@@ -337,7 +337,7 @@
     }
 
     if (setKeys.length > 0) {
-      msg += `🍲 SET MEALS\n`;
+      msg += `🍲 MAIN MEALS\n`;
       let total = 0;
       setKeys.forEach(k => {
         const item = ORDER.setMeals[k];
