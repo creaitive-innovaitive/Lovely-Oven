@@ -1934,3 +1934,71 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .p3-cols { grid-template-columns:1fr; grid-template-rows:auto auto; gap:6mm; padding-top:8mm; }
 .p3-photos { max-height:none; min-height:70mm; }
 .p3-cols .contact-card { padding:6mm; }
+
+/* ═══ Poster cover (page 1) ═══ */
+.pp1 { background: #1E3D2E !important; }
+.pp1-hero { position:absolute; top:0; left:0; right:0; height:168mm; overflow:hidden; }
+.pp1-hero > img, .pp1-hero > canvas { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:30% 55%; display:block; }
+.pp1-shade { position:absolute; inset:0; background:linear-gradient(100deg, rgba(20,34,26,0.82) 0%, rgba(20,34,26,0.45) 45%, rgba(20,34,26,0.05) 75%), linear-gradient(0deg, rgba(20,34,26,0.55) 0%, rgba(20,34,26,0) 35%); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.pp1-logo { position:absolute; top:12mm; right:12mm; width:27mm; height:27mm; border-radius:50%; overflow:hidden; border:1.2mm solid rgba(255,255,255,0.9); background:#2C5040; box-shadow:0 2mm 6mm rgba(0,0,0,0.35); }
+.pp1-logo img { width:100%; height:100%; display:block; }
+.pp1-title { position:absolute; left:14mm; top:20mm; color:#fff; }
+.pp1-kicker { font-family:'Jost',sans-serif; font-size:9.5pt; font-weight:500; letter-spacing:0.28em; text-transform:uppercase; color:#F2C880; margin-bottom:5mm; }
+.pp1-brand { font-family:'Playfair Display',serif; font-size:88pt; font-weight:700; line-height:0.92; letter-spacing:0.005em; text-shadow:0 1mm 5mm rgba(0,0,0,0.35); }
+.pp1-brand em { color:#F2C880; font-weight:600; }
+.pp1-rule { width:34mm; height:0.9mm; background:#F2C880; margin:7mm 0 5mm; }
+.pp1-tag { font-family:'Playfair Display',serif; font-style:italic; font-size:19pt; max-width:105mm; line-height:1.25; text-shadow:0 0.5mm 3mm rgba(0,0,0,0.4); }
+.pp1-strip { position:absolute; left:12mm; right:12mm; top:143mm; display:flex; gap:5mm; z-index:2; }
+.pp1-strip figure { margin:0; flex:1; height:58mm; position:relative; border:1.6mm solid #fff; border-radius:3mm; overflow:hidden; background:#fff; box-shadow:0 2mm 6mm rgba(0,0,0,0.35); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.pp1-strip figure > img, .pp1-strip figure > canvas { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.pp1-strip figcaption { position:absolute; left:0; right:0; bottom:0; padding:5mm 3mm 2.5mm; font-family:'Jost',sans-serif; font-size:9pt; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#fff; text-align:center; background:linear-gradient(0deg, rgba(20,34,26,0.85), rgba(20,34,26,0)); }
+.pp1-bottom { position:absolute; left:0; right:0; bottom:0; height:97mm; background:linear-gradient(135deg,#1A3527 0%,#2C5040 100%); color:#fff; padding:23mm 14mm 0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.pp1-contact { position:absolute; left:14mm; top:25mm; right:62mm; }
+.pp1-label { font-family:'Jost',sans-serif; font-size:8.5pt; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#F2C880; margin-bottom:2mm; }
+.pp1-phone { font-family:'Playfair Display',serif; font-size:30pt; font-weight:700; line-height:1.05; }
+.pp1-handles { margin-top:5mm; display:flex; flex-direction:column; gap:1.6mm; font-family:'Jost',sans-serif; font-size:10pt; color:rgba(255,255,255,0.82); }
+.pp1-handles strong { color:#fff; font-weight:600; margin-left:1.5mm; }
+.pp1-qr { position:absolute; right:14mm; top:22mm; width:38mm; text-align:center; }
+.pp1-qr img { width:38mm; height:38mm; display:block; background:#fff; padding:2mm; border-radius:2.5mm; }
+.pp1-qr span { display:block; margin-top:2mm; font-family:'Jost',sans-serif; font-size:7.5pt; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.8); }
+.pp1-note { position:absolute; left:14mm; right:14mm; bottom:7mm; display:flex; justify-content:space-between; align-items:center; gap:6mm; border-top:0.3mm solid rgba(242,200,128,0.55); padding-top:3mm; font-family:'Jost',sans-serif; font-size:8.5pt; color:rgba(255,255,255,0.85); }
+.pp1-note strong { color:#F2C880; font-weight:600; white-space:nowrap; letter-spacing:0.06em; }
+
+/* ═══ Menu page (page 2, generated from order.html) ═══ */
+.pg2 { padding:0; }
+.pg2-head { background:linear-gradient(135deg,#3A6B45 0%,#1E2C22 100%); color:#fff; padding:5mm 12mm; display:flex; align-items:center; justify-content:space-between; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.pg2-brand { font-family:'Playfair Display',serif; font-size:24pt; font-weight:700; line-height:1; }
+.pg2-brand em { color:#F2C880; }
+.pg2-head-contact { text-align:right; font-family:'Jost',sans-serif; font-size:8.5pt; line-height:1.5; color:rgba(255,255,255,0.88); }
+.pg2-head-contact strong { display:block; font-size:12pt; color:#fff; letter-spacing:0.02em; }
+.pg2-build { margin:4mm 12mm 0; background:#EFE8D8; border-radius:3mm; padding:3.5mm 4mm; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.pg2-build-title { display:flex; align-items:center; gap:3mm; font-family:'Playfair Display',serif; font-size:12pt; font-weight:600; color:#2C4A35; }
+.pg2-build-title em { color:var(--terra); }
+.pg2-badge { margin-left:auto; background:var(--terra); color:#fff; font-family:'Jost',sans-serif; font-size:8.5pt; font-weight:600; padding:1mm 3.5mm; border-radius:999px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.pg2-build-sub { font-size:7pt; color:#6b6b58; margin:1mm 0 2.5mm; line-height:1.35; }
+.pg2-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:2.5mm; }
+.pg2-step { background:#fff; border-radius:2mm; padding:2mm 2.5mm; }
+.pg2-step b { display:block; font-family:'Jost',sans-serif; font-size:6.5pt; letter-spacing:0.12em; text-transform:uppercase; color:#3A6B45; margin-bottom:0.8mm; }
+.pg2-step span { display:block; font-size:7.5pt; color:#2C4A35; line-height:1.45; }
+.pg2-cols { margin:4mm 12mm 0; display:grid; grid-template-columns:1fr 1fr; gap:4mm; align-items:start; }
+.pg2-stack { display:flex; flex-direction:column; gap:3mm; }
+.pg2-stack .special-card .special-body { padding:3mm 4mm; }
+.pg2-stack .special-title { margin-bottom:1.5mm; font-size:11pt; }
+.pg2-photos { display:grid; grid-template-columns:repeat(3,1fr); gap:2mm; }
+.pg2-photos figure { margin:0; height:30mm; position:relative; border-radius:2.5mm; overflow:hidden; }
+.pg2-photos figure > img, .pg2-photos figure > canvas { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.pg2-photos figcaption { position:absolute; left:0; right:0; bottom:0; padding:3mm 1.5mm 1.2mm; font-family:'Jost',sans-serif; font-size:6.5pt; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#fff; text-align:center; background:linear-gradient(0deg, rgba(20,34,26,0.8), rgba(20,34,26,0)); }
+.pg2-foot { position:absolute; left:0; right:0; bottom:0; background:#2C4A35; color:#fff; padding:3.2mm 12mm; display:flex; justify-content:space-between; gap:6mm; font-family:'Jost',sans-serif; font-size:7.5pt; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.pg2-foot strong { color:#F2C880; font-weight:600; }
+.pg2 .price-sub-row { font-size:8.6pt; padding:1mm 0; }
+.pg2 .price-sub-row .price-amount { font-size:8.6pt; }
+.pg2 .price-desc { font-size:7pt; }
+.pg2-stack .special-title { font-size:12.5pt; }
+.pg2-step span { font-size:8.3pt; }
+.pg2-photos figure { height:34mm; }
+.pg2 .price-sub-row { font-size:8.3pt; padding:0.7mm 0; }
+.pg2 .price-sub-row .price-amount { font-size:8.3pt; }
+.pg2 .price-desc { font-size:6.8pt; }
+.pg2-stack { gap:2.5mm; }
+.pg2-cols { margin-top:3.5mm; }
+@media print { .print-pages { padding: 0; } }
