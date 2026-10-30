@@ -1057,7 +1057,7 @@ footer {
 /* ── Nutrition Page ── */
 .nutrition-hero {
   min-height: 55vh;
-  background-image: url('../img/hero/menu-top.jpg');
+  background-image: url('../img/hero/menu-top.jpg?v=20261030c');
   background-size: cover;
   background-position: center 40%;
   display: flex;
@@ -1145,7 +1145,7 @@ footer {
 /* ── Social Page ── */
 .social-hero {
   min-height: 55vh;
-  background-image: url('../img/hero/menu-top.jpg');
+  background-image: url('../img/hero/menu-top.jpg?v=20261030c');
   background-size: cover;
   background-position: center 30%;
   display: flex;
@@ -1594,14 +1594,14 @@ footer {
 .hero-split { position: absolute; inset: 0; }
 .hero-half { position: absolute; inset: 0; background-size: cover; background-position: center; }
 .hero-half-chicken {
-  background-image: url('../img/hero/chicken-hero.jpg');
+  background-image: url('../img/hero/chicken-hero.jpg?v=20261030c');
   /* shifted 16vw left and 5vh down; element overhangs the top so the shift never exposes a gap; clip compensates */
   inset: -6vh 16vw 0 -16vw;
   background-position: 50% calc(50% + 5vh);
   clip-path: polygon(0 6vh, calc(62% + 16vw) 6vh, calc(38% + 16vw) 100%, 0 100%);
 }
 .hero-half-veg {
-  background-image: url('../img/hero/veg-hero.jpg');
+  background-image: url('../img/hero/veg-hero.jpg?v=20261030c');
   background-position: 0% 40%;
   /* shifted 20vw right so the dish sits further right; clip compensates to keep the divider put */
   inset: 0 -20vw 0 20vw;
@@ -1727,8 +1727,8 @@ footer {
 }
 .page-hero::before { content: ''; position: absolute; inset: 0; background: rgba(20,32,25,0.62); }
 .page-hero > * { position: relative; }
-.page-hero-meat { background-image: url('../img/hero/chicken-hero.jpg'); }
-.page-hero-veg { background-image: url('../img/hero/veg-hero.jpg'); }
+.page-hero-meat { background-image: url('../img/hero/chicken-hero.jpg?v=20261030c'); }
+.page-hero-veg { background-image: url('../img/hero/veg-hero.jpg?v=20261030c'); }
 .page-hero-title {
   font-family: 'Cormorant Garamond', serif; font-weight: 600;
   font-size: clamp(2.6rem, 7vw, 4.5rem); line-height: 1.05; margin: 0.4rem 0 1rem; color: #fff;
