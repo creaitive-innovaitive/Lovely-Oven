@@ -14,3 +14,13 @@ tools/serve.py                 local preview
 Preview locally: `python3 tools/serve.py`, then open http://localhost:8000.
 
 Business files (finances, orders, source photos, Grab exports, A5 specials) are kept outside this repo, in `~/Documents/Lovely Oven Files`. Don't commit them: GitHub Pages publishes everything in the repo.
+
+## Keeping the order, menu and nutrition pages in step
+
+`order.html` is the source of truth for items, names, descriptions and prices. After editing it, run
+
+```
+python3 tools/sync_menu.py
+```
+
+to rebuild the menu page's item list (page 2 of the menu and the PDF). `nutrition.html` uses the same section headings and items, so update it by hand when items are added, renamed or removed.
