@@ -67,3 +67,9 @@
   .o-step { grid-template-columns: 1fr; gap: 0.3rem; }
   .o-cols { grid-template-columns: 1fr; }
 }
+
+/* Soup toppings: only orderable with a soup */
+.o-item.o-locked { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+.o-item.o-locked:hover { border-color: transparent; }
+.o-topping-note { font-style: italic; }
+.o-topping-note.o-topping-note-open { display: none; }

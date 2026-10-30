@@ -16,6 +16,7 @@
   const ORDER = {
     protein: null, flavour: null, spiceLevel: null, carb: null, side: null,
     extras:   {},  // { key: { label, price, qty } }
+    toppings: {},  // soup-only options, only orderable alongside a soup
     setMeals: {}   // { key: { label, price, qty } }
   };
 
@@ -31,7 +32,27 @@
     let n = 0;
     Object.values(ORDER.extras).forEach(v => n += v.qty);
     Object.values(ORDER.setMeals).forEach(v => n += v.qty);
+    Object.values(ORDER.toppings).forEach(v => n += v.qty);
     return n;
+  }
+
+  /* Soup toppings can only be ordered with a soup */
+  function soupCount() {
+    return Object.values(ORDER.setMeals).reduce((n, v) => n + (v.soup ? v.qty : 0), 0);
+  }
+
+  function syncToppings() {
+    const locked = soupCount() === 0;
+    if (locked && Object.keys(ORDER.toppings).length) {
+      ORDER.toppings = {};
+      document.querySelectorAll('[data-group="topping"]').forEach(el => {
+        el.classList.remove('order-selected');
+        const ctrl = el.querySelector('.lo-qty-ctrl');
+        if (ctrl) ctrl.remove();
+      });
+    }
+    document.querySelectorAll('[data-group="topping"]').forEach(el => el.classList.toggle('o-locked', locked));
+    document.querySelectorAll('.o-topping-note').forEach(el => el.classList.toggle('o-topping-note-open', !locked));
   }
 
   /* ── Init ────────────────────────────────────────────── */
@@ -45,7 +66,7 @@
   function attachHandlers() {
     document.querySelectorAll('[data-group]').forEach(el => {
       const g = el.dataset.group;
-      if (g === 'extra' || g === 'setmeal') {
+      if (g === 'extra' || g === 'setmeal' || g === 'topping') {
         el.addEventListener('click', handleQtySelect);
       } else {
         el.addEventListener('click', handleSelect);
@@ -86,9 +107,10 @@
     const key   = el.dataset.value;
     const label = el.dataset.label || key;
     const price = parseInt(el.dataset.price || '0', 10);
-    const store = group === 'setmeal' ? ORDER.setMeals : ORDER.extras;
+    const store = group === 'setmeal' ? ORDER.setMeals : group === 'topping' ? ORDER.toppings : ORDER.extras;
+    if (group === 'topping' && soupCount() === 0) return;
 
-    if (!store[key]) store[key] = { label, price, qty: 0 };
+    if (!store[key]) store[key] = { label, price, qty: 0, soup: el.dataset.soup === '1' };
     store[key].qty += 1;
     el.classList.add('order-selected');
     renderQtyCtrl(el, store[key].qty, group, key, store);
@@ -129,6 +151,7 @@
 
   /* ── Floating order bar ──────────────────────────────── */
   function updateBar() {
+    syncToppings();
     const bar = document.getElementById('loBar');
     if (!bar) return;
 
@@ -177,6 +200,7 @@
   window.loClearSelection = function () {
     ['protein', 'flavour', 'carb', 'side', 'spiceLevel'].forEach(k => { ORDER[k] = null; });
     ORDER.extras = {};
+    ORDER.toppings = {};
     ORDER.setMeals = {};
     document.querySelectorAll('.order-selected').forEach(el => el.classList.remove('order-selected'));
     document.querySelectorAll('.lo-qty-ctrl').forEach(el => el.remove());
@@ -209,6 +233,7 @@
     const missing    = STEPS.filter(s => !ORDER[s.key]).map(s => s.label);
     const setKeys    = Object.keys(ORDER.setMeals);
     const extKeys    = Object.keys(ORDER.extras);
+    const topKeys    = Object.keys(ORDER.toppings);
 
     let html = '';
 
@@ -262,6 +287,26 @@
       html += `<div class="lo-sum-subtotal"><span>Main Meals</span><strong>₫${setTotal.toLocaleString()}</strong></div>`;
     }
 
+    /* ── Soup toppings ── */
+    if (topKeys.length > 0) {
+      html += `<div class="lo-section-title">🥣 Soup Toppings</div>`;
+      let topTotal = 0;
+      topKeys.forEach(k => {
+        const item = ORDER.toppings[k];
+        const line = item.price * item.qty;
+        topTotal += line;
+        html += `<div class="lo-sum-row lo-row-done">
+          <span class="lo-sum-icon">🥣</span>
+          <div class="lo-sum-text">
+            <span class="lo-sum-label">${item.label}</span>
+            <span class="lo-sum-val">× ${item.qty}</span>
+          </div>
+          <span class="lo-sum-tick">₫${line.toLocaleString()}</span>
+        </div>`;
+      });
+      html += `<div class="lo-sum-subtotal"><span>Soup Toppings</span><strong>₫${topTotal.toLocaleString()}</strong></div>`;
+    }
+
     /* ── Extras ── */
     if (extKeys.length > 0) {
       html += `<div class="lo-section-title">➕ Extras</div>`;
@@ -287,6 +332,7 @@
     if (allChosen) grandTotal += 130000;
     Object.values(ORDER.setMeals).forEach(v => grandTotal += v.price * v.qty);
     Object.values(ORDER.extras).forEach(v => grandTotal += v.price * v.qty);
+    Object.values(ORDER.toppings).forEach(v => grandTotal += v.price * v.qty);
     if (grandTotal > 0) {
       html += `<div class="lo-sum-total"><span>Total</span><strong>₫${grandTotal.toLocaleString()}</strong></div>`;
     }
@@ -323,6 +369,7 @@
     const hasChicken = STEPS.some(s => ORDER[s.key]);
     const setKeys  = Object.keys(ORDER.setMeals);
     const extKeys  = Object.keys(ORDER.extras);
+    const topKeys  = Object.keys(ORDER.toppings);
 
     let msg = `🍽️ New Order — Lovely Oven\n\n`;
 
@@ -341,6 +388,18 @@
       let total = 0;
       setKeys.forEach(k => {
         const item = ORDER.setMeals[k];
+        const line = item.price * item.qty;
+        total += line;
+        msg += `   ${item.label} × ${item.qty}  ₫${line.toLocaleString()}\n`;
+      });
+      msg += `   Subtotal: ₫${total.toLocaleString()}\n\n`;
+    }
+
+    if (topKeys.length > 0) {
+      msg += `🥣 SOUP TOPPINGS\n`;
+      let total = 0;
+      topKeys.forEach(k => {
+        const item = ORDER.toppings[k];
         const line = item.price * item.qty;
         total += line;
         msg += `   ${item.label} × ${item.qty}  ₫${line.toLocaleString()}\n`;

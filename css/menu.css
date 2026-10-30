@@ -1907,3 +1907,19 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .p2-footer p { font-size:7.5pt; color:rgba(255,255,255,0.45); font-style:italic; }
 .p2-footer strong { font-size:7.5pt; color:var(--gold); font-weight:500; letter-spacing:0.08em; }
 .special-title .special-sub { font-family: Jost, sans-serif; font-size: 7.5pt; font-weight: 500; color: var(--charcoal-soft, #5a5a4a); letter-spacing: 0.02em; }
+
+.p2-right { display:flex; flex-direction:column; gap:3mm; }
+.p2-right .extras-card { padding:3mm 4mm; }
+.p2-right .extras-title { font-size:9.5pt; margin-bottom:2mm; }
+.p2-right .extras-grid { gap:1.5mm; }
+.p2-right .extra-row { padding:1.5mm 3mm; font-size:7.5pt; }
+.p2-right .veg-card .special-body { padding-top:3mm; padding-bottom:3mm; }
+.p2-right .extras-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5mm; }
+.p2-meal-images { min-height:30mm; }
+.p2-cols { gap:3mm 6mm; }
+.p2-info-band { padding:4mm 12mm 4mm; margin-top:3mm; }
+.info-band-label { margin-bottom:2.5mm; }
+.info-tile { padding:3.5mm 4mm; gap:1.8mm; }
+.info-tile-num { font-size:18pt; }
+.p2-right .extras-card:not(.toppings-card) .extras-grid { grid-template-columns:1fr; }
+.p2-right .extras-card:not(.toppings-card) .extra-row { padding:1.2mm 3mm; }
