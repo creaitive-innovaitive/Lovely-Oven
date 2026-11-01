@@ -3,3 +3,4 @@
 .claude/settings.local.json
 __pycache__/
 *.pyc
+img/reviews/

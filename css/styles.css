@@ -2012,3 +2012,8 @@ footer {
   font-family: 'Jost', sans-serif; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted);
 }
 @media (max-width: 900px) { .reviews-sec { padding: 4rem 1.25rem; } }
+.reviews-more {
+  max-width: 900px; margin: 2rem auto 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 0;
+  font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.25rem; color: var(--text-muted);
+}
+.reviews-more span + span::before { content: '\2726'; font-style: normal; font-size: 0.7rem; color: var(--accent); margin: 0 1.1rem; vertical-align: 0.15em; }
