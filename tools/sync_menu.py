@@ -67,7 +67,7 @@ def build():
 PHOTOS = ('        <div class="pg2-photos">\n'
           '          <figure><img data-cover src="img/menu/cottage-pie-single.jpg" alt="Cottage pie"><figcaption>Cottage Pie</figcaption></figure>\n'
           '          <figure><img data-cover src="img/menu/pumpkin-soup.jpg" alt="Pumpkin soup"><figcaption>Pumpkin Soup</figcaption></figure>\n'
-          '          <figure><img data-cover src="img/dishes/beef-ragout.jpg" alt="Beef ragout"><figcaption>Beef Ragout</figcaption></figure>\n'
+          '          <figure><img data-cover src="img/menu/beef-ragout-zoom.jpg" alt="Beef ragout"><figcaption>Beef Ragout</figcaption></figure>\n'
           '        </div>\n')
 
 HEAD = ('  <div class="pg2-head">\n    <div class="pg2-brand">Lovely <em>Oven</em></div>\n'
