@@ -58,7 +58,7 @@ def build():
     sub = re.search(r'<p class="o-sub">(.*?)</p>', body, re.S).group(1)
     steps = ""
     for label, group in (("1 · Cut", "protein"), ("2 · Marinade", "flavour"), ("3 · Carb", "carb"), ("4 · Side", "side")):
-        opts = re.findall(r'data-group="%s" data-value="([^"]*)"' % group, body)
+        opts = re.findall(r'data-group="%s" data-value="[^"]*">([^<]*)<' % group, body)
         steps += '      <div class="pg2-step"><b>%s</b>%s</div>\n' % (label, "".join("<span>%s%s</span>" % (o + (" 🔥" if o == "Peri Peri" else ""), PILL if o in POPULAR_OPTIONS else "") for o in opts))
     return ('  <div class="pg2-build">\n    <div class="pg2-build-title">Build your own <em>Chicken Meal</em><span class="pg2-badge">Full meal — %s</span></div>\n'
             '    <div class="pg2-build-sub">%s</div>\n    <div class="pg2-steps">\n%s    </div>\n  </div>\n') % (price, sub, steps)

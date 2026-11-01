@@ -62,6 +62,11 @@
     updateBar();
   }
 
+  /* Sides that add to the ₫130,000 chicken meal price */
+  const SIDE_SURCHARGE = { 'Cauliflower Mash': 10000 };
+  const chickenPrice = () => 130000 + (SIDE_SURCHARGE[ORDER.side] || 0);
+  const sideText = v => v && SIDE_SURCHARGE[v] ? `${v} (+₫${SIDE_SURCHARGE[v].toLocaleString()})` : v;
+
   /* ── Attach click handlers to all selectable items ───── */
   function attachHandlers() {
     document.querySelectorAll('[data-group]').forEach(el => {
@@ -255,7 +260,7 @@
             <span class="lo-sum-icon">${s.icon}</span>
             <div class="lo-sum-text">
               <span class="lo-sum-label">${s.label}</span>
-              <span class="lo-sum-val">${val ? val + spice : '<em>Not chosen yet</em>'}</span>
+              <span class="lo-sum-val">${val ? (s.key === 'side' ? sideText(val) : val) + spice : '<em>Not chosen yet</em>'}</span>
             </div>
             ${val ? '<span class="lo-sum-tick">✓</span>' : ''}
           </div>
@@ -263,7 +268,7 @@
       });
 
       if (allChosen) {
-        html += `<div class="lo-sum-subtotal"><span>Chicken meal</span><strong>₫130,000</strong></div>`;
+        html += `<div class="lo-sum-subtotal"><span>Chicken meal</span><strong>₫${chickenPrice().toLocaleString()}</strong></div>`;
       }
     }
 
@@ -329,7 +334,7 @@
 
     /* ── Grand total ── */
     let grandTotal = 0;
-    if (allChosen) grandTotal += 130000;
+    if (allChosen) grandTotal += chickenPrice();
     Object.values(ORDER.setMeals).forEach(v => grandTotal += v.price * v.qty);
     Object.values(ORDER.extras).forEach(v => grandTotal += v.price * v.qty);
     Object.values(ORDER.toppings).forEach(v => grandTotal += v.price * v.qty);
@@ -378,8 +383,8 @@
       msg += `   Cut:      ${ORDER.protein || '—'}\n`;
       msg += `   Marinade: ${ORDER.flavour ? ORDER.flavour + spice : '—'}\n`;
       msg += `   Carb:     ${ORDER.carb || '—'}\n`;
-      msg += `   Side:     ${ORDER.side || '—'}\n`;
-      if (STEPS.every(s => ORDER[s.key])) msg += `   Subtotal: ₫130,000\n`;
+      msg += `   Side:     ${sideText(ORDER.side) || '—'}\n`;
+      if (STEPS.every(s => ORDER[s.key])) msg += `   Subtotal: ₫${chickenPrice().toLocaleString()}\n`;
       msg += '\n';
     }
 

@@ -2005,3 +2005,6 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 
 .pop-pill { display:inline-block; margin-left:1.5mm; padding:0.2mm 1.6mm; border-radius:999px; background:var(--terra); color:#fff; font-family:'Jost',sans-serif; font-style:normal; font-size:5pt; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; vertical-align:middle; white-space:nowrap; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .pg2-step .pop-pill { display:block; width:fit-content; margin:0.6mm 0 0.8mm; }
+.pg2-cols { align-items:stretch; }
+.pg2-photos { flex:1; grid-template-rows:1fr; min-height:30mm; }
+.pg2-photos figure { height:auto; min-height:0; }
