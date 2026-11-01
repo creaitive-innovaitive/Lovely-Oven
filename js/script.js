@@ -93,3 +93,53 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
   size();
   window.addEventListener('resize', size);
 })();
+
+
+/* ── Reviews slider: advances every 3s, swipe/dots to move manually ── */
+(function () {
+  const root = document.getElementById('reviewsSlider');
+  if (!root) return;
+  const track = root.querySelector('.reviews-track');
+  const dotsEl = root.querySelector('.reviews-dots');
+  const slides = Array.from(track.children);
+  const n = slides.length;
+  track.appendChild(slides[0].cloneNode(true)).setAttribute('aria-hidden', 'true');
+  let i = 0, timer = null;
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  slides.forEach((_, k) => {
+    const d = document.createElement('button');
+    d.setAttribute('aria-label', 'Comment ' + (k + 1));
+    d.addEventListener('click', () => { go(k); restart(); });
+    dotsEl.appendChild(d);
+  });
+  const dots = Array.from(dotsEl.children);
+
+  function show() {
+    track.style.transform = 'translateX(' + (-100 * i) + '%)';
+    dots.forEach((d, k) => d.classList.toggle('on', k === i % n));
+  }
+  function go(k) {
+    if (k < 0) { track.classList.add('no-anim'); i = n; show(); void track.offsetWidth; track.classList.remove('no-anim'); k = n - 1; }
+    i = k; show();
+  }
+  track.addEventListener('transitionend', () => {
+    if (i >= n) { track.classList.add('no-anim'); i = 0; show(); void track.offsetWidth; track.classList.remove('no-anim'); }
+  });
+  function restart() { clearInterval(timer); if (!still) timer = setInterval(() => go(i + 1), 3000); }
+
+  let x0 = null;
+  root.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; clearInterval(timer); }, { passive: true });
+  root.addEventListener('touchend', e => {
+    if (x0 !== null) {
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) go(dx < 0 ? i + 1 : i - 1);
+    }
+    x0 = null; restart();
+  });
+  root.addEventListener('mouseenter', () => clearInterval(timer));
+  root.addEventListener('mouseleave', restart);
+
+  show();
+  restart();
+})();
