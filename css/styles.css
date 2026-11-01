@@ -927,6 +927,23 @@ footer {
 }
 .scroll-top.visible { opacity: 1; pointer-events: all; }
 
+@media (max-width: 600px) {
+  footer { padding: 2rem 1.5rem 4.5rem; }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem 1.5rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .footer-brand { grid-column: 1 / -1; }
+  .footer-brand p { max-width: none; }
+  .footer-links li { margin-bottom: 0.55rem; }
+  .footer-links a { font-size: 0.9rem; }
+  .footer-bottom p { font-size: 0.72rem; }
+  .scroll-top { width: 40px; height: 40px; bottom: 1rem; right: 1rem; }
+}
+
 /* ── Popup Overlay ── */
 .popup-overlay {
   display: none;
