@@ -12,6 +12,11 @@ LEFT = ["o-veg", "o-set", "o-toppings"]
 RIGHT = ["o-drinks", "o-add", "o-box"]
 
 
+POPULAR_ITEMS = {"Aloo Gobi", "Chilli Con Carne Set", "Pumpkin Soup · Medium"}
+POPULAR_OPTIONS = {"Peri Peri", "Turmeric Basmati"}
+PILL = '<em class="pop-pill">★ Most Popular</em>'
+
+
 def section(sec_id):
     m = re.search(r'<section class="o-sec" id="%s"><h2>(.*?)</h2>(.*?)\n    </section>' % sec_id, order, re.S)
     title, body = m.group(1), m.group(2)
@@ -39,6 +44,8 @@ def card(sec_id):
     rows = ""
     for nm, desc, price in items:
         d = '<small class="price-desc">%s</small>' % desc if desc else ""
+        if nm in POPULAR_ITEMS:
+            nm = "<span>%s%s</span>" % (nm, PILL)
         rows += '        <div class="price-sub-row"><span>%s%s</span><span class="price-amount">₫%s</span></div>\n' % (nm, d, price)
     return ('    <div class="special-card">\n      <div class="special-body">\n        <div class="special-title">%s%s</div>\n'
             '        <div class="price-group">\n%s        </div>\n      </div>\n    </div>\n') % (title, subtxt, rows)
@@ -52,15 +59,15 @@ def build():
     steps = ""
     for label, group in (("1 · Cut", "protein"), ("2 · Marinade", "flavour"), ("3 · Carb", "carb"), ("4 · Side", "side")):
         opts = re.findall(r'data-group="%s" data-value="([^"]*)"' % group, body)
-        steps += '      <div class="pg2-step"><b>%s</b>%s</div>\n' % (label, "".join("<span>%s</span>" % o for o in opts))
+        steps += '      <div class="pg2-step"><b>%s</b>%s</div>\n' % (label, "".join("<span>%s%s</span>" % (o, PILL if o in POPULAR_OPTIONS else "") for o in opts))
     return ('  <div class="pg2-build">\n    <div class="pg2-build-title">Build your own <em>Chicken Meal</em><span class="pg2-badge">Full meal — %s</span></div>\n'
             '    <div class="pg2-build-sub">%s</div>\n    <div class="pg2-steps">\n%s    </div>\n  </div>\n') % (price, sub, steps)
 
 
 PHOTOS = ('        <div class="pg2-photos">\n'
-          '          <figure><img data-cover src="img/menu/cottage-pie.jpg" alt="Cottage pie"><figcaption>Cottage Pie</figcaption></figure>\n'
+          '          <figure><img data-cover src="img/menu/cottage-pie-single.jpg" alt="Cottage pie"><figcaption>Cottage Pie</figcaption></figure>\n'
           '          <figure><img data-cover src="img/menu/pumpkin-soup.jpg" alt="Pumpkin soup"><figcaption>Pumpkin Soup</figcaption></figure>\n'
-          '          <figure><img data-cover src="img/menu/chilli-con-carne.jpg" alt="Chilli con carne"><figcaption>Chilli Con Carne</figcaption></figure>\n'
+          '          <figure><img data-cover src="img/dishes/beef-ragout.jpg" alt="Beef ragout"><figcaption>Beef Ragout</figcaption></figure>\n'
           '        </div>\n')
 
 HEAD = ('  <div class="pg2-head">\n    <div class="pg2-brand">Lovely <em>Oven</em></div>\n'

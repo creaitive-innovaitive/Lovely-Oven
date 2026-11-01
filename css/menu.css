@@ -1955,7 +1955,7 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .pp1-bottom { position:absolute; left:0; right:0; bottom:0; height:97mm; background:linear-gradient(135deg,#1A3527 0%,#2C5040 100%); color:#fff; padding:23mm 14mm 0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .pp1-contact { position:absolute; left:14mm; top:25mm; right:62mm; }
 .pp1-label { font-family:'Jost',sans-serif; font-size:8.5pt; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#F2C880; margin-bottom:2mm; }
-.pp1-phone { font-family:'Playfair Display',serif; font-size:30pt; font-weight:700; line-height:1.05; }
+.pp1-phone { font-family:'Playfair Display',serif; font-size:15pt; font-weight:700; line-height:1.05; }
 .pp1-handles { margin-top:5mm; display:flex; flex-direction:column; gap:1.6mm; font-family:'Jost',sans-serif; font-size:10pt; color:rgba(255,255,255,0.82); }
 .pp1-handles strong { color:#fff; font-weight:600; margin-left:1.5mm; }
 .pp1-qr { position:absolute; right:14mm; top:22mm; width:38mm; text-align:center; }
@@ -2002,3 +2002,5 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .pg2-stack { gap:2.5mm; }
 .pg2-cols { margin-top:3.5mm; }
 @media print { .print-pages { padding: 0; } }
+
+.pop-pill { display:inline-block; margin-left:1.5mm; padding:0.2mm 1.6mm; border-radius:999px; background:var(--terra); color:#fff; font-family:'Jost',sans-serif; font-style:normal; font-size:5pt; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; vertical-align:middle; white-space:nowrap; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
