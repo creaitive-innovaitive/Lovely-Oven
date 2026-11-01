@@ -298,6 +298,21 @@ nav {
 .bamboo-left { left: 3%; }
 .bamboo-right { right: 3%; transform: scaleX(-1); }
 
+.hero-notice {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  margin-bottom: 1.75rem;
+  padding: 0.7rem 1.25rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  color: var(--parchment);
+  background: rgba(18,32,24,0.82);
+  border: 1px solid rgba(196,163,90,0.45);
+  animation: fadeUp 0.8s ease both;
+}
+
 .hero-eyebrow {
   font-size: 0.72rem;
   letter-spacing: 0.32em;
