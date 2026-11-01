@@ -1985,3 +1985,30 @@ footer {
   .hero-info-label { font-size: 0.58rem; letter-spacing: 0.18em; }
   .hero-info-value { font-size: 0.9rem; line-height: 1.3; }
 }
+
+/* ── Reviews ── */
+.reviews-sec { background: #EFE8D8; min-height: 65vh; min-height: 65svh; padding: 5rem 3rem; }
+.reviews-intro { max-width: 520px; margin: 1.25rem auto 0; color: var(--text-muted); font-size: 1.05rem; line-height: 1.7; }
+.reviews-intro span { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.2rem; color: var(--ink); white-space: nowrap; }
+.reviews-grid {
+  width: 100%; max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;
+}
+.review {
+  margin: 0; padding: 2rem 1.75rem 1.5rem; background: var(--parchment); border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(28,40,32,0.1); text-align: center;
+  display: flex; flex-direction: column; justify-content: space-between; gap: 1.25rem;
+}
+.review[hidden] { display: none; }
+.review blockquote {
+  margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; line-height: 1.5; color: var(--ink);
+}
+.review blockquote::before, .review blockquote::after {
+  font-size: 3.2rem; line-height: 0; color: var(--accent); vertical-align: -0.35em;
+}
+.review blockquote::before { content: '\201C'; margin-right: 0.12em; }
+.review blockquote::after { content: '\201D'; margin-left: 0.12em; }
+.review figcaption {
+  font-family: 'Jost', sans-serif; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted);
+}
+@media (max-width: 900px) { .reviews-sec { padding: 4rem 1.25rem; } }
