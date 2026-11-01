@@ -308,8 +308,11 @@ nav {
   line-height: 1.5;
   letter-spacing: 0.03em;
   color: var(--parchment);
-  background: rgba(18,32,24,0.82);
-  border: 1px solid rgba(196,163,90,0.45);
+  background: rgba(28,40,32,0.28);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: 10px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 2px 12px rgba(0,0,0,0.6);
   animation: fadeUp 0.8s ease both;
 }
 
