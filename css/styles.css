@@ -1917,7 +1917,7 @@ footer {
 
 .pay-card p.pay-list { white-space: nowrap; font-size: clamp(0.8rem, 1.4vw, 0.95rem); }
 
-/* Hero buttons: plain, serif, no icons */
+/* Hero buttons: plain, sans-serif, no icons */
 .path-btn {
   min-width: 210px; justify-content: center; text-align: center; gap: 0;
   padding: 0.95rem 2rem; border-radius: 3px; border: 1px solid var(--accent);
