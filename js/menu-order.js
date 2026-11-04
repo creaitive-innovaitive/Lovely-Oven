@@ -27,6 +27,61 @@
     { key: 'side',    label: 'Side',     icon: '🥗' },
   ];
 
+  /* Per-item options: rice yes/no (+10k) and a choice of side from Add-ons & Extras.
+     A side is included in the price; wedges and cauliflower mash carry a surcharge. */
+  const RICE_PRICE = 10000;
+  const SIDE_OPTIONS = [
+    { value: 'Coleslaw',         extra: 0 },
+    { value: 'Rice',             extra: 0 },
+    { value: 'Potato wedges',    extra: 10000 },
+    { value: 'Cauliflower mash', extra: 20000 },
+    { value: 'Fried egg',        extra: 0 },
+    { value: 'Boiled egg',       extra: 0 }
+  ];
+  const sideExtra = v => (SIDE_OPTIONS.find(o => o.value === v) || {}).extra || 0;
+  const fmt = n => '₫' + n.toLocaleString();
+
+  function recalc(item) {
+    item.price = item.base + (item.rice === 'Yes' ? RICE_PRICE : 0) + sideExtra(item.side);
+    const bits = [];
+    if (item.hasRice) bits.push(`Rice: ${item.rice}`);
+    if (item.hasSide) bits.push(`Side: ${item.side ? item.side + (sideExtra(item.side) ? ` (+${fmt(sideExtra(item.side))})` : '') : 'not chosen'}`);
+    item.detail = bits.join(' · ');
+  }
+
+  function renderOpts(el, item) {
+    let box = el.querySelector('.o-opts');
+    if (box) return;
+    box = document.createElement('div');
+    box.className = 'o-opts';
+    box.addEventListener('click', e => e.stopPropagation());
+    if (item.hasRice) {
+      box.innerHTML += `<div class="o-opt-row" data-opt="rice"><b>Add rice +${fmt(RICE_PRICE)}?</b>` +
+        `<button type="button" class="o-opt" data-v="Yes">Yes</button><button type="button" class="o-opt active" data-v="No">No</button></div>`;
+    }
+    if (item.hasSide) {
+      box.innerHTML += `<div class="o-opt-row" data-opt="side"><b>Choose 1 side</b>` +
+        SIDE_OPTIONS.map(o => `<button type="button" class="o-opt" data-v="${o.value}">${o.value}<small>${o.extra ? '+' + fmt(o.extra) : 'included'}</small></button>`).join('') + `</div>`;
+    }
+    box.addEventListener('click', e => {
+      const b = e.target.closest('.o-opt');
+      if (!b) return;
+      const kind = b.parentElement.dataset.opt;
+      item[kind] = b.dataset.v;
+      b.parentElement.querySelectorAll('.o-opt').forEach(x => x.classList.toggle('active', x === b));
+      recalc(item);
+      updateBar();
+    });
+    el.classList.add('has-opts');
+    el.appendChild(box);
+  }
+
+  function removeOpts(el) {
+    const box = el.querySelector('.o-opts');
+    if (box) box.remove();
+    el.classList.remove('has-opts');
+  }
+
   /* ── Helpers ──────────────────────────────────────────── */
   function getTotalQty() {
     let n = 0;
@@ -115,10 +170,15 @@
     const store = group === 'setmeal' ? ORDER.setMeals : group === 'topping' ? ORDER.toppings : ORDER.extras;
     if (group === 'topping' && soupCount() === 0) return;
 
-    if (!store[key]) store[key] = { label, price, qty: 0, soup: el.dataset.soup === '1' };
+    if (!store[key]) {
+      store[key] = { label, price, base: price, qty: 0, soup: el.dataset.soup === '1',
+        hasRice: el.dataset.rice === '1', hasSide: el.dataset.side === '1', rice: 'No', side: null };
+      recalc(store[key]);
+    }
     store[key].qty += 1;
     el.classList.add('order-selected');
     renderQtyCtrl(el, store[key].qty, group, key, store);
+    if (store[key].hasRice || store[key].hasSide) renderOpts(el, store[key]);
     updateBar();
   }
 
@@ -130,6 +190,7 @@
       el.classList.remove('order-selected');
       const ctrl = el.querySelector('.lo-qty-ctrl');
       if (ctrl) ctrl.remove();
+      removeOpts(el);
     } else {
       const num = el.querySelector('.lo-qty-num');
       if (num) num.textContent = store[key].qty;
@@ -209,6 +270,7 @@
     ORDER.setMeals = {};
     document.querySelectorAll('.order-selected').forEach(el => el.classList.remove('order-selected'));
     document.querySelectorAll('.lo-qty-ctrl').forEach(el => el.remove());
+    document.querySelectorAll('.o-item.has-opts').forEach(removeOpts);
     updateBar();
   };
 
@@ -284,7 +346,7 @@
           <span class="lo-sum-icon">🍲</span>
           <div class="lo-sum-text">
             <span class="lo-sum-label">${item.label}</span>
-            <span class="lo-sum-val">× ${item.qty}</span>
+            <span class="lo-sum-val">× ${item.qty}${item.detail ? ' · ' + item.detail : ''}</span>
           </div>
           <span class="lo-sum-tick">₫${line.toLocaleString()}</span>
         </div>`;
@@ -396,6 +458,7 @@
         const line = item.price * item.qty;
         total += line;
         msg += `   ${item.label} × ${item.qty}  ₫${line.toLocaleString()}\n`;
+        if (item.detail) msg += `      ${item.detail}\n`;
       });
       msg += `   Subtotal: ₫${total.toLocaleString()}\n\n`;
     }

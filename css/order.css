@@ -73,3 +73,13 @@
 .o-item.o-locked:hover { border-color: transparent; }
 .o-topping-note { font-style: italic; }
 .o-topping-note.o-topping-note-open { display: none; }
+
+/* Per-item options (rice yes/no, choice of side) */
+.o-item.has-opts { flex-wrap: wrap; }
+.o-opts { flex: 0 0 100%; display: flex; flex-direction: column; gap: 0.45rem; padding: 0.5rem 0 0.15rem 0.3rem; cursor: default; }
+.o-opt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+.o-opt-row > b { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--olive-dark); margin-right: 0.2rem; }
+.o-opt { font: inherit; font-size: 0.78rem; padding: 0.25rem 0.65rem; border: 1.5px solid var(--accent); border-radius: 999px; background: #fff; color: var(--ink); cursor: pointer; }
+.o-opt:hover { border-color: var(--olive-dark); }
+.o-opt.active { background: var(--olive-darker); border-color: var(--olive-darker); color: var(--parchment); }
+.o-opt small { opacity: 0.75; margin-left: 0.2rem; }
