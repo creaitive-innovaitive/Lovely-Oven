@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Lovely Oven Orders</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a narrow rail on the left, one working screen on the right. The order screen is two panels (who and how many, then which days) over a checkout bar, so everything fits an iPad held sideways. */
+:root {
+  --bg: #eef1f6; --surface: #ffffff; --surface2: #f4f6fb; --ink: #121a2b; --muted: #566077;
+  --line: #d8deea; --line2: #bcc5da;
+  --accent: #2c44c9; --accent-ink: #ffffff; --accent-soft: #e2e7fb;
+  --ok: #17703f; --ok-soft: #dcf2e5; --warn: #8f4f00; --warn-soft: #fbe8c8; --bad: #b0221a; --bad-soft: #fce3e0;
+  --rail: #121a2b; --rail-ink: #c3cde6;
+  --shadow: 0 1px 2px rgba(18,26,43,.06), 0 8px 24px rgba(18,26,43,.07);
+  --display: 'Bricolage Grotesque', ui-rounded, system-ui, sans-serif;
+  --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b101c; --surface: #151c2d; --surface2: #1b2438; --ink: #e8ecf7; --muted: #9ba6bf;
+    --line: #2a3552; --line2: #3b496b;
+    --accent: #93a5ff; --accent-ink: #0b101c; --accent-soft: #232e63;
+    --ok: #62d596; --ok-soft: #143a2a; --warn: #f2b45c; --warn-soft: #3d2c10; --bad: #ff8c80; --bad-soft: #42191b;
+    --rail: #080c15; --rail-ink: #a9b5d2;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b101c; --surface: #151c2d; --surface2: #1b2438; --ink: #e8ecf7; --muted: #9ba6bf;
+  --line: #2a3552; --line2: #3b496b;
+  --accent: #93a5ff; --accent-ink: #0b101c; --accent-soft: #232e63;
+  --ok: #62d596; --ok-soft: #143a2a; --warn: #f2b45c; --warn-soft: #3d2c10; --bad: #ff8c80; --bad-soft: #42191b;
+  --rail: #080c15; --rail-ink: #a9b5d2;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font: 500 17px/1.35 var(--body); -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+button, input { font-family: inherit; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+button:disabled { cursor: default; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+h1, h2 { margin: 0; font-family: var(--display); letter-spacing: -.01em; }
+h1 { font-size: 30px; line-height: 1; font-weight: 700; }
+h2 { font-size: 21px; line-height: 1.1; font-weight: 700; }
+p { margin: 0; }
+
+.app { height: 100%; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 16px; padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.stage { display: flex; flex-direction: column; min-width: 0; min-height: 0; gap: 10px; }
+
+/* rail */
+.rail { background: var(--rail); border-radius: 26px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 8px; }
+.brand { font: 700 14px/1 var(--display); color: #fff; text-align: center; letter-spacing: .01em; margin: 4px 0 12px; }
+.brand b { display: block; color: var(--accent); filter: brightness(1.5); font-size: 12px; font-weight: 600; margin-top: 3px; text-transform: uppercase; letter-spacing: .12em; }
+.rail button { position: relative; width: 76px; min-height: 76px; border: 0; border-radius: 20px; background: transparent; color: var(--rail-ink); display: grid; place-items: center; align-content: center; gap: 4px; font: 600 12px var(--body); }
+.rail button[aria-current="page"] { background: var(--accent); color: var(--accent-ink); }
+.rail .spacer { flex: 1; }
+.badge { position: absolute; top: 5px; right: 7px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: var(--warn-soft); color: var(--warn); font: 600 13px var(--mono); display: grid; place-items: center; }
+.badge[hidden] { display: none; }
+
+/* shared pieces */
+.view { display: flex; flex-direction: column; gap: 12px; min-height: 0; flex: 1; }
+.vhead { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; min-height: 56px; }
+.vhead .grow { flex: 1; }
+.panel { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); padding: 18px 20px; min-height: 0; min-width: 0; overflow: auto; }
+.lbl, .field > label { display: block; font: 700 12px/1.2 var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 7px; }
+.sub { color: var(--muted); font-size: 15px; font-weight: 500; }
+.field { min-width: 0; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+
+input[type="text"], input[type="password"], .money input { width: 100%; height: 60px; border: 2px solid var(--line2); border-radius: 15px; background: var(--surface); color: var(--ink); font: 600 22px var(--body); padding: 0 16px; }
+input[type="text"]:focus, .money input:focus { border-color: var(--accent); outline: 3px solid var(--accent-soft); outline-offset: 0; }
+input::placeholder { color: var(--muted); font-weight: 500; opacity: .8; }
+.money { position: relative; }
+.money input { font-family: var(--mono); font-weight: 600; text-align: right; padding-right: 62px; font-size: 21px; }
+.money span { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font: 600 12px var(--mono); color: var(--muted); pointer-events: none; }
+
+.btn { min-height: 56px; padding: 0 22px; border-radius: 15px; border: 2px solid var(--line2); background: var(--surface); color: var(--ink); font: 700 17px var(--body); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.ok { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+.btn.danger { color: var(--bad); }
+.btn.small { min-height: 48px; padding: 0 16px; font-size: 16px; }
+.btn:disabled { opacity: .45; }
+body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; opacity: .6; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.chip { min-height: 48px; padding: 0 16px; border-radius: 26px; border: 2px solid var(--line); background: var(--surface2); font: 600 17px var(--body); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.chips.small .chip { min-height: 44px; font: 600 15px var(--mono); padding: 0 14px; }
+.chips:empty { display: none; }
+
+.seg { display: flex; border: 2px solid var(--line2); border-radius: 15px; overflow: hidden; background: var(--surface); }
+.seg button { min-height: 52px; padding: 0 14px; border: 0; background: transparent; font: 700 16px var(--body); white-space: nowrap; }
+.seg button + button { border-left: 2px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.pill { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 16px; font: 600 14px var(--mono); background: var(--surface2); color: var(--muted); white-space: nowrap; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.info { background: var(--accent-soft); color: var(--accent); }
+
+.datepick { display: flex; align-items: center; border: 2px solid var(--line2); border-radius: 15px; background: var(--surface); overflow: hidden; }
+.datepick button { min-height: 52px; border: 0; background: transparent; font: 700 17px var(--body); }
+.datepick .step { width: 56px; font-size: 26px; }
+.datepick .when { padding: 0 14px; min-width: 190px; border-left: 2px solid var(--line); border-right: 2px solid var(--line); }
+
+/* new order */
+.order-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 14px; flex: 1; min-height: 0; }
+.combo { position: relative; }
+.suggest { position: absolute; z-index: 5; left: 0; right: 0; top: calc(100% + 6px); background: var(--surface); border: 2px solid var(--line2); border-radius: 15px; box-shadow: var(--shadow); overflow: hidden; }
+.suggest button { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 0 16px; border: 0; background: transparent; text-align: left; font: 700 19px var(--body); }
+.suggest button + button { border-top: 1px solid var(--line); }
+.suggest button small { font: 500 14px var(--mono); color: var(--muted); }
+.suggest button.on { background: var(--accent-soft); }
+.hint { min-height: 32px; margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; color: var(--muted); font-size: 15px; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.stepper { display: grid; grid-template-columns: 64px 1fr 64px; height: 64px; border: 2px solid var(--line2); border-radius: 16px; overflow: hidden; background: var(--surface); }
+.stepper button { border: 0; background: var(--surface2); font: 600 34px var(--body); }
+.stepper button:active { background: var(--accent-soft); }
+.stepper output { display: grid; place-items: center; font: 600 34px var(--mono); }
+.inline { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
+.inline .stepper { width: 200px; flex: none; }
+.inline .money { width: 230px; flex: none; }
+.inline .chips { margin: 0; }
+.more { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 0 16px; border: 2px dashed var(--line2); border-radius: 15px; background: transparent; font: 700 17px var(--body); text-align: left; }
+.more span:first-child { flex: 1; }
+.extras { padding-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 16px; }
+.extras input[type="text"] { height: 54px; font-size: 19px; }
+.extras .money input { height: 54px; }
+
+/* the day tickets */
+.planhead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.planhead h2 { flex: 1; }
+.plan-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
+.plan-actions .grow { flex: 1; }
+.week { margin-top: 10px; }
+.week .cap { font: 700 12px var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 6px; }
+.days { display: grid; gap: 8px; }
+.day { border: 2px solid var(--line); border-radius: 16px; background: var(--surface); overflow: hidden; min-width: 0; }
+.day .top { display: grid; justify-items: center; align-content: center; gap: 0; padding: 6px 4px 5px; border-bottom: 2px dashed var(--line2); }
+.day .dow { font: 700 12px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.day .num { font: 700 28px/1 var(--display); }
+.day .mon { font: 600 12px var(--body); color: var(--muted); }
+.day .ctl { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+.day .ctl button { min-height: 52px; border: 0; background: transparent; font: 600 28px var(--body); }
+.day .ctl button:active:not(:disabled) { background: var(--accent-soft); }
+.day .ctl button:disabled { opacity: .25; }
+.day .count { font: 600 28px var(--mono); min-width: 28px; text-align: center; }
+.day.on { border-color: var(--accent); background: var(--accent-soft); }
+.day.on .top { border-bottom-color: var(--accent); }
+.day.on .count { color: var(--accent); }
+.day.today .mon { color: var(--accent); font-weight: 700; }
+.day.off { opacity: .4; }
+
+/* checkout bar */
+.checkout { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); padding: 14px 20px; }
+.tot { min-width: 190px; }
+.tot strong { display: block; font: 600 36px/1.05 var(--mono); letter-spacing: -.02em; }
+.tot small { display: block; font: 500 14px var(--mono); color: var(--muted); margin-top: 3px; }
+.tot small.owes { color: var(--warn); font-weight: 600; }
+.checkout .part { width: 200px; }
+.savebox { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.save { min-width: 200px; min-height: 64px; font-size: 20px; }
+.why { font-size: 14px; color: var(--muted); min-height: 18px; }
+
+/* meals today */
+.stats { display: flex; gap: 8px; flex-wrap: wrap; }
+.sect { display: flex; flex-direction: column; gap: 10px; }
+.sect > h2 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
+.mgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 12px; }
+.meal { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); padding: 14px 16px 14px 20px; border: 2px solid transparent; }
+.meal.served { background: var(--ok-soft); box-shadow: none; }
+.meal .who { min-width: 0; }
+.meal .who strong { display: block; font: 700 24px/1.15 var(--display); overflow-wrap: anywhere; }
+.meal .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.meal .ask { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.meal .ask span { flex: 1; min-width: 180px; font-weight: 600; }
+.tick { display: inline-flex; align-items: center; gap: 6px; color: var(--ok); font-weight: 700; }
+.empty { display: grid; justify-items: start; gap: 12px; padding: 28px 8px; color: var(--muted); max-width: 520px; }
+.empty strong { font: 700 22px var(--display); color: var(--ink); }
+.scroll { overflow: auto; min-height: 0; flex: 1; padding-bottom: 8px; display: flex; flex-direction: column; gap: 18px; }
+
+/* customers */
+.cust-grid { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 14px; flex: 1; min-height: 0; }
+.cust-grid .list { display: flex; flex-direction: column; gap: 12px; padding: 14px; }
+.cust-grid .list .rows { overflow: auto; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+.crow { display: grid; gap: 6px; text-align: left; border: 2px solid transparent; background: var(--surface2); border-radius: 16px; padding: 12px 14px; min-height: 64px; width: 100%; }
+.crow strong { font: 700 20px var(--display); }
+.crow .chips { margin: 0; gap: 6px; }
+.crow[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.tile { background: var(--surface2); border-radius: 16px; padding: 12px 14px; }
+.tile b { display: block; font: 600 28px/1.1 var(--mono); }
+.tile.warn b { color: var(--warn); }
+.tile.bad b { color: var(--bad); }
+.tile span { font: 700 12px var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.box { border: 2px solid var(--line); border-radius: 18px; padding: 16px; display: grid; gap: 8px; }
+.row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.row .grow { flex: 1; min-width: 160px; }
+.row .money { width: 190px; }
+.row .money input { height: 52px; font-size: 19px; }
+.rl { display: grid; grid-template-columns: auto 1fr auto auto; gap: 4px 16px; font-size: 16px; }
+.rl span:nth-child(4n+1) { color: var(--muted); font-family: var(--mono); font-size: 14px; }
+.rl .r { text-align: right; font-family: var(--mono); }
+
+/* overlays */
+.modal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; background: rgba(8,12,22,.55); }
+.sheet { width: min(680px, 100%); max-height: 92%; overflow: auto; background: var(--surface); border-radius: 26px; padding: 22px; display: grid; gap: 14px; box-shadow: var(--shadow); }
+.toast { position: fixed; z-index: 40; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); max-width: min(720px, calc(100% - 32px)); background: var(--ink); color: var(--bg); padding: 14px 20px; border-radius: 16px; font-weight: 600; box-shadow: var(--shadow); }
+.toast.bad { background: var(--bad); color: #fff; }
+.boot { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; gap: 14px; justify-items: center; background: var(--bg); color: var(--muted); font-weight: 600; text-align: center; padding: 24px; }
+.previewbar { background: var(--warn-soft); color: var(--warn); border-radius: 14px; padding: 8px 16px; font-weight: 600; font-size: 15px; }
+
+@media (max-width: 860px) {
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+  .rail { order: 2; flex-direction: row; justify-content: center; padding: 6px; border-radius: 22px; }
+  .rail .brand, .rail .spacer { display: none; }
+  .rail button { width: 72px; min-height: 60px; }
+  .view { overflow: auto; }
+  .order-grid, .cust-grid, .split, .extras { grid-template-columns: minmax(0, 1fr); }
+  .panel { overflow: visible; }
+  .savebox { margin-left: 0; align-items: stretch; width: 100%; }
+  .checkout .part { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="app" id="app">
+  <nav class="rail" aria-label="Sections">
+    <div class="brand">Lovely<br>Oven<b>orders</b></div>
+    <button type="button" id="nav-order" aria-current="page">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>
+      New order
+    </button>
+    <button type="button" id="nav-today">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>
+      Meals
+      <span class="badge" id="b-today" hidden>0</span>
+    </button>
+    <button type="button" id="nav-customers">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 13.2c2.6.2 4.5 2.3 4.5 4.8"/></svg>
+      Customers
+      <span class="badge" id="b-cust" hidden>0</span>
+    </button>
+    <div class="spacer"></div>
+    <button type="button" id="nav-refresh" aria-label="Refresh from the sheet">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+      Refresh
+    </button>
+  </nav>
+
+  <div class="stage">
+    <div class="previewbar" id="previewbar" hidden>Preview with sample customers. Nothing you do here is saved to your spreadsheet.</div>
+
+    <!-- NEW ORDER -->
+    <section class="view" id="view-order" aria-label="New order">
+      <header class="vhead">
+        <h1>New order</h1>
+        <div class="grow"></div>
+        <span class="lbl" style="margin:0">Order date</span>
+        <div class="datepick">
+          <button type="button" class="step" id="d-prev" aria-label="Day before">‹</button>
+          <button type="button" class="when" id="d-label" aria-label="Back to today"></button>
+          <button type="button" class="step" id="d-next" aria-label="Day after">›</button>
+        </div>
+      </header>
+      <div class="order-grid">
+        <div class="panel stack">
+          <div class="field">
+            <label for="cust">Customer</label>
+            <div class="combo">
+              <input type="text" id="cust" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Tap a name below or start typing">
+              <div class="suggest" id="suggest" hidden></div>
+            </div>
+            <div class="chips" id="recent"></div>
+            <div class="hint" id="custhint"></div>
+          </div>
+          <div class="field">
+            <label>Meals paid for</label>
+            <div class="inline">
+              <div class="stepper">
+                <button type="button" id="q-minus" aria-label="One fewer meal">−</button>
+                <output id="qty" aria-live="polite">1</output>
+                <button type="button" id="q-plus" aria-label="One more meal">+</button>
+              </div>
+              <div class="chips small" id="qchips"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="unit">Price per meal</label>
+            <div class="inline">
+              <div class="money"><input type="text" id="unit" inputmode="numeric" autocomplete="off"><span>VND</span></div>
+              <div class="chips small" id="pchips"></div>
+            </div>
+          </div>
+          <div class="field">
+            <button type="button" class="more" id="more" aria-expanded="false"><span>Extras, notes or discount</span><span class="pill" id="more-sum">None</span><span aria-hidden="true">▾</span></button>
+            <div class="extras" id="extras" hidden>
+              <div class="field"><label for="food">Food ordered</label><input type="text" id="food" autocomplete="off" placeholder="Optional"></div>
+              <div class="field"><label for="extra">Extra ordered</label><input type="text" id="extra" autocomplete="off" placeholder="Optional"></div>
+              <div class="field"><label for="xprice">Price of extra</label><div class="money"><input type="text" id="xprice" inputmode="numeric" autocomplete="off" placeholder="0"><span>VND</span></div></div>
+              <div class="field"><label for="disc">Freebie or discount</label><div class="money"><input type="text" id="disc" inputmode="numeric" autocomplete="off" placeholder="0"><span>VND</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" id="plan"></div>
+      </div>
+      <footer class="checkout">
+        <div class="tot"><span class="lbl">Total to pay</span><strong id="total">0</strong><small id="breakdown"></small></div>
+        <div><span class="lbl">Payment</span>
+          <div class="seg" id="paymode">
+            <button type="button" data-m="full" aria-pressed="true">Paid</button>
+            <button type="button" data-m="part" aria-pressed="false">Part paid</button>
+            <button type="button" data-m="none" aria-pressed="false">Unpaid</button>
+          </div>
+        </div>
+        <div class="field part" id="partwrap" hidden><label for="partamt">Paid so far</label><div class="money"><input type="text" id="partamt" inputmode="numeric" autocomplete="off" placeholder="0"><span>VND</span></div></div>
+        <div><span class="lbl">Paid by</span>
+          <div class="seg" id="method">
+            <button type="button" data-v="Cash" aria-pressed="true">Cash</button>
+            <button type="button" data-v="Transfer" aria-pressed="false">Transfer</button>
+          </div>
+        </div>
+        <div class="savebox"><span class="why" id="why"></span><button type="button" class="btn primary save" id="save">Save order</button></div>
+      </footer>
+    </section>
+
+    <!-- MEALS -->
+    <section class="view" id="view-today" aria-label="Meals" hidden>
+      <header class="vhead">
+        <h1>Meals</h1>
+        <div class="datepick">
+          <button type="button" class="step" id="t-prev" aria-label="Day before">‹</button>
+          <button type="button" class="when" id="t-label" aria-label="Back to today"></button>
+          <button type="button" class="step" id="t-next" aria-label="Day after">›</button>
+        </div>
+        <div class="stats" id="t-stats"></div>
+      </header>
+      <div class="scroll" id="t-body"></div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section class="view" id="view-customers" aria-label="Customers" hidden>
+      <header class="vhead"><h1>Customers</h1></header>
+      <div class="cust-grid">
+        <div class="panel list">
+          <input type="text" id="c-search" autocomplete="off" placeholder="Search customers" aria-label="Search customers">
+          <div class="rows" id="c-list"></div>
+        </div>
+        <div class="panel" id="c-detail"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<div class="boot" id="boot"><strong id="boot-msg">Loading orders…</strong><button type="button" class="btn" id="boot-retry" hidden>Try again</button>
+  <form id="boot-key" hidden style="display:grid;gap:12px;width:min(320px,100%)"><input type="password" id="key-in" autocomplete="current-password" placeholder="Passcode" aria-label="Passcode"><button type="submit" class="btn primary">Unlock</button></form>
+</div>
+
+<script>
+/* ===== CORE: pure logic shared by Code.gs and the form. No Google or DOM calls in here. ===== */
+
+var STATUS_ = { SCHEDULED: 'Scheduled', SERVED: 'Served', CANCELLED: 'Cancelled' };
+var KEEP_DAYS_ = 120;
+
+function fail_(msg) { throw new Error(msg); }
+function pad2_(n) { return (n < 10 ? '0' : '') + n; }
+
+/* ---- dates are plain 'YYYY-MM-DD' strings so time zones can never shift a meal to another day ---- */
+function fromISO_(iso) { var p = iso.split('-'); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); }
+function toISO_(d) { return d.getUTCFullYear() + '-' + pad2_(d.getUTCMonth() + 1) + '-' + pad2_(d.getUTCDate()); }
+function isISO_(s) { return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && toISO_(fromISO_(s)) === s; }
+function addDays_(iso, n) { var d = fromISO_(iso); d.setUTCDate(d.getUTCDate() + n); return toISO_(d); }
+function dow_(iso) { return fromISO_(iso).getUTCDay(); }
+function isWeekend_(iso) { var d = dow_(iso); return d === 0 || d === 6; }
+function mondayOf_(iso) { return addDays_(iso, -((dow_(iso) + 6) % 7)); }
+
+/* the next n serving days, starting on `start` when it is a serving day */
+function spreadDays_(start, n, weekends) {
+  var out = [], d = start, guard = 0;
+  while (out.length < n && guard++ < 400) {
+    if (weekends || !isWeekend_(d)) out.push(d);
+    d = addDays_(d, 1);
+  }
+  return out;
+}
+
+/* ---- names: old rows carry "(cash)" in the name, so strip it for grouping ---- */
+function baseName_(raw) {
+  return String(raw == null ? '' : raw).replace(/\s*\((?:cash|transfer|bank)\)\s*/ig, ' ').replace(/\s+/g, ' ').trim();
+}
+function methodFromName_(raw) {
+  var m = /\((cash|transfer|bank)\)/i.exec(String(raw || ''));
+  return m ? (m[1].toLowerCase() === 'cash' ? 'Cash' : 'Transfer') : '';
+}
+
+function money_(v, label) {
+  if (v === '' || v == null) return 0;
+  var n = Number(v);
+  if (!isFinite(n) || n < 0) fail_('Check the ' + label + '.');
+  return Math.round(n);
+}
+
+function payable_(o) { return (o.pfood || 0) + (o.pextra || 0) - (o.disc || 0); }
+function cmpMeal_(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.row || 0) - (b.row || 0); }
+
+function indexData_(data) {
+  var live = {}, byOid = {}, byRow = {};
+  data.meals.forEach(function (m) {
+    if (m.status !== STATUS_.CANCELLED && m.oid) (live[m.oid] = live[m.oid] || []).push(m);
+  });
+  Object.keys(live).forEach(function (k) { live[k].sort(cmpMeal_); });
+  data.orders.forEach(function (o) { if (o.oid) byOid[o.oid] = o; byRow[o.row] = o; });
+  return { live: live, byOid: byOid, byRow: byRow };
+}
+
+/* meals paid for but not yet given a day */
+function credit_(ix, o) {
+  if (!o || !o.oid) return 0;
+  return Math.max(0, o.qty - (ix.live[o.oid] || []).length);
+}
+
+/* ---- what the form sees ---- */
+function buildState_(data) {
+  var today = data.today, ix = indexData_(data);
+  var cutoff = addDays_(today, -KEEP_DAYS_), mealCut = addDays_(today, -30), recentCut = addDays_(today, -21), priceCut = addDays_(today, -90);
+  var cust = {}, priceCount = {}, orders = [];
+
+  var sorted = data.orders.slice().sort(function (a, b) {
+    return a.date < b.date ? -1 : a.date > b.date ? 1 : a.row - b.row;
+  });
+  sorted.forEach(function (o) {
+    var name = baseName_(o.name), key = name.toLowerCase();
+    var c = cust[key] || (cust[key] = { name: name, orders: 0, recent: 0, last: '', unitPrice: 0, food: '', method: '', credit: 0, owed: 0, upcoming: 0, served: 0 });
+    var pay = payable_(o), owed = Math.max(0, pay - (o.paid || 0)), credit = credit_(ix, o);
+    var unit = o.pfood > 0 ? Math.round(o.pfood / o.qty) : 0;
+    var method = o.method || methodFromName_(o.name);
+    c.name = name; c.orders++; c.last = o.date;
+    if (unit) c.unitPrice = unit;
+    if (o.food) c.food = o.food;
+    if (method) c.method = method;
+    c.credit += credit; c.owed += owed;
+    if (o.date >= recentCut) c.recent++;
+    if (unit && o.date >= priceCut) priceCount[unit] = (priceCount[unit] || 0) + 1;
+    if (o.date >= cutoff || owed > 0 || credit > 0) {
+      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, food: o.food || '', payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
+    }
+  });
+
+  var meals = [];
+  data.meals.forEach(function (m) {
+    if (m.status === STATUS_.CANCELLED) return;
+    var c = cust[baseName_(m.name).toLowerCase()];
+    if (c) {
+      if (m.status === STATUS_.SERVED) c.served++;
+      else if (m.date >= today) c.upcoming++;
+    }
+    if (m.date >= mealCut || m.status === STATUS_.SCHEDULED) {
+      var list = ix.live[m.oid] || [], o = ix.byOid[m.oid];
+      meals.push({ id: m.id, date: m.date, name: baseName_(m.name), status: m.status, oid: m.oid || '', n: list.indexOf(m) + 1 || null, of: o ? o.qty : list.length, note: m.note || '' });
+    }
+  });
+
+  var customers = Object.keys(cust).map(function (k) { return cust[k]; }).sort(function (a, b) {
+    return a.last < b.last ? 1 : a.last > b.last ? -1 : a.name < b.name ? -1 : 1;
+  });
+  var byFreq = Object.keys(priceCount).map(Number).sort(function (a, b) { return priceCount[b] - priceCount[a] || a - b; });
+  var prices = byFreq.slice(0, 4).sort(function (a, b) { return a - b; });
+  return { today: today, orders: orders.reverse(), meals: meals, customers: customers, prices: prices, topPrice: byFreq[0] || 0 };
+}
+
+/* validates a list of {date,count}, merges repeats, returns it sorted */
+function cleanSchedule_(list, minDate, maxMeals) {
+  var by = {}, total = 0;
+  (list || []).forEach(function (s) {
+    var n = Number(s.count);
+    if (!isISO_(s.date)) fail_('One of the meal days is not a valid date.');
+    if (!isFinite(n) || Math.floor(n) !== n || n < 1) return;
+    if (s.date < minDate) fail_('A meal is dated before the order.');
+    by[s.date] = (by[s.date] || 0) + n; total += n;
+  });
+  if (total > maxMeals) fail_('You have scheduled ' + total + ' meals but only ' + maxMeals + (maxMeals === 1 ? ' is' : ' are') + ' available.');
+  return Object.keys(by).sort().map(function (d) { return { date: d, count: by[d] }; });
+}
+
+function expandMeals_(sched, name, oid, note, nonce, startIdx) {
+  var out = [], i = startIdx || 0;
+  sched.forEach(function (s) {
+    for (var k = 0; k < s.count; k++) {
+      i++;
+      out.push({ date: s.date, name: name, status: STATUS_.SCHEDULED, oid: oid, id: 'M' + nonce + '-' + i, note: note || '' });
+    }
+  });
+  return out;
+}
+
+/* ---- every change is planned here first, then written to the sheet (or the preview) ---- */
+function planSaveOrder_(p, data) {
+  var name = baseName_(p.name);
+  if (!name) fail_('Enter the customer name.');
+  if (name.length > 60) fail_('That name is too long.');
+  data.orders.some(function (o) {
+    if (baseName_(o.name).toLowerCase() === name.toLowerCase()) { name = baseName_(o.name); return true; }
+    return false;
+  });
+  var qty = Number(p.qty);
+  if (!isFinite(qty) || Math.floor(qty) !== qty || qty < 1 || qty > 60) fail_('Meals must be a whole number from 1 to 60.');
+  if (!isISO_(p.date)) fail_('Pick the order date.');
+  var unit = money_(p.unitPrice, 'price per meal'), ep = money_(p.extraPrice, 'extra price');
+  var disc = money_(p.discount, 'discount'), paid = money_(p.paid, 'amount paid');
+  if (unit <= 0) fail_('Enter the price per meal.');
+  var pfood = unit * qty, pay = pfood + ep - disc;
+  if (pay < 0) fail_('The discount is bigger than the order.');
+  if (paid > pay) fail_('The amount paid is more than the total.');
+  var method = p.method === 'Cash' || p.method === 'Transfer' ? p.method : '';
+  var sched = cleanSchedule_(p.schedule, p.date, qty);
+  var oid = 'O' + data.nonce, food = String(p.food || '').trim().slice(0, 80);
+  var meals = expandMeals_(sched, name, oid, food, data.nonce, 0);
+  return {
+    order: { date: p.date, name: name, qty: qty, food: food, pfood: pfood, extra: String(p.extra || '').trim().slice(0, 80), pextra: ep, disc: disc, paid: paid, oid: oid, method: method },
+    meals: meals,
+    info: { oid: oid, name: name, qty: qty, scheduled: meals.length, credit: qty - meals.length, days: sched.map(function (s) { return s.date; }), payable: pay, owed: pay - paid }
+  };
+}
+
+function planSchedule_(p, data) {
+  var ix = indexData_(data), o = ix.byOid[p.oid];
+  if (!o) fail_('Could not find that order. Refresh and try again.');
+  var credit = credit_(ix, o), sched = cleanSchedule_(p.schedule, o.date, credit);
+  if (!sched.length) fail_('Pick at least one day.');
+  var meals = expandMeals_(sched, baseName_(o.name), o.oid, o.food, data.nonce, (ix.live[o.oid] || []).length + 100);
+  return { meals: meals, info: { name: baseName_(o.name), scheduled: meals.length, credit: credit - meals.length } };
+}
+
+function findMeal_(data, id) {
+  for (var i = 0; i < data.meals.length; i++) if (data.meals[i].id === id) return data.meals[i];
+  return fail_('Could not find that meal. Refresh and try again.');
+}
+
+function planMealStatus_(p, data) {
+  var m = findMeal_(data, p.id), to = p.status, from = m.status;
+  var ok = (from === STATUS_.SCHEDULED && (to === STATUS_.SERVED || to === STATUS_.CANCELLED)) || (from === STATUS_.SERVED && to === STATUS_.SCHEDULED);
+  if (!ok) fail_('That meal is already ' + from.toLowerCase() + '.');
+  return { id: m.id, status: to, info: { name: baseName_(m.name), status: to } };
+}
+
+function planMove_(p, data) {
+  var m = findMeal_(data, p.id), ix = indexData_(data), o = ix.byOid[m.oid];
+  if (m.status !== STATUS_.SCHEDULED) fail_('Only a scheduled meal can be moved.');
+  if (!isISO_(p.date)) fail_('Pick a valid day.');
+  if (o && p.date < o.date) fail_('That is before the order was placed.');
+  return { id: m.id, date: p.date, info: { name: baseName_(m.name), date: p.date } };
+}
+
+function planPayment_(p, data) {
+  var ix = indexData_(data), o = ix.byRow[p.row];
+  if (!o || baseName_(o.name) !== baseName_(p.name) || o.date !== p.date) fail_('That order has changed. Refresh and try again.');
+  var amount = money_(p.amount, 'amount');
+  if (amount <= 0) fail_('Enter the amount received.');
+  var owed = Math.max(0, payable_(o) - (o.paid || 0));
+  if (amount > owed) fail_('That is more than the ' + owed.toLocaleString('en-US') + ' still owed.');
+  return { row: o.row, paid: (o.paid || 0) + amount, info: { name: baseName_(o.name), amount: amount, owed: owed - amount } };
+}
+
+</script>
+<script>
+(function () {
+'use strict';
+
+var hasGAS = !!(window.google && window.google.script && window.google.script.run);
+var DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function $(id) { return document.getElementById(id); }
+function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
+function dayShort(iso) { return DOW[dow_(iso)] + ' ' + (+iso.slice(8)); }
+function dayLong(iso) { return dayShort(iso) + ' ' + MON[+iso.slice(5, 7) - 1]; }
+function sum(o) { var t = 0; for (var k in o) t += o[k]; return t; }
+function plural(n, one, many) { return n + ' ' + (n === 1 ? one : (many || one + 's')); }
+
+function h(tag, attrs) {
+  var e = document.createElement(tag), i, k, v;
+  if (attrs) {
+    for (k in attrs) {
+      v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') e.className = v;
+      else if (k === 'text') e.textContent = v;
+      else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? '' : v);
+    }
+  }
+  for (i = 2; i < arguments.length; i++) add(e, arguments[i]);
+  return e;
+}
+function add(parent, c) {
+  if (c == null || c === false) return;
+  if (Array.isArray(c)) c.forEach(function (x) { add(parent, x); });
+  else parent.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+}
+
+/* ------------------------------------------------------------------ backend */
+function localToday() { var d = new Date(); return d.getFullYear() + '-' + pad2_(d.getMonth() + 1) + '-' + pad2_(d.getDate()); }
+
+/* In the preview there is no spreadsheet, so a small in-memory stand-in answers with the same shapes. */
+function makeMock() {
+  var T = localToday(), orders = [], meals = [], oRow = 2, mRow = 2, seq = 0;
+  function addOrder(date, name, qty, unit, paid, method, days) {
+    var oid = days ? 'OPRE' + (++seq) : '';
+    orders.push({ row: oRow++, date: date, name: name, qty: qty, food: '', pfood: unit * qty, extra: '', pextra: 0, disc: 0, paid: paid, oid: oid, method: method });
+    (days || []).forEach(function (d, i) {
+      meals.push({ row: mRow++, date: d, name: name, status: d < T ? STATUS_.SERVED : STATUS_.SCHEDULED, oid: oid, id: 'MPRE' + seq + '-' + i, note: '' });
+    });
+  }
+  var mon = mondayOf_(T);
+  addOrder(addDays_(T, -20), 'Francois', 1, 310000, 310000, 'Transfer');
+  addOrder(addDays_(T, -10), 'William', 2, 140000, 280000, 'Transfer');
+  addOrder(addDays_(T, -5), 'Danny', 2, 100000, 100000, 'Cash');
+  addOrder(addDays_(T, -3), 'Henry', 2, 100000, 200000, 'Transfer');
+  addOrder(addDays_(T, -2), 'Dr Kumar', 1, 70000, 70000, 'Cash');
+  addOrder(addDays_(T, -1), 'Ayush', 1, 100000, 100000, 'Transfer');
+  addOrder(addDays_(T, -1), 'Dr Kumar', 1, 70000, 70000, 'Cash');
+  addOrder(mon, 'David', 5, 100000, 500000, 'Transfer', spreadDays_(mon, 5, false));
+  addOrder(mon, 'Ken', 5, 100000, 500000, 'Cash', spreadDays_(mon, 3, false));
+  addOrder(T, 'Luca', 1, 100000, 100000, 'Cash', [T]);
+  addOrder(T, 'Dr Kumar', 1, 70000, 70000, 'Cash', [T]);
+  addOrder(T, 'Ayush', 1, 100000, 100000, 'Transfer', [T]);
+
+  function data() { return { orders: orders, meals: meals, today: T, nonce: Math.random().toString(36).slice(2, 10).toUpperCase() }; }
+  function out(info) { return { state: buildState_(data()), info: info }; }
+  function addMeals(list) { list.forEach(function (m) { var r = { row: mRow++ }; for (var k in m) r[k] = m[k]; meals.push(r); }); }
+  return {
+    getState: function () { return out(); },
+    saveOrder: function (p) {
+      var plan = planSaveOrder_(p, data()), r = { row: oRow++ };
+      for (var k in plan.order) r[k] = plan.order[k];
+      orders.push(r); addMeals(plan.meals);
+      return out(plan.info);
+    },
+    scheduleMeals: function (p) { var plan = planSchedule_(p, data()); addMeals(plan.meals); return out(plan.info); },
+    setMealStatus: function (p) { var plan = planMealStatus_(p, data()); findMeal_(data(), plan.id).status = plan.status; return out(plan.info); },
+    moveMeal: function (p) { var plan = planMove_(p, data()); findMeal_(data(), plan.id).date = plan.date; return out(plan.info); },
+    recordPayment: function (p) {
+      var plan = planPayment_(p, data());
+      orders.forEach(function (o) { if (o.row === plan.row) o.paid = plan.paid; });
+      return out(plan.info);
+    }
+  };
+}
+/* Set to the Apps Script web app URL (ends in /exec) to use the live sheet from the website. Empty = sample-data preview. */
+var API_URL = '';
+var useApi = !hasGAS && !!API_URL;
+var mock = (hasGAS || useApi) ? null : makeMock();
+
+function getKey() { try { return localStorage.getItem('lo_key') || ''; } catch (e) { return ''; } }
+function setKey(k) { try { localStorage.setItem('lo_key', k); } catch (e) { /* private mode: asks again next visit */ } }
+
+function call(name, payload) {
+  return new Promise(function (resolve, reject) {
+    if (useApi) {
+      // text/plain keeps this a "simple" request, so the browser skips the CORS preflight that Apps Script cannot answer
+      fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ key: getKey(), fn: name, p: payload }) })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j && j.error) { var e = new Error(j.error); e.auth = !!j.auth; reject(e); } else resolve(j);
+        })
+        .catch(function () { reject(new Error('Could not reach the server. Check the connection.')); });
+    } else if (hasGAS) {
+      var run = google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(function (e) { reject(new Error(e && e.message ? String(e.message).replace(/^Error:\s*/, '') : 'Something went wrong. Try again.')); });
+      if (payload === undefined) run[name](); else run[name](payload);
+    } else {
+      setTimeout(function () {
+        try { resolve(JSON.parse(JSON.stringify(mock[name](payload)))); } catch (e) { reject(e); }
+      }, 140);
+    }
+  });
+}
+
+/* ------------------------------------------------------------------ state */
+var S = null, view = 'order', busy = false, lastLoad = 0;
+var D = null;                                   // the order being typed
+var TV = { date: null, confirm: {} };           // meals screen
+var CV = { q: '', sel: null, sched: {} };       // customers screen
+var scheduleOrder = null;                       // schedule widget on the order screen
+var lastMethod = 'Cash', lastDate = null;
+
+function setBusy(b) { busy = b; document.body.classList.toggle('busy', b); }
+
+var toastTimer = null;
+function toast(msg, kind) {
+  var t = $('toast');
+  t.textContent = msg; t.className = 'toast' + (kind === 'bad' ? ' bad' : ''); t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.hidden = true; }, kind === 'bad' ? 7000 : 4200);
+}
+
+function act(fn, payload, okMsg) {
+  if (busy) return Promise.resolve();
+  setBusy(true);
+  return call(fn, payload).then(function (r) {
+    S = r.state; lastLoad = Date.now();
+    renderAll();
+    if (okMsg) toast(typeof okMsg === 'function' ? okMsg(r.info) : okMsg);
+    return r;
+  }).catch(function (e) { toast(e.message, 'bad'); }).then(function (r) { setBusy(false); return r; });
+}
+
+function load(quiet) {
+  return call('getState').then(function (r) {
+    S = r.state; lastLoad = Date.now();
+    if (!D) D = newDraft();
+    $('boot').hidden = true;
+    renderAll();
+    if (!quiet) toast('Up to date');
+  }).catch(function (e) {
+    if (e.auth) { askKey(getKey() ? e.message : ''); return; }
+    if (S) { if (!quiet) toast(e.message, 'bad'); return; }
+    $('boot').hidden = false; $('boot-msg').textContent = 'Could not load the orders. ' + e.message; $('boot-retry').hidden = false;
+  });
+}
+
+function askKey(msg) {
+  $('boot').hidden = false; $('boot-retry').hidden = true; $('boot-key').hidden = false;
+  $('boot-msg').textContent = msg || 'Enter the passcode';
+  $('key-in').value = ''; $('key-in').focus();
+}
+
+/* ------------------------------------------------------------------ new order */
+function newDraft() {
+  return { date: lastDate || S.today, name: '', qty: 1, unit: S.topPrice || 100000, food: '', extra: '', extraPrice: 0, disc: 0, payMode: 'full', part: 0, method: lastMethod, counts: {}, touched: false, weekends: false, extrasOpen: false };
+}
+function autoSchedule() {
+  if (D.touched) return;
+  var days = D.qty === 1 ? [D.date] : spreadDays_(D.date, D.qty, D.weekends), c = {};
+  days.forEach(function (d) { c[d] = (c[d] || 0) + 1; });
+  D.counts = c;
+}
+function fitCounts() {
+  var over = sum(D.counts) - D.qty, keys = Object.keys(D.counts).sort().reverse(), i, n;
+  for (i = 0; i < keys.length && over > 0; i++) {
+    n = Math.min(over, D.counts[keys[i]]); over -= n; D.counts[keys[i]] -= n;
+    if (!D.counts[keys[i]]) delete D.counts[keys[i]];
+  }
+}
+function calc() {
+  var food = D.unit * D.qty, payable = food + D.extraPrice - D.disc;
+  var paid = D.payMode === 'full' ? payable : D.payMode === 'none' ? 0 : Math.min(D.part, payable);
+  return { food: food, payable: payable, paid: paid, owed: payable - paid };
+}
+function problem() {
+  var c = calc();
+  if (!D.name.trim()) return 'Enter the customer name';
+  if (!(D.unit > 0)) return 'Enter the price per meal';
+  if (c.payable < 0) return 'The discount is bigger than the order';
+  if (D.payMode === 'part' && !(D.part > 0 && D.part < c.payable)) return 'Enter how much has been paid';
+  return '';
+}
+function findCustomer(name) {
+  var k = baseName_(name).toLowerCase();
+  for (var i = 0; i < S.customers.length; i++) if (S.customers[i].name.toLowerCase() === k) return S.customers[i];
+  return null;
+}
+function pickCustomer(c) {
+  D.name = c.name;
+  if (c.unitPrice > 0) D.unit = c.unitPrice;
+  if (c.method) D.method = c.method;
+  hideSuggest(); $('cust').value = c.name;
+  updateOrder();
+}
+function describeDays(days) {
+  days = days.slice().sort();
+  if (!days.length) return '';
+  if (days.length <= 3) return days.map(dayShort).join(', ');
+  return dayShort(days[0]) + ' to ' + dayShort(days[days.length - 1]);
+}
+function setVal(input, v) { if (document.activeElement !== input) input.value = v; }
+
+function bindMoney(input, onChange) {
+  input.addEventListener('input', function () {
+    var digits = input.value.replace(/\D/g, '').slice(0, 10), n = digits ? parseInt(digits, 10) : 0;
+    input.value = digits ? fmt(n) : '';
+    onChange(n);
+  });
+  input.addEventListener('focus', function () { setTimeout(function () { try { input.select(); } catch (e) { /* ignore */ } }, 0); });
+}
+
+var suggestIdx = -1;
+function showSuggest() {
+  var q = D.name.trim().toLowerCase(), box = $('suggest');
+  if (!q) { hideSuggest(); return; }
+  var list = S.customers.filter(function (c) { return c.name.toLowerCase().indexOf(q) >= 0; })
+    .sort(function (a, b) { return (a.name.toLowerCase().indexOf(q) === 0 ? 0 : 1) - (b.name.toLowerCase().indexOf(q) === 0 ? 0 : 1); }).slice(0, 5);
+  if (!list.length || (list.length === 1 && list[0].name.toLowerCase() === q)) { hideSuggest(); return; }
+  box.textContent = '';
+  list.forEach(function (c, i) {
+    var b = h('button', { type: 'button', class: i === suggestIdx ? 'on' : '' }, h('span', { text: c.name }), h('small', { text: c.unitPrice ? fmt(c.unitPrice) : '' }));
+    b.addEventListener('pointerdown', function (ev) { ev.preventDefault(); pickCustomer(c); });
+    box.appendChild(b);
+  });
+  box._list = list; box.hidden = false;
+}
+function hideSuggest() { var b = $('suggest'); b.hidden = true; suggestIdx = -1; }
+
+function renderRecent() {
+  var box = $('recent');
+  var list = S.customers.slice().sort(function (a, b) { return b.recent - a.recent || (a.last < b.last ? 1 : -1); }).slice(0, 8);
+  box.textContent = '';
+  list.forEach(function (c) {
+    box.appendChild(h('button', { type: 'button', class: 'chip', 'aria-pressed': c.name === D.name ? 'true' : 'false', text: c.name, onclick: function () { pickCustomer(c); } }));
+  });
+}
+function renderHint() {
+  var box = $('custhint'), c = D.name.trim() ? findCustomer(D.name) : null;
+  box.textContent = '';
+  if (!D.name.trim()) { box.appendChild(h('span', { text: 'Pick a regular or type a new name.' })); return; }
+  if (!c) { box.appendChild(h('span', { class: 'pill info', text: 'New customer' })); return; }
+  box.appendChild(h('span', { text: 'Last order ' + dayLong(c.last) + (c.unitPrice ? ' at ' + fmt(c.unitPrice) : '') }));
+  if (c.credit > 0) box.appendChild(h('span', { class: 'pill warn', text: plural(c.credit, 'meal') + ' still to schedule' }));
+  if (c.owed > 0) box.appendChild(h('span', { class: 'pill bad', text: 'Owes ' + fmt(c.owed) }));
+}
+
+function updateOrder() {
+  if (!S || !D) return;
+  if (!D.touched) autoSchedule(); else fitCounts();
+  $('d-label').textContent = (D.date === S.today ? 'Today · ' : '') + dayLong(D.date);
+  setVal($('cust'), D.name);
+  $('qty').textContent = D.qty;
+  $('q-minus').disabled = D.qty <= 1; $('q-plus').disabled = D.qty >= 60;
+  setVal($('unit'), D.unit ? fmt(D.unit) : '');
+  setVal($('food'), D.food); setVal($('extra'), D.extra);
+  setVal($('xprice'), D.extraPrice ? fmt(D.extraPrice) : ''); setVal($('disc'), D.disc ? fmt(D.disc) : '');
+  setVal($('partamt'), D.part ? fmt(D.part) : '');
+
+  var qc = $('qchips'); qc.textContent = '';
+  [1, 2, 3, 5, 10].forEach(function (n) {
+    qc.appendChild(h('button', { type: 'button', class: 'chip', 'aria-pressed': D.qty === n ? 'true' : 'false', text: String(n), onclick: function () { D.qty = n; updateOrder(); } }));
+  });
+  var pc = $('pchips'); pc.textContent = '';
+  S.prices.forEach(function (p) {
+    pc.appendChild(h('button', { type: 'button', class: 'chip', 'aria-pressed': D.unit === p ? 'true' : 'false', text: fmt(p), onclick: function () { D.unit = p; updateOrder(); } }));
+  });
+  var xs = [];
+  if (D.food.trim()) xs.push('Food'); if (D.extra.trim() || D.extraPrice) xs.push('Extra'); if (D.disc) xs.push('Discount');
+  $('extras').hidden = !D.extrasOpen; $('more').setAttribute('aria-expanded', D.extrasOpen ? 'true' : 'false');
+  $('more-sum').textContent = xs.length ? xs.join(' · ') : 'None'; $('more-sum').className = 'pill' + (xs.length ? ' info' : '');
+  renderRecent(); renderHint();
+  scheduleOrder.render();
+
+  var c = calc();
+  $('total').textContent = fmt(Math.max(0, c.payable));
+  var parts = [D.qty + ' × ' + fmt(D.unit)];
+  if (D.extraPrice) parts.push('+ ' + fmt(D.extraPrice) + ' extra');
+  if (D.disc) parts.push('− ' + fmt(D.disc) + ' off');
+  var bd = $('breakdown');
+  bd.textContent = parts.join(' ') + (c.owed > 0 && c.payable > 0 ? ' · owes ' + fmt(c.owed) : '');
+  bd.className = c.owed > 0 && c.payable > 0 ? 'owes' : '';
+  Array.prototype.forEach.call($('paymode').children, function (b) { b.setAttribute('aria-pressed', b.dataset.m === D.payMode ? 'true' : 'false'); });
+  Array.prototype.forEach.call($('method').children, function (b) { b.setAttribute('aria-pressed', b.dataset.v === D.method ? 'true' : 'false'); });
+  $('partwrap').hidden = D.payMode !== 'part';
+  var pr = problem();
+  $('save').disabled = !!pr; $('why').textContent = pr;
+  $('save').textContent = 'Save order';
+}
+
+function wireOrder() {
+  var cust = $('cust');
+  cust.addEventListener('input', function () { D.name = cust.value; suggestIdx = -1; showSuggest(); updateOrder(); });
+  cust.addEventListener('focus', function () { showSuggest(); });
+  cust.addEventListener('blur', function () { setTimeout(hideSuggest, 120); });
+  cust.addEventListener('keydown', function (ev) {
+    var box = $('suggest');
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      if (!box.hidden && box._list) pickCustomer(box._list[Math.max(0, suggestIdx)]);
+      else cust.blur();
+    }
+  });
+  $('d-prev').onclick = function () { shiftDate(-1); };
+  $('d-next').onclick = function () { shiftDate(1); };
+  $('d-label').onclick = function () { D.date = S.today; lastDate = null; D.touched = false; scheduleOrder.reset(); updateOrder(); };
+  $('q-minus').onclick = function () { D.qty = Math.max(1, D.qty - 1); updateOrder(); };
+  $('q-plus').onclick = function () { D.qty = Math.min(60, D.qty + 1); updateOrder(); };
+  bindMoney($('unit'), function (n) { D.unit = n; updateOrder(); });
+  bindMoney($('xprice'), function (n) { D.extraPrice = n; updateOrder(); });
+  bindMoney($('disc'), function (n) { D.disc = n; updateOrder(); });
+  bindMoney($('partamt'), function (n) { D.part = n; updateOrder(); });
+  $('food').addEventListener('input', function () { D.food = $('food').value; });
+  $('extra').addEventListener('input', function () { D.extra = $('extra').value; });
+  Array.prototype.forEach.call($('paymode').children, function (b) {
+    b.onclick = function () { D.payMode = b.dataset.m; updateOrder(); if (D.payMode === 'part') $('partamt').focus(); };
+  });
+  Array.prototype.forEach.call($('method').children, function (b) { b.onclick = function () { D.method = b.dataset.v; updateOrder(); }; });
+  $('save').onclick = saveOrder;
+  $('more').onclick = function () { D.extrasOpen = !D.extrasOpen; updateOrder(); };
+
+  scheduleOrder = makeSchedule($('plan'), {
+    title: 'Who eats when',
+    total: function () { return D.qty; },
+    min: function () { return D.date; },
+    counts: function () { return D.counts; },
+    change: function (c) { D.counts = c; D.touched = true; updateOrder(); },
+    weekends: function () { return D.weekends; },
+    setWeekends: function (b) { D.weekends = b; D.touched = false; updateOrder(); },
+    hint: function () {
+      return D.qty === 1 ? 'One meal. Change the day if it is for later.'
+        : 'Each + puts one of the ' + D.qty + ' meals on that day. Anything left over stays as credit to schedule later.';
+    },
+    spreadFrom: function () { return D.date; }
+  });
+}
+function shiftDate(n) {
+  D.date = addDays_(D.date, n); lastDate = D.date === S.today ? null : D.date;
+  D.touched = false; scheduleOrder.reset(); updateOrder();
+}
+
+function saveOrder() {
+  if (busy) return;
+  var pr = problem();
+  if (pr) { toast(pr, 'bad'); return; }
+  var c = calc();
+  var schedule = Object.keys(D.counts).map(function (d) { return { date: d, count: D.counts[d] }; });
+  var p = { date: D.date, name: D.name.trim(), qty: D.qty, food: D.food, unitPrice: D.unit, extra: D.extra, extraPrice: D.extraPrice, discount: D.disc, paid: c.paid, method: D.method, schedule: schedule };
+  lastMethod = D.method;
+  act('saveOrder', p, function (i) {
+    var msg = 'Saved ' + i.name + ': ' + plural(i.qty, 'meal');
+    if (i.scheduled) msg += ' on ' + describeDays(i.days);
+    if (i.credit > 0) msg += ' · ' + i.credit + ' to schedule later';
+    if (i.owed > 0) msg += ' · owes ' + fmt(i.owed);
+    return msg;
+  }).then(function (r) {
+    if (r && r.state) { D = newDraft(); scheduleOrder.reset(); updateOrder(); window.scrollTo(0, 0); }
+  });
+}
+
+/* ------------------------------------------------------------------ day tickets (shared by the order and customer screens) */
+function makeSchedule(host, cfg) {
+  var weekOffset = 0;
+  function showWeekend(counts) {
+    if (cfg.weekends()) return true;
+    for (var k in counts) if (counts[k] && isWeekend_(k)) return true;
+    return false;
+  }
+  function render() {
+    var total = cfg.total(), counts = cfg.counts(), min = cfg.min(), used = sum(counts), wk = showWeekend(counts), cols = wk ? 7 : 5;
+    var anchor = addDays_(mondayOf_(min), 7 * weekOffset);
+    host.textContent = '';
+
+    function bump(date, d) {
+      var c = {}, k;
+      for (k in counts) c[k] = counts[k];
+      c[date] = (c[date] || 0) + d;
+      if (c[date] <= 0) delete c[date];
+      cfg.change(c);
+    }
+    function tile(date) {
+      var n = counts[date] || 0, off = date < min;
+      return h('div', { class: 'day' + (n ? ' on' : '') + (off ? ' off' : '') + (date === S.today ? ' today' : '') },
+        h('div', { class: 'top' }, h('span', { class: 'dow', text: DOW[dow_(date)] }), h('span', { class: 'num', text: String(+date.slice(8)) }), h('span', { class: 'mon', text: date === S.today ? 'Today' : MON[+date.slice(5, 7) - 1] })),
+        h('div', { class: 'ctl' },
+          h('button', { type: 'button', 'aria-label': 'One fewer meal on ' + dayLong(date), text: '−', disabled: off || n === 0, onclick: function () { bump(date, -1); } }),
+          h('span', { class: 'count', text: String(n) }),
+          h('button', { type: 'button', 'aria-label': 'One more meal on ' + dayLong(date), text: '+', disabled: off || used >= total, onclick: function () { bump(date, 1); } })));
+    }
+
+    host.appendChild(h('div', { class: 'planhead' }, h('h2', { text: cfg.title }),
+      h('span', { class: 'pill ' + (used === total ? 'ok' : used > 0 ? 'warn' : ''), text: used + ' of ' + total + ' scheduled' })));
+    host.appendChild(h('p', { class: 'sub', style: 'margin-top:6px', text: cfg.hint() }));
+
+    var start = cfg.spreadFrom();
+    host.appendChild(h('div', { class: 'plan-actions' },
+      total > 1 ? h('button', { type: 'button', class: 'btn small', text: 'One a day', onclick: function () {
+        var c = {}; spreadDays_(start, total, wk).forEach(function (d) { c[d] = (c[d] || 0) + 1; }); cfg.change(c);
+      } }) : null,
+      total > 1 ? h('button', { type: 'button', class: 'btn small', text: 'All on ' + dayShort(start), onclick: function () { var c = {}; c[start] = total; cfg.change(c); } }) : null,
+      h('button', { type: 'button', class: 'btn small', text: 'Clear', disabled: used === 0, onclick: function () { cfg.change({}); } }),
+      h('div', { class: 'grow' }),
+      h('div', { class: 'seg' },
+        h('button', { type: 'button', 'aria-label': 'Earlier weeks', text: '‹', disabled: weekOffset === 0, onclick: function () { weekOffset = Math.max(0, weekOffset - 1); render(); } }),
+        h('button', { type: 'button', 'aria-label': 'Later weeks', text: '›', onclick: function () { weekOffset = Math.min(8, weekOffset + 1); render(); } })),
+      h('button', { type: 'button', class: 'chip', 'aria-pressed': wk ? 'true' : 'false', text: 'Sat & Sun', onclick: function () { cfg.setWeekends(!cfg.weekends()); } })));
+
+    [0, 1].forEach(function (w) {
+      var ws = addDays_(anchor, 7 * w), tiles = [], i, d;
+      for (i = 0; i < cols; i++) { d = addDays_(ws, i); tiles.push(tile(d)); }
+      host.appendChild(h('div', { class: 'week' },
+        h('div', { class: 'cap', text: 'Week of ' + dayLong(ws) }),
+        h('div', { class: 'days', style: 'grid-template-columns:repeat(' + cols + ',minmax(0,1fr))' }, tiles)));
+    });
+  }
+  return { render: render, reset: function () { weekOffset = 0; } };
+}
+
+/* ------------------------------------------------------------------ meals */
+function renderToday() {
+  var date = TV.date || S.today, isToday = date === S.today;
+  $('t-label').textContent = (isToday ? 'Today · ' : '') + dayLong(date);
+  var day = S.meals.filter(function (m) { return m.date === date; }).sort(function (a, b) {
+    var sa = a.status === STATUS_.SERVED ? 1 : 0, sb = b.status === STATUS_.SERVED ? 1 : 0;
+    return sa - sb || (a.name < b.name ? -1 : a.name > b.name ? 1 : (a.n || 0) - (b.n || 0));
+  });
+  var over = isToday ? S.meals.filter(function (m) { return m.status === STATUS_.SCHEDULED && m.date < S.today; }).sort(cmpMeal_) : [];
+  var served = day.filter(function (m) { return m.status === STATUS_.SERVED; }).length;
+  var stats = $('t-stats'); stats.textContent = '';
+  stats.appendChild(h('span', { class: 'pill', text: plural(day.length, 'meal') }));
+  stats.appendChild(h('span', { class: 'pill ok', text: served + ' served' }));
+  if (day.length - served > 0) stats.appendChild(h('span', { class: 'pill warn', text: (day.length - served) + ' to go' }));
+
+  var body = $('t-body'); body.textContent = '';
+  if (over.length) {
+    body.appendChild(h('div', { class: 'sect' }, h('h2', null, 'Not ticked off from earlier days ', h('span', { class: 'pill warn', text: String(over.length) })),
+      h('div', { class: 'mgrid' }, over.map(function (m) { return mealCard(m, true); }))));
+  }
+  if (day.length) {
+    body.appendChild(h('div', { class: 'sect' }, h('div', { class: 'mgrid' }, day.map(function (m) { return mealCard(m, false); }))));
+  } else {
+    body.appendChild(h('div', { class: 'empty' }, h('strong', { text: 'No meals booked for this day' }),
+      h('p', { text: 'Meals show up here once an order has them scheduled for ' + (isToday ? 'today' : dayLong(date)) + '.' }),
+      h('button', { type: 'button', class: 'btn primary', text: 'New order', onclick: function () { go('order'); } })));
+  }
+}
+function mealCard(m, showDate) {
+  var served = m.status === STATUS_.SERVED, ask = TV.confirm[m.id];
+  var sub = (m.n ? 'Meal ' + m.n + ' of ' + m.of : 'Meal') + (showDate ? ' · ' + dayLong(m.date) : '') + (m.note ? ' · ' + m.note : '');
+  var acts;
+  if (served) {
+    acts = [h('span', { class: 'tick', text: '✓ Served' }), h('button', { type: 'button', class: 'btn small', text: 'Undo', onclick: function () { act('setMealStatus', { id: m.id, status: STATUS_.SCHEDULED }); } })];
+  } else if (ask) {
+    acts = [];
+  } else {
+    acts = [
+      h('button', { type: 'button', class: 'btn ok', text: 'Served', onclick: function () { act('setMealStatus', { id: m.id, status: STATUS_.SERVED }); } }),
+      h('button', { type: 'button', class: 'btn', text: 'Move', onclick: function () { openMove(m); } }),
+      h('button', { type: 'button', class: 'btn danger', text: 'Cancel', onclick: function () { TV.confirm[m.id] = true; renderToday(); } })
+    ];
+  }
+  return h('div', { class: 'meal' + (served ? ' served' : '') },
+    h('div', { class: 'who' }, h('strong', { text: m.name }), h('span', { class: 'sub', text: sub })),
+    h('div', { class: 'acts' }, acts),
+    ask ? h('div', { class: 'ask' }, h('span', { text: 'Cancel this meal? It goes back to ' + m.name + '’s unscheduled meals.' }),
+      h('button', { type: 'button', class: 'btn danger', text: 'Yes, cancel', onclick: function () { delete TV.confirm[m.id]; act('setMealStatus', { id: m.id, status: STATUS_.CANCELLED }, 'Meal cancelled. ' + m.name + ' has it back to schedule.'); } }),
+      h('button', { type: 'button', class: 'btn', text: 'Keep', onclick: function () { delete TV.confirm[m.id]; renderToday(); } })) : null);
+}
+
+function openModal(content) { var s = $('sheet'); s.textContent = ''; add(s, content); $('modal').hidden = false; }
+function closeModal() { $('modal').hidden = true; }
+function openMove(m) {
+  var weekends = isWeekend_(m.date), start = S.today > m.date ? S.today : m.date;
+  function draw() {
+    var days = [], d = start, guard = 0;
+    while (days.length < 15 && guard++ < 60) { if (weekends || !isWeekend_(d)) days.push(d); d = addDays_(d, 1); }
+    openModal([
+      h('h2', { text: 'Move ' + m.name + '’s meal' }),
+      h('p', { class: 'sub', text: 'Now on ' + dayLong(m.date) + '. Pick the new day.' }),
+      h('div', { class: 'chips', style: 'margin:0' }, days.map(function (x) {
+        return h('button', { type: 'button', class: 'chip', 'aria-pressed': x === m.date ? 'true' : 'false', text: dayLong(x), onclick: function () {
+          closeModal();
+          if (x !== m.date) act('moveMeal', { id: m.id, date: x }, m.name + '’s meal moved to ' + dayLong(x));
+        } });
+      })),
+      h('div', { class: 'row' },
+        h('button', { type: 'button', class: 'chip', 'aria-pressed': weekends ? 'true' : 'false', text: 'Sat & Sun', onclick: function () { weekends = !weekends; draw(); } }),
+        h('div', { class: 'grow' }),
+        h('button', { type: 'button', class: 'btn', text: 'Close', onclick: closeModal }))
+    ]);
+  }
+  draw();
+}
+
+/* ------------------------------------------------------------------ customers */
+function needsAttention(c) { return c.credit > 0 || c.owed > 0; }
+
+function renderCustomers() {
+  var q = CV.q.trim().toLowerCase();
+  var list = S.customers.filter(function (c) { return !q || c.name.toLowerCase().indexOf(q) >= 0; }).sort(function (a, b) {
+    return (needsAttention(b) ? 1 : 0) - (needsAttention(a) ? 1 : 0) || (a.last < b.last ? 1 : a.last > b.last ? -1 : 0);
+  });
+  if (!CV.sel || !findCustomer(CV.sel)) CV.sel = list.length ? list[0].name : null;
+  var box = $('c-list'); box.textContent = '';
+  list.forEach(function (c) {
+    box.appendChild(h('button', { type: 'button', class: 'crow', 'aria-current': c.name === CV.sel ? 'true' : 'false', onclick: function () { CV.sel = c.name; renderCustomers(); } },
+      h('strong', { text: c.name }),
+      h('div', { class: 'chips' },
+        c.credit > 0 ? h('span', { class: 'pill warn', text: plural(c.credit, 'meal') + ' to schedule' }) : null,
+        c.owed > 0 ? h('span', { class: 'pill bad', text: 'Owes ' + fmt(c.owed) }) : null,
+        c.upcoming > 0 ? h('span', { class: 'pill info', text: c.upcoming + ' coming up' }) : null,
+        !needsAttention(c) && !c.upcoming ? h('span', { class: 'pill', text: 'Last ' + dayLong(c.last) }) : null)));
+  });
+  if (!list.length) box.appendChild(h('p', { class: 'sub', style: 'padding:8px', text: 'No customers match.' }));
+  renderDetail();
+}
+
+function renderDetail() {
+  var host = $('c-detail'); host.textContent = '';
+  var c = CV.sel ? findCustomer(CV.sel) : null;
+  if (!c) { host.appendChild(h('div', { class: 'empty' }, h('strong', { text: 'No customer selected' }), h('p', { text: 'Pick a customer on the left to see their meals and what they owe.' }))); return; }
+  var key = c.name.toLowerCase();
+  var mine = S.orders.filter(function (o) { return o.name.toLowerCase() === key; });
+  var toSched = mine.filter(function (o) { return o.oid && o.credit > 0; });
+  var unpaid = mine.filter(function (o) { return o.owed > 0; });
+  var upcoming = S.meals.filter(function (m) { return m.name.toLowerCase() === key && m.status === STATUS_.SCHEDULED && m.date >= S.today; }).sort(cmpMeal_);
+  var detail = h('div', { class: 'stack' });
+
+  detail.appendChild(h('div', null, h('h1', { text: c.name }),
+    h('p', { class: 'sub', style: 'margin-top:6px', text: 'Last order ' + dayLong(c.last) + (c.unitPrice ? ' · usually ' + fmt(c.unitPrice) + ' a meal' : '') })));
+  detail.appendChild(h('div', { class: 'tiles' },
+    h('div', { class: 'tile' + (c.credit ? ' warn' : '') }, h('b', { text: String(c.credit) }), h('span', { text: 'To schedule' })),
+    h('div', { class: 'tile' }, h('b', { text: String(c.upcoming) }), h('span', { text: 'Coming up' })),
+    h('div', { class: 'tile' }, h('b', { text: String(c.served) }), h('span', { text: 'Eaten (tracked)' })),
+    h('div', { class: 'tile' + (c.owed ? ' bad' : '') }, h('b', { text: fmt(c.owed) }), h('span', { text: 'Owes' }))));
+
+  toSched.forEach(function (o) {
+    var st = CV.sched[o.oid] || (CV.sched[o.oid] = { counts: {}, weekends: false });
+    var min = o.date > S.today ? o.date : S.today, hostEl = h('div'), saveBtn;
+    var widget = makeSchedule(hostEl, {
+      title: 'Schedule ' + plural(o.credit, 'meal'),
+      total: function () { return o.credit; },
+      min: function () { return min; },
+      counts: function () { return st.counts; },
+      change: function (cc) { st.counts = cc; widget.render(); sync(); },
+      weekends: function () { return st.weekends; },
+      setWeekends: function (b) { st.weekends = b; widget.render(); },
+      hint: function () { return 'From the order of ' + dayLong(o.date) + ' (' + plural(o.qty, 'meal') + '). Pick the days they will eat.'; },
+      spreadFrom: function () { return min; }
+    });
+    function sync() { saveBtn.disabled = sum(st.counts) === 0; saveBtn.textContent = sum(st.counts) ? 'Save ' + plural(sum(st.counts), 'meal') : 'Pick a day'; }
+    saveBtn = h('button', { type: 'button', class: 'btn primary', text: 'Pick a day', disabled: true, onclick: function () {
+      var sched = Object.keys(st.counts).map(function (d) { return { date: d, count: st.counts[d] }; });
+      act('scheduleMeals', { oid: o.oid, schedule: sched }, function (i) { delete CV.sched[o.oid]; return 'Scheduled ' + plural(i.scheduled, 'meal') + ' for ' + i.name; });
+    } });
+    detail.appendChild(h('div', { class: 'box' }, hostEl, h('div', { class: 'row' }, h('div', { class: 'grow' }), saveBtn)));
+    widget.render(); sync();
+  });
+
+  if (upcoming.length) {
+    detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Coming up' }), h('div', { class: 'mgrid' }, upcoming.map(function (m) { return mealCard(m, true); }))));
+  }
+
+  if (unpaid.length) {
+    detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Money owed' }), unpaid.map(function (o) {
+      var amt = o.owed, inp = h('input', { type: 'text', inputmode: 'numeric', autocomplete: 'off', 'aria-label': 'Amount received', value: fmt(o.owed) });
+      bindMoney(inp, function (n) { amt = n; });
+      return h('div', { class: 'box' },
+        h('div', { class: 'row' }, h('div', { class: 'grow' }, h('strong', { text: dayLong(o.date) + ' · ' + plural(o.qty, 'meal') }),
+          h('div', { class: 'sub', text: 'Total ' + fmt(o.payable) + ' · paid ' + fmt(o.paid) + ' · owes ' + fmt(o.owed) })),
+          h('div', { class: 'money' }, inp, h('span', { text: 'VND' })),
+          h('button', { type: 'button', class: 'btn ok', text: 'Record payment', onclick: function () {
+            act('recordPayment', { row: o.row, name: o.name, date: o.date, amount: amt }, function (i) { return 'Recorded ' + fmt(i.amount) + ' from ' + i.name + (i.owed ? ' · still owes ' + fmt(i.owed) : ' · all paid'); });
+          } })));
+    })));
+  }
+
+  detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Recent orders' }),
+    h('div', { class: 'rl' }, mine.slice(0, 6).map(function (o) {
+      return [h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') }), h('span', { class: 'r', text: fmt(o.payable) }),
+        h('span', { class: 'r', text: o.owed ? 'owes ' + fmt(o.owed) : 'paid' })];
+    }))));
+  host.appendChild(detail);
+}
+
+/* ------------------------------------------------------------------ shell */
+function go(v) {
+  view = v;
+  ['order', 'today', 'customers'].forEach(function (x) {
+    $('view-' + x).hidden = x !== v;
+    $('nav-' + x).setAttribute('aria-current', x === v ? 'page' : 'false');
+  });
+  if (S) renderAll();
+}
+function renderNav() {
+  var t = S.meals.filter(function (m) { return m.status === STATUS_.SCHEDULED && m.date <= S.today; }).length;
+  var c = S.customers.filter(needsAttention).length;
+  $('b-today').textContent = t; $('b-today').hidden = !t;
+  $('b-cust').textContent = c; $('b-cust').hidden = !c;
+}
+function renderAll() {
+  renderNav();
+  if (view === 'order') updateOrder();
+  else if (view === 'today') renderToday();
+  else renderCustomers();
+}
+
+function init() {
+  if (!hasGAS && !useApi) $('previewbar').hidden = false;
+  wireOrder();
+  $('boot-key').onsubmit = function (ev) {
+    ev.preventDefault();
+    setKey($('key-in').value.trim()); $('boot-key').hidden = true; $('boot-msg').textContent = 'Loading orders…';
+    load(false);
+  };
+  $('nav-order').onclick = function () { go('order'); };
+  $('nav-today').onclick = function () { go('today'); };
+  $('nav-customers').onclick = function () { go('customers'); };
+  $('nav-refresh').onclick = function () { if (!busy) load(false); };
+  $('boot-retry').onclick = function () { $('boot-retry').hidden = true; $('boot-msg').textContent = 'Loading orders…'; load(false); };
+  $('t-prev').onclick = function () { TV.date = addDays_(TV.date || S.today, -1); renderToday(); };
+  $('t-next').onclick = function () { TV.date = addDays_(TV.date || S.today, 1); renderToday(); };
+  $('t-label').onclick = function () { TV.date = S.today; renderToday(); };
+  $('c-search').addEventListener('input', function () { CV.q = $('c-search').value; renderCustomers(); });
+  $('modal').addEventListener('click', function (ev) { if (ev.target === $('modal')) closeModal(); });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') closeModal(); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && S && !busy && view !== 'customers' && Date.now() - lastLoad > 60000) load(true);
+  });
+  load(true);
+}
+init();
+})();
+</script>
+
+</html>
