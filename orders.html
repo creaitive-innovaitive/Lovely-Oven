@@ -261,7 +261,7 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
   </nav>
 
   <div class="stage">
-    <div class="previewbar" id="previewbar" hidden>Preview with sample customers. Nothing you do here is saved to your spreadsheet.</div>
+    <div class="previewbar" id="previewbar" hidden>Preview with sample customers. Nothing you do here is saved.</div>
 
     <!-- NEW ORDER -->
     <section class="view" id="view-order" aria-label="New order">
@@ -368,9 +368,10 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status" hidden></div>
 <div class="boot" id="boot"><strong id="boot-msg">Loading orders…</strong><button type="button" class="btn" id="boot-retry" hidden>Try again</button>
-  <form id="boot-key" hidden style="display:grid;gap:12px;width:min(320px,100%)"><input type="password" id="key-in" autocomplete="current-password" placeholder="Passcode" aria-label="Passcode"><button type="submit" class="btn primary">Unlock</button></form>
+  <form id="boot-key" hidden style="display:grid;gap:12px;width:min(320px,100%)"><input type="email" id="email-in" autocomplete="username" placeholder="Email" aria-label="Email"><input type="password" id="key-in" autocomplete="current-password" placeholder="Password" aria-label="Password"><button type="submit" class="btn primary">Sign in</button></form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 /* ===== CORE: pure logic shared by Code.gs and the form. No Google or DOM calls in here. ===== */
 
@@ -581,7 +582,6 @@ function planPayment_(p, data) {
 (function () {
 'use strict';
 
-var hasGAS = !!(window.google && window.google.script && window.google.script.run);
 var DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -661,34 +661,87 @@ function makeMock() {
     }
   };
 }
-/* Set to the Apps Script web app URL (ends in /exec) to use the live sheet from the website. Empty = sample-data preview. */
-var API_URL = '';
-var useApi = !hasGAS && !!API_URL;
-var mock = (hasGAS || useApi) ? null : makeMock();
+/* ---- Supabase: fill these in from Project Settings > API. The anon key is meant to be public; row-level security (supabase/schema.sql) keeps the data behind the login. ---- */
+var SUPABASE_URL = '';
+var SUPABASE_KEY = '';
+var useSb = !!(SUPABASE_URL && SUPABASE_KEY && window.supabase);
+var sb = useSb ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+var mock = useSb ? null : makeMock();
 
-function getKey() { try { return localStorage.getItem('lo_key') || ''; } catch (e) { return ''; } }
-function setKey(k) { try { localStorage.setItem('lo_key', k); } catch (e) { /* private mode: asks again next visit */ } }
+function authError(msg) { var e = new Error(msg); e.auth = true; return e; }
+function nonce() { var a = new Uint8Array(5); crypto.getRandomValues(a); return Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('').toUpperCase(); }
+function ok(r) { if (r.error) throw new Error(r.error.message); return r.data; }
+
+/* PostgREST returns at most 1000 rows a request, so read in pages */
+function fetchAll(table, orderCol) {
+  var out = [];
+  function page(from) {
+    return sb.from(table).select('*').order(orderCol).range(from, from + 999).then(function (r) {
+      var rows = ok(r); out = out.concat(rows);
+      return rows.length === 1000 ? page(from + 1000) : out;
+    });
+  }
+  return page(0);
+}
+
+function readData() {
+  return Promise.all([fetchAll('orders', 'id'), fetchAll('meals', 'seq')]).then(function (rs) {
+    return {
+      today: localToday(),
+      orders: rs[0].map(function (r) {
+        return { row: r.id, date: r.order_date, name: r.customer, qty: r.qty, food: r.food || '', pfood: r.pfood, extra: r.extra || '', pextra: r.pextra, disc: r.disc, paid: r.paid, notes: r.notes || '', oid: r.oid || '', method: r.method || '' };
+      }),
+      meals: rs[1].map(function (r) {
+        return { row: r.seq, date: r.meal_date, name: r.customer, status: r.status, oid: r.oid || '', id: r.id, note: r.note || '' };
+      })
+    };
+  });
+}
+function reply(info) { return readData().then(function (d) { return { state: buildState_(d), info: info }; }); }
+function mealRows(list) {
+  return list.map(function (m) { return { id: m.id, meal_date: m.date, customer: m.name, status: m.status, oid: m.oid, note: m.note }; });
+}
+function insertMeals(list) { return list.length ? sb.from('meals').insert(mealRows(list)).then(ok) : Promise.resolve(); }
+function withNonce(d) { d.nonce = nonce(); return d; }
+
+var sbApi = {
+  getState: function () { return readData().then(function (d) { return { state: buildState_(d) }; }); },
+  saveOrder: function (p) {
+    return readData().then(function (d) {
+      var plan = planSaveOrder_(p, withNonce(d)), o = plan.order;
+      return sb.from('orders').insert({ order_date: o.date, customer: o.name, qty: o.qty, food: o.food, pfood: o.pfood, extra: o.extra, pextra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes, oid: o.oid, method: o.method })
+        .then(ok).then(function () { return insertMeals(plan.meals); }).then(function () { return reply(plan.info); });
+    });
+  },
+  scheduleMeals: function (p) {
+    return readData().then(function (d) { var plan = planSchedule_(p, withNonce(d)); return insertMeals(plan.meals).then(function () { return reply(plan.info); }); });
+  },
+  setMealStatus: function (p) {
+    return readData().then(function (d) { var plan = planMealStatus_(p, d); return sb.from('meals').update({ status: plan.status }).eq('id', plan.id).then(ok).then(function () { return reply(plan.info); }); });
+  },
+  moveMeal: function (p) {
+    return readData().then(function (d) { var plan = planMove_(p, d); return sb.from('meals').update({ meal_date: plan.date }).eq('id', plan.id).then(ok).then(function () { return reply(plan.info); }); });
+  },
+  recordPayment: function (p) {
+    return readData().then(function (d) { var plan = planPayment_(p, d); return sb.from('orders').update({ paid: plan.paid }).eq('id', plan.row).then(ok).then(function () { return reply(plan.info); }); });
+  }
+};
 
 function call(name, payload) {
+  if (useSb) {
+    return sb.auth.getSession().then(function (r) {
+      if (!r.data.session) throw authError('');
+      return sbApi[name](payload);
+    }).catch(function (e) {
+      if (e && e.auth) throw e;
+      if (e && /JWT|expired/i.test(e.message || '')) throw authError('Your session expired. Sign in again.');
+      throw e instanceof Error && e.message && !/fetch/i.test(e.message) ? e : new Error('Could not reach the server. Check the connection.');
+    });
+  }
   return new Promise(function (resolve, reject) {
-    if (useApi) {
-      // text/plain keeps this a "simple" request, so the browser skips the CORS preflight that Apps Script cannot answer
-      fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ key: getKey(), fn: name, p: payload }) })
-        .then(function (r) { return r.json(); })
-        .then(function (j) {
-          if (j && j.error) { var e = new Error(j.error); e.auth = !!j.auth; reject(e); } else resolve(j);
-        })
-        .catch(function () { reject(new Error('Could not reach the server. Check the connection.')); });
-    } else if (hasGAS) {
-      var run = google.script.run
-        .withSuccessHandler(resolve)
-        .withFailureHandler(function (e) { reject(new Error(e && e.message ? String(e.message).replace(/^Error:\s*/, '') : 'Something went wrong. Try again.')); });
-      if (payload === undefined) run[name](); else run[name](payload);
-    } else {
-      setTimeout(function () {
-        try { resolve(JSON.parse(JSON.stringify(mock[name](payload)))); } catch (e) { reject(e); }
-      }, 140);
-    }
+    setTimeout(function () {
+      try { resolve(JSON.parse(JSON.stringify(mock[name](payload)))); } catch (e) { reject(e); }
+    }, 140);
   });
 }
 
@@ -729,16 +782,16 @@ function load(quiet) {
     renderAll();
     if (!quiet) toast('Up to date');
   }).catch(function (e) {
-    if (e.auth) { askKey(getKey() ? e.message : ''); return; }
+    if (e.auth) { askLogin(e.message); return; }
     if (S) { if (!quiet) toast(e.message, 'bad'); return; }
     $('boot').hidden = false; $('boot-msg').textContent = 'Could not load the orders. ' + e.message; $('boot-retry').hidden = false;
   });
 }
 
-function askKey(msg) {
+function askLogin(msg) {
   $('boot').hidden = false; $('boot-retry').hidden = true; $('boot-key').hidden = false;
-  $('boot-msg').textContent = msg || 'Enter the passcode';
-  $('key-in').value = ''; $('key-in').focus();
+  $('boot-msg').textContent = msg || 'Sign in';
+  $('key-in').value = ''; $('email-in').focus();
 }
 
 /* ------------------------------------------------------------------ new order */
@@ -1217,12 +1270,15 @@ function renderAll() {
 }
 
 function init() {
-  if (!hasGAS && !useApi) $('previewbar').hidden = false;
+  if (!useSb) $('previewbar').hidden = false;
   wireOrder();
   $('boot-key').onsubmit = function (ev) {
     ev.preventDefault();
-    setKey($('key-in').value.trim()); $('boot-key').hidden = true; $('boot-msg').textContent = 'Loading orders…';
-    load(false);
+    var email = $('email-in').value.trim(), pw = $('key-in').value;
+    $('boot-key').hidden = true; $('boot-msg').textContent = 'Signing in…';
+    sb.auth.signInWithPassword({ email: email, password: pw }).then(function (r) {
+      if (r.error) askLogin('Wrong email or password.'); else { $('boot-msg').textContent = 'Loading orders…'; load(false); }
+    }).catch(function () { askLogin('Could not reach the server.'); });
   };
   $('nav-order').onclick = function () { go('order'); };
   $('nav-today').onclick = function () { go('today'); };
