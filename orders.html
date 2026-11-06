@@ -662,8 +662,8 @@ function makeMock() {
   };
 }
 /* ---- Supabase: fill these in from Project Settings > API. The anon key is meant to be public; row-level security (supabase/schema.sql) keeps the data behind the login. ---- */
-var SUPABASE_URL = '';
-var SUPABASE_KEY = '';
+var SUPABASE_URL = 'https://drkebbkyipipxwcclihc.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_x2cn9JVmEk5eCUJ3CtiAgA_5zLN4XqM';
 var useSb = !!(SUPABASE_URL && SUPABASE_KEY && window.supabase);
 var sb = useSb ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 var mock = useSb ? null : makeMock();
