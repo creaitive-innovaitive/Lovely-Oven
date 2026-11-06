@@ -9,6 +9,9 @@
   /* ── Config ─────────────────────────────────────────── */
   const WHATSAPP_NUMBER = '84987390140';
   const ZALO_NUMBER     = '0987390140';
+  // Public values: the table only accepts new rows from here and cannot be read without a staff login.
+  const ORDERS_URL = 'https://drkebbkyipipxwcclihc.supabase.co/rest/v1/web_orders';
+  const ORDERS_KEY = 'sb_publishable_x2cn9JVmEk5eCUJ3CtiAgA_5zLN4XqM';
 
   /* ── Order state ─────────────────────────────────────── */
   // Chicken meal: one item requiring all 4 steps
@@ -501,14 +504,48 @@
     return msg;
   }
 
+  /* ── Itemised copy of the order for the staff dashboard ── */
+  function buildItems() {
+    const items = [];
+    if (STEPS.every(s => ORDER[s.key])) {
+      items.push({ g: 'chicken', value: 'chicken', label: 'Chicken meal', qty: 1, price: chickenPrice(),
+        detail: [ORDER.protein, ORDER.flavour + (ORDER.spiceLevel ? ` (${ORDER.spiceLevel})` : ''), ORDER.carb, sideText(ORDER.side)].join(' · '),
+        opts: { protein: ORDER.protein, flavour: ORDER.flavour, spice: ORDER.spiceLevel || '', carb: ORDER.carb, side: ORDER.side } });
+    }
+    [['setmeal', ORDER.setMeals], ['topping', ORDER.toppings], ['extra', ORDER.extras]].forEach(([g, group]) => {
+      Object.keys(group).forEach(k => {
+        const it = group[k];
+        items.push({ g, value: k, label: it.label, qty: it.qty, price: it.price, detail: it.detail || '', opts: { rice: it.rice || '', side: it.side || '' } });
+      });
+    });
+    return items;
+  }
+
+  let lastPosted = '';
+  function postToDashboard(msg) {
+    const items = buildItems();
+    if (!items.length || msg === lastPosted) return;   // same order sent again (e.g. WhatsApp then Zalo): record it once
+    lastPosted = msg;
+    const total = items.reduce((n, i) => n + i.price * i.qty, 0);
+    const name = (document.getElementById('loName')?.value || '').trim().slice(0, 60);
+    const notes = (document.getElementById('loNotes')?.value || '').trim().slice(0, 300);
+    try {
+      fetch(ORDERS_URL, { method: 'POST', keepalive: true,
+        headers: { apikey: ORDERS_KEY, Authorization: 'Bearer ' + ORDERS_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ customer: name, notes, items, total }) }).catch(() => {});
+    } catch (e) { /* the WhatsApp/Zalo message is the order; this copy is a bonus */ }
+  }
+
   /* ── Send actions ────────────────────────────────────── */
   window.loSendWhatsApp = function () {
     const msg = buildMessage();
+    postToDashboard(msg);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   window.loSendZalo = function () {
     const msg = buildMessage();
+    postToDashboard(msg);
     const btn = document.getElementById('loZaloBtn');
 
     navigator.clipboard.writeText(msg).then(() => {

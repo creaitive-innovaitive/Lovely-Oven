@@ -233,6 +233,29 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
   .savebox { margin-left: 0; align-items: stretch; width: 100%; }
   .checkout .part { width: 100%; }
 }
+
+.tgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); gap: 16px; align-items: start; }
+.dishes { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); padding: 18px 20px; display: grid; gap: 14px; position: sticky; top: 0; }
+.dishes h2 { font-size: 20px; }
+.dishes h3 { font: 700 12px/1.2 var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 6px; }
+.dl { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 17px; }
+.dl b { font-family: var(--mono); text-align: right; }
+.dl .sub { grid-column: 1 / -1; font-size: 14px; }
+.modebar { display: flex; gap: 8px; }
+.picker { display: grid; gap: 14px; }
+.psec > h3 { font: 700 12px/1.2 var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 6px 0; }
+.prow { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.prow .nm { font-weight: 600; font-size: 17px; }
+.prow .nm small { display: block; color: var(--muted); font-weight: 500; font-size: 14px; }
+.pq { display: inline-grid; grid-template-columns: 44px 36px 44px; align-items: center; text-align: center; border: 2px solid var(--line2); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.pq button { height: 44px; border: 0; background: var(--surface2); font: 600 24px var(--body); }
+.pq span { font: 600 18px var(--mono); }
+.prow .opts { grid-column: 1 / -1; }
+.prow .opts .chip { min-height: 38px; font-size: 14px; padding: 0 12px; }
+.cart { background: var(--accent-soft); border-radius: 14px; padding: 10px 14px; display: grid; gap: 4px; font-size: 16px; }
+.cart div { display: flex; justify-content: space-between; gap: 12px; }
+.webbtn { background: var(--warn-soft); color: var(--warn); border: 0; border-radius: 14px; padding: 8px 16px; font: 700 15px var(--body); }
+@media (max-width: 960px) { .tgrid { grid-template-columns: 1fr; } .dishes { position: static; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
@@ -286,7 +309,14 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
             <div class="chips" id="recent"></div>
             <div class="hint" id="custhint"></div>
           </div>
-          <div class="field">
+          <div class="modebar" id="modebar">
+            <button type="button" class="chip" data-mode="quick" aria-pressed="true">Quick entry</button>
+            <button type="button" class="chip" data-mode="pick" aria-pressed="false">Pick dishes</button>
+            <div class="grow"></div>
+            <button type="button" class="webbtn" id="webbtn" hidden></button>
+          </div>
+          <div class="picker" id="picker" hidden></div>
+          <div class="field" id="f-qty">
             <label>Meals paid for</label>
             <div class="inline">
               <div class="stepper">
@@ -297,7 +327,7 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
               <div class="chips small" id="qchips"></div>
             </div>
           </div>
-          <div class="field">
+          <div class="field" id="f-unit">
             <label for="unit">Price per meal</label>
             <div class="inline">
               <div class="money"><input type="text" id="unit" inputmode="numeric" autocomplete="off"><span>VND</span></div>
@@ -416,6 +446,24 @@ function money_(v, label) {
   return Math.round(n);
 }
 
+/* a basket line is one dish (or drink) with its options; chicken and main meals count as meals, the rest are extras */
+function isMain_(it) { return it.g === 'chicken' || it.g === 'setmeal'; }
+function cleanItems_(list) {
+  var out = [];
+  (Array.isArray(list) ? list : []).slice(0, 30).forEach(function (it) {
+    var q = Number(it && it.qty), pr = Number(it && it.price);
+    if (!it || !isFinite(q) || q < 1 || q > 60 || !isFinite(pr) || pr < 0) return;
+    out.push({ g: String(it.g || '').slice(0, 12), value: String(it.value || it.label || '').slice(0, 80), label: String(it.label || it.value || '').slice(0, 80),
+      qty: Math.floor(q), price: Math.round(pr), detail: String(it.detail || '').slice(0, 160), opts: it.opts && typeof it.opts === 'object' ? it.opts : {} });
+  });
+  return out;
+}
+function itemTotals_(items) {
+  var t = { main: 0, other: 0, meals: 0 };
+  items.forEach(function (it) { if (isMain_(it)) { t.main += it.price * it.qty; t.meals += it.qty; } else t.other += it.price * it.qty; });
+  return t;
+}
+
 function payable_(o) { return (o.pfood || 0) + (o.pextra || 0) - (o.disc || 0); }
 function cmpMeal_(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.row || 0) - (b.row || 0); }
 
@@ -458,7 +506,7 @@ function buildState_(data) {
     if (o.date >= recentCut) c.recent++;
     if (unit && o.date >= priceCut) priceCount[unit] = (priceCount[unit] || 0) + 1;
     if (o.date >= cutoff || owed > 0 || credit > 0) {
-      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, food: o.food || '', notes: o.notes || '', payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
+      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, food: o.food || '', notes: o.notes || '', items: o.items || [], payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
     }
   });
 
@@ -481,7 +529,7 @@ function buildState_(data) {
   });
   var byFreq = Object.keys(priceCount).map(Number).sort(function (a, b) { return priceCount[b] - priceCount[a] || a - b; });
   var prices = byFreq.slice(0, 4).sort(function (a, b) { return a - b; });
-  return { today: today, orders: orders.reverse(), meals: meals, customers: customers, prices: prices, topPrice: byFreq[0] || 0 };
+  return { today: today, orders: orders.reverse(), meals: meals, customers: customers, prices: prices, topPrice: byFreq[0] || 0, web: data.web || [] };
 }
 
 /* validates a list of {date,count}, merges repeats, returns it sorted */
@@ -518,13 +566,16 @@ function planSaveOrder_(p, data) {
     if (baseName_(o.name).toLowerCase() === name.toLowerCase()) { name = baseName_(o.name); return true; }
     return false;
   });
-  var qty = Number(p.qty);
+  var items = cleanItems_(p.items), tot = itemTotals_(items);
+  var qty = items.length ? Math.max(1, tot.meals) : Number(p.qty);
   if (!isFinite(qty) || Math.floor(qty) !== qty || qty < 1 || qty > 60) fail_('Meals must be a whole number from 1 to 60.');
   if (!isISO_(p.date)) fail_('Pick the order date.');
   var unit = money_(p.unitPrice, 'price per meal'), ep = money_(p.extraPrice, 'extra price');
   var disc = money_(p.discount, 'discount'), paid = money_(p.paid, 'amount paid');
-  if (unit <= 0) fail_('Enter the price per meal.');
-  var pfood = unit * qty, pay = pfood + ep - disc;
+  if (!items.length && unit <= 0) fail_('Enter the price per meal.');
+  var pfood = items.length ? tot.main : unit * qty;
+  if (items.length) ep += tot.other;
+  var pay = pfood + ep - disc;
   if (pay < 0) fail_('The discount is bigger than the order.');
   if (paid > pay) fail_('The amount paid is more than the total.');
   var method = p.method === 'Cash' || p.method === 'Transfer' ? p.method : '';
@@ -532,7 +583,7 @@ function planSaveOrder_(p, data) {
   var oid = 'O' + data.nonce, food = String(p.food || '').trim().slice(0, 80), notes = String(p.notes || '').trim().slice(0, 200);
   var meals = expandMeals_(sched, name, oid, food, data.nonce, 0);
   return {
-    order: { date: p.date, name: name, qty: qty, food: food, pfood: pfood, extra: String(p.extra || '').trim().slice(0, 80), pextra: ep, disc: disc, paid: paid, notes: notes, oid: oid, method: method },
+    order: { date: p.date, name: name, qty: qty, food: food, pfood: pfood, extra: String(p.extra || '').trim().slice(0, 80), pextra: ep, disc: disc, paid: paid, notes: notes, items: items, oid: oid, method: method },
     meals: meals,
     info: { oid: oid, name: name, qty: qty, scheduled: meals.length, credit: qty - meals.length, days: sched.map(function (s) { return s.date; }), payable: pay, owed: pay - paid }
   };
@@ -621,7 +672,7 @@ function makeMock() {
   var T = localToday(), orders = [], meals = [], oRow = 2, mRow = 2, seq = 0;
   function addOrder(date, name, qty, unit, paid, method, days) {
     var oid = days ? 'OPRE' + (++seq) : '';
-    orders.push({ row: oRow++, date: date, name: name, qty: qty, food: '', notes: '', pfood: unit * qty, extra: '', pextra: 0, disc: 0, paid: paid, oid: oid, method: method });
+    orders.push({ row: oRow++, date: date, name: name, qty: qty, food: '', notes: '', items: [], pfood: unit * qty, extra: '', pextra: 0, disc: 0, paid: paid, oid: oid, method: method });
     (days || []).forEach(function (d, i) {
       meals.push({ row: mRow++, date: d, name: name, status: d < T ? STATUS_.SERVED : STATUS_.SCHEDULED, oid: oid, id: 'MPRE' + seq + '-' + i, note: '' });
     });
@@ -640,15 +691,18 @@ function makeMock() {
   addOrder(T, 'Dr Kumar', 1, 70000, 70000, 'Cash', [T]);
   addOrder(T, 'Ayush', 1, 100000, 100000, 'Transfer', [T]);
 
-  function data() { return { orders: orders, meals: meals, today: T, nonce: Math.random().toString(36).slice(2, 10).toUpperCase() }; }
+  var web = [{ id: 1, customer: 'Sample web order', notes: 'Delivered to FPT', total: 160000, status: 'New', items: [{ g: 'setmeal', value: 'Raja Masala', label: 'Raja Masala', qty: 1, price: 100000, detail: '', opts: {} }, { g: 'extra', value: 'Lemon Juice', label: 'Lemon Juice', qty: 3, price: 20000, detail: '', opts: {} }] }];
+  function data() { return { web: web.filter(function (w) { return w.status === 'New'; }), orders: orders, meals: meals, today: T, nonce: Math.random().toString(36).slice(2, 10).toUpperCase() }; }
   function out(info) { return { state: buildState_(data()), info: info }; }
   function addMeals(list) { list.forEach(function (m) { var r = { row: mRow++ }; for (var k in m) r[k] = m[k]; meals.push(r); }); }
   return {
     getState: function () { return out(); },
+    dismissWeb: function (p) { web.forEach(function (w) { if (w.id === p.id) w.status = 'Dismissed'; }); return out(); },
     saveOrder: function (p) {
       var plan = planSaveOrder_(p, data()), r = { row: oRow++ };
       for (var k in plan.order) r[k] = plan.order[k];
       orders.push(r); addMeals(plan.meals);
+      web.forEach(function (w) { if (w.id === p.webId) w.status = 'Accepted'; });
       return out(plan.info);
     },
     scheduleMeals: function (p) { var plan = planSchedule_(p, data()); addMeals(plan.meals); return out(plan.info); },
@@ -662,6 +716,7 @@ function makeMock() {
   };
 }
 /* ---- Supabase: fill these in from Project Settings > API. The anon key is meant to be public; row-level security (supabase/schema.sql) keeps the data behind the login. ---- */
+var MENU = {"chicken": {"protein": ["Chicken Thigh (Boneless)"], "flavour": ["Peri Peri", "Salt & Pepper", "Chilli & Lime", "BBQ"], "carb": ["White Steamed Rice", "Turmeric Basmati"], "side": ["Coleslaw", "Wedges", "Broccoli", "Mashed Potato", "Cauliflower Mash"], "spice": ["Mild", "Medium", "Hot"]}, "sections": [{"id": "veg", "title": "Vegetarian", "items": [{"g": "setmeal", "value": "Aloo Gobi", "label": "Aloo Gobi", "price": 100000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Moong Dal", "label": "Moong Dal", "price": 100000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Raja Masala", "label": "Raja Masala", "price": 100000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Pumpkin Soup — Small", "label": "Pumpkin Soup — Small", "price": 60000, "rice": false, "side": false, "soup": true}, {"g": "setmeal", "value": "Pumpkin Soup — Medium", "label": "Pumpkin Soup — Medium", "price": 90000, "rice": false, "side": false, "soup": true}]}, {"id": "set", "title": "Main Meals", "items": [{"g": "setmeal", "value": "Bolognaise 200g", "label": "Bolognaise 200g (Beef & Pork)", "price": 100000, "rice": true, "side": false, "soup": false}, {"g": "setmeal", "value": "Chilli Con Carne Set", "label": "Chilli Con Carne Set (Beef & Pork)", "price": 100000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Beef Ragout — Medium Bowl", "label": "Beef Ragout — Medium Bowl", "price": 90000, "rice": true, "side": false, "soup": false}, {"g": "setmeal", "value": "Beef Ragout — Big Bowl", "label": "Beef Ragout — Big Bowl", "price": 120000, "rice": true, "side": false, "soup": false}, {"g": "setmeal", "value": "Cottage Pie & 1 side", "label": "Cottage Pie & 1 side", "price": 100000, "rice": false, "side": true, "soup": false}, {"g": "setmeal", "value": "Pumpkin Soup with Crunchy Bacon — Small", "label": "Pumpkin Soup with Crunchy Bacon — Small", "price": 60000, "rice": false, "side": false, "soup": true}, {"g": "setmeal", "value": "Pumpkin Soup with Crunchy Bacon — Medium", "label": "Pumpkin Soup with Crunchy Bacon — Medium", "price": 90000, "rice": false, "side": false, "soup": true}]}, {"id": "toppings", "title": "Soup Toppings", "items": [{"g": "topping", "value": "Roast chicken breast", "label": "Roast chicken breast (soup topping)", "price": 50000, "rice": false, "side": false, "soup": false}, {"g": "topping", "value": "Extra crunchy bacon", "label": "Extra crunchy bacon (soup topping)", "price": 20000, "rice": false, "side": false, "soup": false}, {"g": "topping", "value": "Croutons", "label": "Croutons (soup topping)", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "topping", "value": "Pumpkin seeds", "label": "Pumpkin seeds (soup topping)", "price": 10000, "rice": false, "side": false, "soup": false}]}, {"id": "drinks", "title": "Drinks", "items": [{"g": "extra", "value": "Lemon Juice", "label": "Lemon Juice", "price": 20000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Coca Cola", "label": "Coca Cola", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Coke Zero", "label": "Coke Zero", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "7-Up", "label": "7-Up", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Fanta Orange", "label": "Fanta Orange", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Mineral Water", "label": "Mineral Water", "price": 10000, "rice": false, "side": false, "soup": false}]}, {"id": "add", "title": "Add-ons & Extras", "items": [{"g": "extra", "value": "Extra coleslaw / rice", "label": "Extra coleslaw / rice", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Extra potato wedges", "label": "Extra potato wedges", "price": 20000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Cauliflower Mash", "label": "Cauliflower Mash", "price": 30000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Fried egg", "label": "Fried egg", "price": 10000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Boiled egg", "label": "Boiled egg", "price": 10000, "rice": false, "side": false, "soup": false}]}, {"id": "box", "title": "Boxes to Share", "items": [{"g": "setmeal", "value": "Bolognaise box — 500g", "label": "Bolognaise box — 500g (Beef & Pork)", "price": 160000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Bolognaise box — 1kg", "label": "Bolognaise box — 1kg (Beef & Pork)", "price": 300000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Chilli box — 500g", "label": "Chilli Con Carne box — 500g (Beef & Pork)", "price": 160000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Chilli box — 1kg", "label": "Chilli Con Carne box — 1kg (Beef & Pork)", "price": 300000, "rice": false, "side": false, "soup": false}]}], "rules": {"chickenBase": 130000, "ricePrice": 10000, "sideOptions": [{"value": "Coleslaw", "extra": 0}, {"value": "Rice", "extra": 0}, {"value": "Potato wedges", "extra": 10000}, {"value": "Cauliflower mash", "extra": 20000}, {"value": "Fried egg", "extra": 0}, {"value": "Boiled egg", "extra": 0}], "chickenSideSurcharge": {"Cauliflower Mash": 10000}}};   // filled in by tools/build_orders.py from order.html
 var SUPABASE_URL = 'https://drkebbkyipipxwcclihc.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_x2cn9JVmEk5eCUJ3CtiAgA_5zLN4XqM';
 var useSb = !!(SUPABASE_URL && SUPABASE_KEY && window.supabase);
@@ -685,11 +740,12 @@ function fetchAll(table, orderCol) {
 }
 
 function readData() {
-  return Promise.all([fetchAll('orders', 'id'), fetchAll('meals', 'seq')]).then(function (rs) {
+  var web = sb.from('web_orders').select('*').eq('status', 'New').order('id').then(function (r) { return r.error ? [] : r.data; }, function () { return []; });
+  return Promise.all([fetchAll('orders', 'id'), fetchAll('meals', 'seq'), web]).then(function (rs) {
     return {
-      today: localToday(),
+      today: localToday(), web: rs[2].map(function (w) { return { id: w.id, customer: w.customer, notes: w.notes, items: w.items, total: w.total, status: w.status }; }),
       orders: rs[0].map(function (r) {
-        return { row: r.id, date: r.order_date, name: r.customer, qty: r.qty, food: r.food || '', pfood: r.pfood, extra: r.extra || '', pextra: r.pextra, disc: r.disc, paid: r.paid, notes: r.notes || '', oid: r.oid || '', method: r.method || '' };
+        return { row: r.id, date: r.order_date, name: r.customer, qty: r.qty, food: r.food || '', pfood: r.pfood, extra: r.extra || '', pextra: r.pextra, disc: r.disc, paid: r.paid, notes: r.notes || '', items: r.items || [], oid: r.oid || '', method: r.method || '' };
       }),
       meals: rs[1].map(function (r) {
         return { row: r.seq, date: r.meal_date, name: r.customer, status: r.status, oid: r.oid || '', id: r.id, note: r.note || '' };
@@ -709,10 +765,12 @@ var sbApi = {
   saveOrder: function (p) {
     return readData().then(function (d) {
       var plan = planSaveOrder_(p, withNonce(d)), o = plan.order;
-      return sb.from('orders').insert({ order_date: o.date, customer: o.name, qty: o.qty, food: o.food, pfood: o.pfood, extra: o.extra, pextra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes, oid: o.oid, method: o.method })
-        .then(ok).then(function () { return insertMeals(plan.meals); }).then(function () { return reply(plan.info); });
+      return sb.from('orders').insert({ order_date: o.date, customer: o.name, qty: o.qty, food: o.food, pfood: o.pfood, extra: o.extra, pextra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes, items: o.items, oid: o.oid, method: o.method })
+        .then(ok).then(function () { return insertMeals(plan.meals); })
+        .then(function () { return p.webId ? sb.from('web_orders').update({ status: 'Accepted' }).eq('id', p.webId).then(ok) : null; }).then(function () { return reply(plan.info); });
     });
   },
+  dismissWeb: function (p) { return sb.from('web_orders').update({ status: 'Dismissed' }).eq('id', p.id).then(ok).then(function () { return reply(); }); },
   scheduleMeals: function (p) {
     return readData().then(function (d) { var plan = planSchedule_(p, withNonce(d)); return insertMeals(plan.meals).then(function () { return reply(plan.info); }); });
   },
@@ -796,12 +854,12 @@ function askLogin(msg) {
 
 /* ------------------------------------------------------------------ new order */
 function newDraft() {
-  return { date: lastDate || S.today, name: '', qty: 1, unit: S.topPrice || 100000, food: '', notes: '', extra: '', extraPrice: 0, disc: 0, payMode: 'full', part: 0, method: lastMethod, counts: {}, touched: false, weekends: false, extrasOpen: false };
+  return { date: lastDate || S.today, name: '', qty: 1, unit: S.topPrice || 100000, picker: false, items: [], webId: null, food: '', notes: '', extra: '', extraPrice: 0, disc: 0, payMode: 'full', part: 0, method: lastMethod, counts: {}, touched: false, weekends: false, extrasOpen: false };
 }
 function autoSchedule() {
   if (D.touched) return;
-  var days = D.qty === 1 ? [D.date] : spreadDays_(D.date, D.qty, D.weekends), c = {};
-  days.forEach(function (d) { c[d] = (c[d] || 0) + 1; });
+  var days = D.qty === 1 || D.picker ? [D.date] : spreadDays_(D.date, D.qty, D.weekends), c = {};
+  days.forEach(function (d) { c[d] = (c[d] || 0) + (D.picker ? D.qty : 1); });
   D.counts = c;
 }
 function fitCounts() {
@@ -812,14 +870,16 @@ function fitCounts() {
   }
 }
 function calc() {
-  var food = D.unit * D.qty, payable = food + D.extraPrice - D.disc;
+  var t = D.picker ? itemTotals_(D.items) : null;
+  var food = t ? t.main : D.unit * D.qty, payable = food + (t ? t.other : 0) + D.extraPrice - D.disc;
   var paid = D.payMode === 'full' ? payable : D.payMode === 'none' ? 0 : Math.min(D.part, payable);
   return { food: food, payable: payable, paid: paid, owed: payable - paid };
 }
 function problem() {
   var c = calc();
   if (!D.name.trim()) return 'Enter the customer name';
-  if (!(D.unit > 0)) return 'Enter the price per meal';
+  if (D.picker && !D.items.length) return 'Pick at least one dish';
+  if (!D.picker && !(D.unit > 0)) return 'Enter the price per meal';
   if (c.payable < 0) return 'The discount is bigger than the order';
   if (D.payMode === 'part' && !(D.part > 0 && D.part < c.payable)) return 'Enter how much has been paid';
   return '';
@@ -908,8 +968,178 @@ function useBanked() {
   })(0);
 }
 
+
+/* ------------------------------------------------------------------ dish picker (built from the website menu, see tools/build_orders.py) */
+var RULES = MENU ? MENU.rules : null, BYVAL = {}, SECOF = {};
+if (MENU) MENU.sections.forEach(function (sec) { sec.items.forEach(function (it) { BYVAL[it.value] = it; SECOF[it.value] = sec.id; }); });
+var PB = { flavour: '', spice: '', carb: '', side: '' };      // chicken meal being built
+
+function sideExtra(v) { var o = RULES.sideOptions.filter(function (x) { return x.value === v; })[0]; return o ? o.extra : 0; }
+function recalcLine(l) {
+  var bits;
+  if (l.g === 'chicken') {
+    var sur = RULES.chickenSideSurcharge[l.opts.side] || 0;
+    l.price = RULES.chickenBase + sur;
+    l.detail = [l.opts.protein, l.opts.flavour + (l.opts.spice ? ' (' + l.opts.spice + ')' : ''), l.opts.carb, l.opts.side + (sur ? ' (+' + fmt(sur) + ')' : '')].join(' · ');
+  } else if (l.g === 'setmeal') {
+    var it = BYVAL[l.value];
+    l.price = (l.base != null ? l.base : it ? it.price : l.price) + (l.opts.rice === 'Yes' ? RULES.ricePrice : 0) + sideExtra(l.opts.side);
+    bits = [];
+    if (it && it.rice) bits.push('Rice: ' + (l.opts.rice || 'No'));
+    if (it && it.side) bits.push('Side: ' + (l.opts.side ? l.opts.side + (sideExtra(l.opts.side) ? ' (+' + fmt(sideExtra(l.opts.side)) + ')' : '') : 'not chosen'));
+    l.detail = bits.join(' · ');
+  }
+}
+function lineFor(it) { return D.items.filter(function (l) { return l.g === it.g && l.value === it.value; })[0]; }
+function hasSoup() { return D.items.some(function (l) { return BYVAL[l.value] && BYVAL[l.value].soup; }); }
+function bumpItem(it, d) {
+  var l = lineFor(it);
+  if (!l) {
+    if (d < 0) return;
+    l = { g: it.g, value: it.value, label: it.label, qty: 0, price: it.price, base: it.price, detail: '', opts: {} };
+    if (it.rice) l.opts.rice = 'No';
+    if (it.side) l.opts.side = '';
+    D.items.push(l);
+  }
+  l.qty += d;
+  if (l.qty <= 0) D.items.splice(D.items.indexOf(l), 1);
+  if (l.qty > 60) l.qty = 60;
+  recalcLine(l);
+  if (!hasSoup()) D.items = D.items.filter(function (x) { return x.g !== 'topping'; });
+  updateOrder();
+}
+function addChicken() {
+  var l = { g: 'chicken', value: 'chicken', label: 'Chicken meal', qty: 1, price: 0, detail: '', opts: { protein: MENU.chicken.protein[0], flavour: PB.flavour, spice: PB.flavour === 'Peri Peri' ? PB.spice : '', carb: PB.carb, side: PB.side } };
+  recalcLine(l);
+  var same = D.items.filter(function (x) { return x.g === 'chicken' && x.detail === l.detail; })[0];
+  if (same) same.qty++; else D.items.push(l);
+  PB = { flavour: '', spice: '', carb: '', side: '' };
+  updateOrder();
+}
+function chipRow(title, values, cur, pick) {
+  return h('div', null, h('div', { class: 'lbl', text: title }), h('div', { class: 'chips', style: 'margin-top:0' }, values.map(function (v) {
+    return h('button', { type: 'button', class: 'chip', 'aria-pressed': cur === v ? 'true' : 'false', text: v, onclick: function () { pick(v); } });
+  })));
+}
+function chickenBuilder() {
+  var c = MENU.chicken, ready = PB.flavour && PB.carb && PB.side && (PB.flavour !== 'Peri Peri' || PB.spice);
+  var price = RULES.chickenBase + (RULES.chickenSideSurcharge[PB.side] || 0);
+  return h('div', { class: 'psec' }, h('h3', { text: 'Build your own chicken meal' }),
+    h('div', { class: 'box' },
+      h('div', { class: 'sub', text: c.protein[0] }),
+      chipRow('Marinade', c.flavour, PB.flavour, function (v) { PB.flavour = v; if (v !== 'Peri Peri') PB.spice = ''; renderPicker(); }),
+      PB.flavour === 'Peri Peri' ? chipRow('Spice', c.spice, PB.spice, function (v) { PB.spice = v; renderPicker(); }) : null,
+      chipRow('Carb', c.carb, PB.carb, function (v) { PB.carb = v; renderPicker(); }),
+      chipRow('Side', c.side, PB.side, function (v) { PB.side = v; renderPicker(); }),
+      h('button', { type: 'button', class: 'btn primary', text: ready ? 'Add chicken meal · ' + fmt(price) : 'Choose marinade, carb and side', disabled: !ready, onclick: addChicken })));
+}
+function pickRow(it) {
+  var l = lineFor(it), n = l ? l.qty : 0, locked = it.g === 'topping' && !hasSoup();
+  var row = h('div', { class: 'prow', style: locked ? 'opacity:.45' : null },
+    h('div', { class: 'nm' }, it.value, h('small', { text: fmt(it.price) })),
+    h('div', { class: 'pq' },
+      h('button', { type: 'button', 'aria-label': 'One fewer ' + it.value, text: '−', disabled: n === 0, onclick: function () { bumpItem(it, -1); } }),
+      h('span', { text: String(n) }),
+      h('button', { type: 'button', 'aria-label': 'One more ' + it.value, text: '+', disabled: locked, onclick: function () { bumpItem(it, 1); } })));
+  if (l && (it.rice || it.side)) {
+    var o = h('div', { class: 'opts' });
+    if (it.rice) o.appendChild(h('div', { class: 'chips' }, h('span', { class: 'sub', text: 'Add rice +' + fmt(RULES.ricePrice) + '?' }),
+      ['Yes', 'No'].map(function (v) { return h('button', { type: 'button', class: 'chip', 'aria-pressed': l.opts.rice === v ? 'true' : 'false', text: v, onclick: function () { l.opts.rice = v; recalcLine(l); updateOrder(); } }); })));
+    if (it.side) o.appendChild(h('div', { class: 'chips' }, h('span', { class: 'sub', text: 'Side:' }),
+      RULES.sideOptions.map(function (so) { return h('button', { type: 'button', class: 'chip', 'aria-pressed': l.opts.side === so.value ? 'true' : 'false', text: so.value + (so.extra ? ' +' + fmt(so.extra) : ''), onclick: function () { l.opts.side = so.value; recalcLine(l); updateOrder(); } }); })));
+    row.appendChild(o);
+  }
+  return row;
+}
+function renderPicker() {
+  var host = $('picker'); host.textContent = '';
+  if (!D.picker) return;
+  if (!MENU) { host.appendChild(h('p', { class: 'sub', text: 'The menu is not loaded.' })); return; }
+  if (D.items.length) {
+    var t = itemTotals_(D.items);
+    host.appendChild(h('div', { class: 'cart' }, D.items.map(function (l) {
+      return h('div', null, h('span', { text: l.qty + ' × ' + (l.g === 'chicken' ? 'Chicken meal' : l.value) + (l.detail ? ' · ' + l.detail : '') }),
+        h('span', null, fmt(l.price * l.qty) + ' ', h('button', { type: 'button', class: 'btn small', text: '✕', 'aria-label': 'Remove ' + l.value, onclick: function () { D.items.splice(D.items.indexOf(l), 1); if (!hasSoup()) D.items = D.items.filter(function (x) { return x.g !== 'topping'; }); updateOrder(); } })));
+    }), h('div', null, h('strong', { text: plural(t.meals, 'meal') + ' · total' }), h('strong', { text: fmt(t.main + t.other) }))));
+  }
+  host.appendChild(chickenBuilder());
+  MENU.sections.forEach(function (sec) {
+    host.appendChild(h('div', { class: 'psec' }, h('h3', { text: sec.title }), sec.items.map(pickRow)));
+  });
+}
+
+/* ------------------------------------------------------------------ website orders waiting */
+function loadWebOrder(w) {
+  D = newDraft(); D.picker = true; D.webId = w.id; D.name = w.customer || ''; D.notes = w.notes || '';
+  D.items = w.items.map(function (it) { var l = JSON.parse(JSON.stringify(it)); l.base = BYVAL[l.value] ? BYVAL[l.value].price : l.price; l.opts = l.opts || {}; return l; });
+  var f = findCustomer(D.name); if (f && f.method) D.method = f.method;
+  closeModal(); scheduleOrder.reset(); updateOrder();
+}
+function openWeb() {
+  openModal([h('h2', { text: 'Website orders' }), (S.web || []).map(function (w) {
+    return h('div', { class: 'box', style: 'margin-top:10px' },
+      h('strong', { text: (w.customer || 'No name') + ' · ' + fmt(w.total || 0) }),
+      w.items.map(function (it) { return h('div', { class: 'sub', text: it.qty + ' × ' + (it.value || it.label) + (it.detail ? ' · ' + it.detail : '') }); }),
+      w.notes ? h('div', { class: 'sub', text: 'Notes: ' + w.notes }) : null,
+      h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', text: 'Use for an order', onclick: function () { loadWebOrder(w); } }),
+        h('button', { type: 'button', class: 'btn danger', text: 'Dismiss', onclick: function () { closeModal(); act('dismissWeb', { id: w.id }, 'Dismissed'); } })));
+  }), h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn', text: 'Close', onclick: closeModal }))]);
+}
+
+/* ------------------------------------------------------------------ dishes (what to cook) */
+function normSide(v) {
+  var k = String(v).toLowerCase();
+  if (/wedge/.test(k)) return 'Potato wedges';
+  if (/cauliflower/.test(k)) return 'Cauliflower mash';
+  if (k === 'rice' || /white steamed/.test(k)) return 'Rice';
+  return v;
+}
+function dishesFor(date) {
+  var first = {}, T = { Mains: {}, Chicken: {}, 'Sides and extras': {}, Drinks: {}, Toppings: {} }, loose = [];
+  S.meals.forEach(function (m) { if (m.oid && (!first[m.oid] || m.date < first[m.oid])) first[m.oid] = m.date; });
+  function put(sec, label, n) { T[sec][label] = (T[sec][label] || 0) + n; }
+  S.orders.forEach(function (o) {
+    if (!o.oid || first[o.oid] !== date) return;
+    if (!o.items || !o.items.length) { if (o.food) loose.push({ name: o.name, food: o.food }); return; }
+    o.items.forEach(function (it) {
+      var q = it.qty, op = it.opts || {}, sec = SECOF[it.value];
+      if (it.g === 'chicken') {
+        put('Chicken', 'Chicken thigh', q);
+        put('Chicken', '· ' + op.flavour + (op.spice ? ' (' + op.spice + ')' : ''), q);
+        if (op.carb) put('Chicken', '· ' + op.carb, q);
+        if (op.side) put('Sides and extras', normSide(op.side), q);
+      } else if (it.g === 'setmeal') {
+        put('Mains', it.value, q);
+        if (op.rice === 'Yes') put('Sides and extras', 'Rice', q);
+        if (op.side) put('Sides and extras', normSide(op.side), q);
+      } else if (it.g === 'topping') put('Toppings', it.value, q);
+      else if (sec === 'drinks') put('Drinks', it.value, q);
+      else put('Sides and extras', normSide(it.value), q);
+    });
+  });
+  return { tally: T, loose: loose };
+}
+function dishesPanel(date) {
+  var d = dishesFor(date), panel = h('div', { class: 'dishes' }, h('h2', { text: 'Dishes' })), any = false;
+  Object.keys(d.tally).forEach(function (sec) {
+    var keys = Object.keys(d.tally[sec]);
+    if (!keys.length) return;
+    any = true;
+    panel.appendChild(h('div', null, h('h3', { text: sec }), h('div', { class: 'dl' }, keys.map(function (k) {
+      return [h('span', { text: k, style: k.charAt(0) === '·' ? 'color:var(--muted);padding-left:10px' : null }), h('b', { text: String(d.tally[sec][k]) })];
+    }))));
+  });
+  if (d.loose.length) {
+    any = true;
+    panel.appendChild(h('div', null, h('h3', { text: 'Not itemised' }), h('div', { class: 'dl' }, d.loose.map(function (x) { return [h('span', { text: x.name }), h('span', { class: 'sub', text: x.food })]; }))));
+  }
+  if (!any) panel.appendChild(h('p', { class: 'sub', text: 'No dishes yet. Orders made with "Pick dishes", or sent from the website, add up here.' }));
+  return panel;
+}
+
 function updateOrder() {
   if (!S || !D) return;
+  if (D.picker) D.qty = Math.max(1, itemTotals_(D.items).meals);
   if (!D.touched) autoSchedule(); else fitCounts();
   $('d-label').textContent = (D.date === S.today ? 'Today · ' : '') + dayLong(D.date);
   setVal($('cust'), D.name);
@@ -933,6 +1163,10 @@ function updateOrder() {
   $('extras').hidden = !D.extrasOpen; $('more').setAttribute('aria-expanded', D.extrasOpen ? 'true' : 'false');
   $('more-sum').textContent = xs.length ? xs.join(' · ') : 'None'; $('more-sum').className = 'pill' + (xs.length ? ' info' : '');
   renderRecent(); renderHint();
+  $('f-qty').hidden = D.picker; $('f-unit').hidden = D.picker; $('picker').hidden = !D.picker;
+  Array.prototype.forEach.call($('modebar').querySelectorAll('[data-mode]'), function (b) { b.setAttribute('aria-pressed', (b.dataset.mode === 'pick') === D.picker ? 'true' : 'false'); });
+  var wn = (S.web || []).length; $('webbtn').hidden = !wn; $('webbtn').textContent = wn + ' website order' + (wn === 1 ? '' : 's') + ' waiting';
+  renderPicker();
   scheduleOrder.render();
 
   var c = calc();
@@ -952,6 +1186,8 @@ function updateOrder() {
 }
 
 function wireOrder() {
+  Array.prototype.forEach.call($('modebar').querySelectorAll('[data-mode]'), function (b) { b.onclick = function () { D.picker = b.dataset.mode === 'pick'; updateOrder(); }; });
+  $('webbtn').onclick = openWeb;
   var cust = $('cust');
   cust.addEventListener('input', function () { D.name = cust.value; suggestIdx = -1; showSuggest(); updateOrder(); });
   cust.addEventListener('focus', function () { showSuggest(); });
@@ -993,8 +1229,9 @@ function wireOrder() {
     setWeekends: function (b) { D.weekends = b; D.touched = false; updateOrder(); },
     hint: function () {
       return D.qty === 1 ? 'One meal. Change the day if it is for later.'
-        : 'Each + puts one of the ' + D.qty + ' meals on that day. Anything left over stays as credit to schedule later.';
+        : 'Each + adds a meal on that day (and to the order). Anything left over stays as credit to schedule later.';
     },
+    grow: function () { D.qty = Math.min(60, D.qty + 1); },
     spreadFrom: function () { return D.date; }
   });
 }
@@ -1009,7 +1246,7 @@ function saveOrder() {
   if (pr) { toast(pr, 'bad'); return; }
   var c = calc();
   var schedule = Object.keys(D.counts).map(function (d) { return { date: d, count: D.counts[d] }; });
-  var p = { date: D.date, name: D.name.trim(), qty: D.qty, food: D.food, notes: D.notes, unitPrice: D.unit, extra: D.extra, extraPrice: D.extraPrice, discount: D.disc, paid: c.paid, method: D.method, schedule: schedule };
+  var p = { webId: D.webId, items: D.picker ? D.items : [], date: D.date, name: D.name.trim(), qty: D.qty, food: D.food, notes: D.notes, unitPrice: D.unit, extra: D.extra, extraPrice: D.extraPrice, discount: D.disc, paid: c.paid, method: D.method, schedule: schedule };
   lastMethod = D.method;
   act('saveOrder', p, function (i) {
     var msg = 'Saved ' + i.name + ': ' + plural(i.qty, 'meal');
@@ -1049,7 +1286,7 @@ function makeSchedule(host, cfg) {
         h('div', { class: 'ctl' },
           h('button', { type: 'button', 'aria-label': 'One fewer meal on ' + dayLong(date), text: '−', disabled: off || n === 0, onclick: function () { bump(date, -1); } }),
           h('span', { class: 'count', text: String(n) }),
-          h('button', { type: 'button', 'aria-label': 'One more meal on ' + dayLong(date), text: '+', disabled: off || used >= total, onclick: function () { bump(date, 1); } })));
+          h('button', { type: 'button', 'aria-label': 'One more meal on ' + dayLong(date), text: '+', disabled: off || (used >= total && !cfg.grow), onclick: function () { if (used >= total && cfg.grow) cfg.grow(); bump(date, 1); } })));
     }
 
     host.appendChild(h('div', { class: 'planhead' }, h('h2', { text: cfg.title }),
@@ -1095,7 +1332,8 @@ function renderToday() {
   stats.appendChild(h('span', { class: 'pill ok', text: served + ' served' }));
   if (day.length - served > 0) stats.appendChild(h('span', { class: 'pill warn', text: (day.length - served) + ' to go' }));
 
-  var body = $('t-body'); body.textContent = '';
+  var host = $('t-body'); host.textContent = '';
+  var body = h('div', { class: 'stack' });
   if (over.length) {
     body.appendChild(h('div', { class: 'sect' }, h('h2', null, 'Not ticked off from earlier days ', h('span', { class: 'pill warn', text: String(over.length) })),
       h('div', { class: 'mgrid' }, over.map(function (m) { return mealCard(m, true); }))));
@@ -1107,6 +1345,7 @@ function renderToday() {
       h('p', { text: 'Meals show up here once an order has them scheduled for ' + (isToday ? 'today' : dayLong(date)) + '.' }),
       h('button', { type: 'button', class: 'btn primary', text: 'New order', onclick: function () { go('order'); } })));
   }
+  host.appendChild(h('div', { class: 'tgrid' }, body, dishesPanel(date)));
 }
 function mealCard(m, showDate) {
   var served = m.status === STATUS_.SERVED, ask = TV.confirm[m.id];
@@ -1172,11 +1411,21 @@ function renderCustomers() {
       h('div', { class: 'chips' },
         c.credit > 0 ? h('span', { class: 'pill warn', text: plural(c.credit, 'meal') + ' to schedule' }) : null,
         c.owed > 0 ? h('span', { class: 'pill bad', text: 'Owes ' + fmt(c.owed) }) : null,
-        c.upcoming > 0 ? h('span', { class: 'pill info', text: c.upcoming + ' coming up' }) : null,
+        c.upcoming > 0 ? h('span', { class: 'pill info', text: c.upcoming + ' booked' }) : null,
         !needsAttention(c) && !c.upcoming ? h('span', { class: 'pill', text: 'Last ' + dayLong(c.last) }) : null)));
   });
   if (!list.length) box.appendChild(h('p', { class: 'sub', style: 'padding:8px', text: 'No customers match.' }));
   renderDetail();
+}
+
+/* ticks a list of meals off one after another, then shows one message */
+function markServed(list) {
+  if (busy || !list.length) return;
+  (function next(i) {
+    if (i >= list.length) return;
+    act('setMealStatus', { id: list[i].id, status: STATUS_.SERVED }, i === list.length - 1 ? plural(list.length, 'meal') + ' marked as served' : null)
+      .then(function (r) { if (r && r.state) next(i + 1); });
+  })(0);
 }
 
 function renderDetail() {
@@ -1188,14 +1437,15 @@ function renderDetail() {
   var toSched = mine.filter(function (o) { return o.oid && o.credit > 0; });
   var unpaid = mine.filter(function (o) { return o.owed > 0; });
   var upcoming = S.meals.filter(function (m) { return m.name.toLowerCase() === key && m.status === STATUS_.SCHEDULED && m.date >= S.today; }).sort(cmpMeal_);
+  var dueNow = upcoming.filter(function (m) { return m.date <= S.today; });
   var detail = h('div', { class: 'stack' });
 
   detail.appendChild(h('div', null, h('h1', { text: c.name }),
     h('p', { class: 'sub', style: 'margin-top:6px', text: 'Last order ' + dayLong(c.last) + (c.unitPrice ? ' · usually ' + fmt(c.unitPrice) + ' a meal' : '') })));
   detail.appendChild(h('div', { class: 'tiles' },
     h('div', { class: 'tile' + (c.credit ? ' warn' : '') }, h('b', { text: String(c.credit) }), h('span', { text: 'To schedule' })),
-    h('div', { class: 'tile' }, h('b', { text: String(c.upcoming) }), h('span', { text: 'Coming up' })),
-    h('div', { class: 'tile' }, h('b', { text: String(c.served) }), h('span', { text: 'Eaten (tracked)' })),
+    h('div', { class: 'tile' }, h('b', { text: String(c.upcoming) }), h('span', { text: 'Booked' })),
+    h('div', { class: 'tile' }, h('b', { text: String(c.served) }), h('span', { text: 'Served' })),
     h('div', { class: 'tile' + (c.owed ? ' bad' : '') }, h('b', { text: fmt(c.owed) }), h('span', { text: 'Owes' }))));
 
   toSched.forEach(function (o) {
@@ -1222,7 +1472,7 @@ function renderDetail() {
   });
 
   if (upcoming.length) {
-    detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Coming up' }), h('div', { class: 'mgrid' }, upcoming.map(function (m) { return mealCard(m, true); }))));
+    detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Booked meals' }), dueNow.length ? h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn ok', text: 'Mark ' + plural(dueNow.length, 'meal') + ' due today as served', onclick: function () { markServed(dueNow); } })) : null, h('div', { class: 'mgrid' }, upcoming.map(function (m) { return mealCard(m, true); }))));
   }
 
   if (unpaid.length) {
@@ -1240,7 +1490,7 @@ function renderDetail() {
   }
 
   detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Recent orders' }),
-    h('div', { class: 'rl' }, mine.slice(0, 6).map(function (o) {
+    h('div', { class: 'rl', style: 'max-height:460px;overflow:auto;align-content:start' }, mine.map(function (o) {
       return [h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
         h('span', { class: 'r', text: o.owed ? 'owes ' + fmt(o.owed) : 'paid' })];
     }))));
