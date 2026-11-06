@@ -65,6 +65,7 @@ p { margin: 0; }
 .rail button { position: relative; width: 76px; min-height: 76px; border: 0; border-radius: 20px; background: transparent; color: var(--rail-ink); display: grid; place-items: center; align-content: center; gap: 4px; font: 600 12px var(--body); }
 .rail button[aria-current="page"] { background: var(--accent); color: var(--accent-ink); }
 .rail .spacer { flex: 1; }
+.rail button[hidden] { display: none; }
 .badge { position: absolute; top: 5px; right: 7px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: var(--warn-soft); color: var(--warn); font: 600 13px var(--mono); display: grid; place-items: center; }
 .badge[hidden] { display: none; }
 
@@ -277,9 +278,13 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
       <span class="badge" id="b-cust" hidden>0</span>
     </button>
     <div class="spacer"></div>
-    <button type="button" id="nav-refresh" aria-label="Refresh from the sheet">
+    <button type="button" id="nav-refresh" aria-label="Refresh">
       <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
       Refresh
+    </button>
+    <button type="button" id="nav-out" hidden aria-label="Sign out">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <span id="who" style="font-size:10px;max-width:84px;overflow:hidden;text-overflow:ellipsis;display:block">Sign out</span>
     </button>
   </nav>
 
@@ -1534,6 +1539,16 @@ function init() {
   $('nav-today').onclick = function () { go('today'); };
   $('nav-customers').onclick = function () { go('customers'); };
   $('nav-refresh').onclick = function () { if (!busy) load(false); };
+  if (useSb) {
+    sb.auth.getSession().then(function (r) {
+      if (r.data.session) { $('who').textContent = r.data.session.user.email; $('nav-out').hidden = false; $('nav-out').title = 'Signed in as ' + r.data.session.user.email + '. Tap to sign out.'; }
+    });
+    sb.auth.onAuthStateChange(function (ev, session) {
+      $('nav-out').hidden = !session;
+      if (session) $('who').textContent = session.user.email;
+    });
+    $('nav-out').onclick = function () { sb.auth.signOut().then(function () { S = null; D = null; askLogin('Signed out'); }); };
+  }
   $('boot-retry').onclick = function () { $('boot-retry').hidden = true; $('boot-msg').textContent = 'Loading orders…'; load(false); };
   $('t-prev').onclick = function () { TV.date = addDays_(TV.date || S.today, -1); renderToday(); };
   $('t-next').onclick = function () { TV.date = addDays_(TV.date || S.today, 1); renderToday(); };
