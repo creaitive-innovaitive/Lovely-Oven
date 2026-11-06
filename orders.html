@@ -1399,13 +1399,14 @@ function mealCard(m, showDate) {
 function openModal(content) { var s = $('sheet'); s.textContent = ''; add(s, content); $('modal').hidden = false; }
 function closeModal() { $('modal').hidden = true; }
 function openMove(m) {
-  var weekends = isWeekend_(m.date), start = S.today > m.date ? S.today : m.date;
+  var weekends = isWeekend_(m.date), ord = S.orders.filter(function (o) { return o.oid && o.oid === m.oid; })[0];
+  var floor = ord ? ord.date : addDays_(m.date, -60), start = floor > addDays_(m.date, -7) ? floor : addDays_(m.date, -7);
   function draw() {
     var days = [], d = start, guard = 0;
     while (days.length < 15 && guard++ < 60) { if (weekends || !isWeekend_(d)) days.push(d); d = addDays_(d, 1); }
     openModal([
       h('h2', { text: 'Move ' + m.name + '’s meal' }),
-      h('p', { class: 'sub', text: 'Now on ' + dayLong(m.date) + '. Pick the new day.' }),
+      h('p', { class: 'sub', text: 'Now on ' + dayLong(m.date) + '. Pick the new day' + (ord ? ' (not before the order on ' + dayLong(ord.date) + ').' : '.') }),
       h('div', { class: 'chips', style: 'margin:0' }, days.map(function (x) {
         return h('button', { type: 'button', class: 'chip', 'aria-pressed': x === m.date ? 'true' : 'false', text: dayLong(x), onclick: function () {
           closeModal();
@@ -1413,6 +1414,8 @@ function openMove(m) {
         } });
       })),
       h('div', { class: 'row' },
+        h('button', { type: 'button', class: 'btn', text: '‹ Earlier', disabled: start <= floor, onclick: function () { start = addDays_(start, -14) < floor ? floor : addDays_(start, -14); draw(); } }),
+        h('button', { type: 'button', class: 'btn', text: 'Later ›', onclick: function () { start = addDays_(start, 14); draw(); } }),
         h('button', { type: 'button', class: 'chip', 'aria-pressed': weekends ? 'true' : 'false', text: 'Sat & Sun', onclick: function () { weekends = !weekends; draw(); } }),
         h('div', { class: 'grow' }),
         h('button', { type: 'button', class: 'btn', text: 'Close', onclick: closeModal }))
