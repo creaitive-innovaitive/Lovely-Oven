@@ -439,6 +439,7 @@
     const topKeys  = Object.keys(ORDER.toppings);
 
     let msg = `🍽️ New Order — Lovely Oven\n\n`;
+    let grand = 0;
 
     if (hasChicken) {
       msg += `🍗 CHICKEN MEAL\n`;
@@ -446,7 +447,7 @@
       msg += `   Marinade: ${ORDER.flavour ? ORDER.flavour + spice : '—'}\n`;
       msg += `   Carb:     ${ORDER.carb || '—'}\n`;
       msg += `   Side:     ${sideText(ORDER.side) || '—'}\n`;
-      if (STEPS.every(s => ORDER[s.key])) msg += `   Subtotal: ₫${chickenPrice().toLocaleString()}\n`;
+      if (STEPS.every(s => ORDER[s.key])) { msg += `   Subtotal: ₫${chickenPrice().toLocaleString()}\n`; grand += chickenPrice(); }
       msg += '\n';
     }
 
@@ -461,6 +462,7 @@
         if (item.detail) msg += `      ${item.detail}\n`;
       });
       msg += `   Subtotal: ₫${total.toLocaleString()}\n\n`;
+      grand += total;
     }
 
     if (topKeys.length > 0) {
@@ -473,6 +475,7 @@
         msg += `   ${item.label} × ${item.qty}  ₫${line.toLocaleString()}\n`;
       });
       msg += `   Subtotal: ₫${total.toLocaleString()}\n\n`;
+      grand += total;
     }
 
     if (extKeys.length > 0) {
@@ -485,7 +488,12 @@
         msg += `   ${item.label} × ${item.qty}  ₫${line.toLocaleString()}\n`;
       });
       msg += `   Subtotal: ₫${total.toLocaleString()}\n\n`;
+      grand += total;
     }
+
+    msg += `━━━━━━━━━━━━━━━━\n`;
+    msg += `💰 FINAL TOTAL: ₫${grand.toLocaleString()}\n`;
+    msg += `━━━━━━━━━━━━━━━━\n\n`;
 
     if (name)  msg += `👤 Name:   ${name}\n`;
     if (notes) msg += `📝 Notes:  ${notes}\n`;

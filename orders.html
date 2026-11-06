@@ -308,6 +308,7 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
             <button type="button" class="more" id="more" aria-expanded="false"><span>Extras, notes or discount</span><span class="pill" id="more-sum">None</span><span aria-hidden="true">▾</span></button>
             <div class="extras" id="extras" hidden>
               <div class="field"><label for="food">Food ordered</label><input type="text" id="food" autocomplete="off" placeholder="Optional"></div>
+              <div class="field"><label for="notes">Notes</label><input type="text" id="notes" autocomplete="off" placeholder="Optional"></div>
               <div class="field"><label for="extra">Extra ordered</label><input type="text" id="extra" autocomplete="off" placeholder="Optional"></div>
               <div class="field"><label for="xprice">Price of extra</label><div class="money"><input type="text" id="xprice" inputmode="numeric" autocomplete="off" placeholder="0"><span>VND</span></div></div>
               <div class="field"><label for="disc">Freebie or discount</label><div class="money"><input type="text" id="disc" inputmode="numeric" autocomplete="off" placeholder="0"><span>VND</span></div></div>
@@ -456,7 +457,7 @@ function buildState_(data) {
     if (o.date >= recentCut) c.recent++;
     if (unit && o.date >= priceCut) priceCount[unit] = (priceCount[unit] || 0) + 1;
     if (o.date >= cutoff || owed > 0 || credit > 0) {
-      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, food: o.food || '', payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
+      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, food: o.food || '', notes: o.notes || '', payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
     }
   });
 
@@ -527,10 +528,10 @@ function planSaveOrder_(p, data) {
   if (paid > pay) fail_('The amount paid is more than the total.');
   var method = p.method === 'Cash' || p.method === 'Transfer' ? p.method : '';
   var sched = cleanSchedule_(p.schedule, p.date, qty);
-  var oid = 'O' + data.nonce, food = String(p.food || '').trim().slice(0, 80);
+  var oid = 'O' + data.nonce, food = String(p.food || '').trim().slice(0, 80), notes = String(p.notes || '').trim().slice(0, 200);
   var meals = expandMeals_(sched, name, oid, food, data.nonce, 0);
   return {
-    order: { date: p.date, name: name, qty: qty, food: food, pfood: pfood, extra: String(p.extra || '').trim().slice(0, 80), pextra: ep, disc: disc, paid: paid, oid: oid, method: method },
+    order: { date: p.date, name: name, qty: qty, food: food, pfood: pfood, extra: String(p.extra || '').trim().slice(0, 80), pextra: ep, disc: disc, paid: paid, notes: notes, oid: oid, method: method },
     meals: meals,
     info: { oid: oid, name: name, qty: qty, scheduled: meals.length, credit: qty - meals.length, days: sched.map(function (s) { return s.date; }), payable: pay, owed: pay - paid }
   };
@@ -620,7 +621,7 @@ function makeMock() {
   var T = localToday(), orders = [], meals = [], oRow = 2, mRow = 2, seq = 0;
   function addOrder(date, name, qty, unit, paid, method, days) {
     var oid = days ? 'OPRE' + (++seq) : '';
-    orders.push({ row: oRow++, date: date, name: name, qty: qty, food: '', pfood: unit * qty, extra: '', pextra: 0, disc: 0, paid: paid, oid: oid, method: method });
+    orders.push({ row: oRow++, date: date, name: name, qty: qty, food: '', notes: '', pfood: unit * qty, extra: '', pextra: 0, disc: 0, paid: paid, oid: oid, method: method });
     (days || []).forEach(function (d, i) {
       meals.push({ row: mRow++, date: d, name: name, status: d < T ? STATUS_.SERVED : STATUS_.SCHEDULED, oid: oid, id: 'MPRE' + seq + '-' + i, note: '' });
     });
@@ -742,7 +743,7 @@ function askKey(msg) {
 
 /* ------------------------------------------------------------------ new order */
 function newDraft() {
-  return { date: lastDate || S.today, name: '', qty: 1, unit: S.topPrice || 100000, food: '', extra: '', extraPrice: 0, disc: 0, payMode: 'full', part: 0, method: lastMethod, counts: {}, touched: false, weekends: false, extrasOpen: false };
+  return { date: lastDate || S.today, name: '', qty: 1, unit: S.topPrice || 100000, food: '', notes: '', extra: '', extraPrice: 0, disc: 0, payMode: 'full', part: 0, method: lastMethod, counts: {}, touched: false, weekends: false, extrasOpen: false };
 }
 function autoSchedule() {
   if (D.touched) return;
@@ -830,8 +831,28 @@ function renderHint() {
   if (!D.name.trim()) { box.appendChild(h('span', { text: 'Pick a regular or type a new name.' })); return; }
   if (!c) { box.appendChild(h('span', { class: 'pill info', text: 'New customer' })); return; }
   box.appendChild(h('span', { text: 'Last order ' + dayLong(c.last) + (c.unitPrice ? ' at ' + fmt(c.unitPrice) : '') }));
-  if (c.credit > 0) box.appendChild(h('span', { class: 'pill warn', text: plural(c.credit, 'meal') + ' still to schedule' }));
+  if (c.credit > 0) {
+    box.appendChild(h('span', { class: 'pill warn', text: plural(c.credit, 'meal') + ' banked, already paid' }));
+    box.appendChild(h('button', { type: 'button', class: 'btn small ok', text: 'Use ' + plural(Math.min(D.qty, c.credit), 'banked meal') + ' on ' + dayShort(D.date) + ' (nothing to pay)', onclick: useBanked }));
+  }
   if (c.owed > 0) box.appendChild(h('span', { class: 'pill bad', text: 'Owes ' + fmt(c.owed) }));
+}
+
+/* books meals for the chosen day against orders the customer has already paid for, so no new payment is due */
+function useBanked() {
+  if (busy) return;
+  var key = D.name.trim().toLowerCase(), need = D.qty, jobs = [];
+  S.orders.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; }).forEach(function (o) {
+    if (o.name.toLowerCase() !== key || !o.oid || o.credit <= 0 || need <= 0) return;
+    var n = Math.min(need, o.credit); need -= n;
+    jobs.push({ oid: o.oid, schedule: [{ date: D.date, count: n }] });
+  });
+  if (!jobs.length) return;
+  (function next(i) {
+    if (i >= jobs.length) { D = newDraft(); scheduleOrder.reset(); updateOrder(); return; }
+    act('scheduleMeals', jobs[i], function (inf) { return 'Used ' + plural(inf.scheduled, 'banked meal') + ' for ' + inf.name + ' · nothing to pay'; })
+      .then(function (r) { if (r && r.state) next(i + 1); });
+  })(0);
 }
 
 function updateOrder() {
@@ -842,7 +863,7 @@ function updateOrder() {
   $('qty').textContent = D.qty;
   $('q-minus').disabled = D.qty <= 1; $('q-plus').disabled = D.qty >= 60;
   setVal($('unit'), D.unit ? fmt(D.unit) : '');
-  setVal($('food'), D.food); setVal($('extra'), D.extra);
+  setVal($('food'), D.food); setVal($('notes'), D.notes); setVal($('extra'), D.extra);
   setVal($('xprice'), D.extraPrice ? fmt(D.extraPrice) : ''); setVal($('disc'), D.disc ? fmt(D.disc) : '');
   setVal($('partamt'), D.part ? fmt(D.part) : '');
 
@@ -855,7 +876,7 @@ function updateOrder() {
     pc.appendChild(h('button', { type: 'button', class: 'chip', 'aria-pressed': D.unit === p ? 'true' : 'false', text: fmt(p), onclick: function () { D.unit = p; updateOrder(); } }));
   });
   var xs = [];
-  if (D.food.trim()) xs.push('Food'); if (D.extra.trim() || D.extraPrice) xs.push('Extra'); if (D.disc) xs.push('Discount');
+  if (D.food.trim()) xs.push('Food'); if (D.notes.trim()) xs.push('Notes'); if (D.extra.trim() || D.extraPrice) xs.push('Extra'); if (D.disc) xs.push('Discount');
   $('extras').hidden = !D.extrasOpen; $('more').setAttribute('aria-expanded', D.extrasOpen ? 'true' : 'false');
   $('more-sum').textContent = xs.length ? xs.join(' · ') : 'None'; $('more-sum').className = 'pill' + (xs.length ? ' info' : '');
   renderRecent(); renderHint();
@@ -900,6 +921,7 @@ function wireOrder() {
   bindMoney($('disc'), function (n) { D.disc = n; updateOrder(); });
   bindMoney($('partamt'), function (n) { D.part = n; updateOrder(); });
   $('food').addEventListener('input', function () { D.food = $('food').value; });
+  $('notes').addEventListener('input', function () { D.notes = $('notes').value; });
   $('extra').addEventListener('input', function () { D.extra = $('extra').value; });
   Array.prototype.forEach.call($('paymode').children, function (b) {
     b.onclick = function () { D.payMode = b.dataset.m; updateOrder(); if (D.payMode === 'part') $('partamt').focus(); };
@@ -934,7 +956,7 @@ function saveOrder() {
   if (pr) { toast(pr, 'bad'); return; }
   var c = calc();
   var schedule = Object.keys(D.counts).map(function (d) { return { date: d, count: D.counts[d] }; });
-  var p = { date: D.date, name: D.name.trim(), qty: D.qty, food: D.food, unitPrice: D.unit, extra: D.extra, extraPrice: D.extraPrice, discount: D.disc, paid: c.paid, method: D.method, schedule: schedule };
+  var p = { date: D.date, name: D.name.trim(), qty: D.qty, food: D.food, notes: D.notes, unitPrice: D.unit, extra: D.extra, extraPrice: D.extraPrice, discount: D.disc, paid: c.paid, method: D.method, schedule: schedule };
   lastMethod = D.method;
   act('saveOrder', p, function (i) {
     var msg = 'Saved ' + i.name + ': ' + plural(i.qty, 'meal');
@@ -1166,7 +1188,7 @@ function renderDetail() {
 
   detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Recent orders' }),
     h('div', { class: 'rl' }, mine.slice(0, 6).map(function (o) {
-      return [h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') }), h('span', { class: 'r', text: fmt(o.payable) }),
+      return [h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
         h('span', { class: 'r', text: o.owed ? 'owes ' + fmt(o.owed) : 'paid' })];
     }))));
   host.appendChild(detail);

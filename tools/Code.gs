@@ -83,7 +83,7 @@ function buildState_(data) {
     if (o.date >= recentCut) c.recent++;
     if (unit && o.date >= priceCut) priceCount[unit] = (priceCount[unit] || 0) + 1;
     if (o.date >= cutoff || owed > 0 || credit > 0) {
-      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, food: o.food || '', payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
+      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, food: o.food || '', notes: o.notes || '', payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
     }
   });
 
@@ -154,10 +154,10 @@ function planSaveOrder_(p, data) {
   if (paid > pay) fail_('The amount paid is more than the total.');
   var method = p.method === 'Cash' || p.method === 'Transfer' ? p.method : '';
   var sched = cleanSchedule_(p.schedule, p.date, qty);
-  var oid = 'O' + data.nonce, food = String(p.food || '').trim().slice(0, 80);
+  var oid = 'O' + data.nonce, food = String(p.food || '').trim().slice(0, 80), notes = String(p.notes || '').trim().slice(0, 200);
   var meals = expandMeals_(sched, name, oid, food, data.nonce, 0);
   return {
-    order: { date: p.date, name: name, qty: qty, food: food, pfood: pfood, extra: String(p.extra || '').trim().slice(0, 80), pextra: ep, disc: disc, paid: paid, oid: oid, method: method },
+    order: { date: p.date, name: name, qty: qty, food: food, pfood: pfood, extra: String(p.extra || '').trim().slice(0, 80), pextra: ep, disc: disc, paid: paid, notes: notes, oid: oid, method: method },
     meals: meals,
     info: { oid: oid, name: name, qty: qty, scheduled: meals.length, credit: qty - meals.length, days: sched.map(function (s) { return s.date; }), payable: pay, owed: pay - paid }
   };
@@ -208,7 +208,7 @@ function planPayment_(p, data) {
 var SPREADSHEET_ID = '1gGX_TTaDoZvPgKUhOhL4s6BRcyLk3b5JBRZLPEMUrCw';
 var ORDERS_SHEET_ = 'Orders';
 var MEALS_SHEET_ = 'Meals';
-var ORDER_COLS_ = 12;   // A..L on Orders (K = Order ID, L = Payment method are added by the form)
+var ORDER_COLS_ = 13;   // A..M on Orders (K = Notes, L = Order ID, M = Payment method; K..M are added by the form)
 
 /* The form lives on the website (orders.html) and talks to this script over POST.
    Set the passcode under Project Settings > Script properties as API_KEY.
@@ -308,15 +308,21 @@ function isoOf_(v, tz) {
   return '';
 }
 
-/* adds the two extra Orders columns and the Meals sheet the first time the form runs */
+/* adds the extra Orders columns (Notes, Order ID, Payment method) and the Meals sheet the first time the form runs */
 function ensureSetup_(ss) {
   var os = ss.getSheetByName(ORDERS_SHEET_);
   if (!os) throw new Error('The spreadsheet needs a sheet called "' + ORDERS_SHEET_ + '".');
-  var heads = os.getRange(1, 11, 1, 2).getValues()[0];
-  if (!heads[0] || !heads[1]) {
-    if (!heads[0]) os.getRange(1, 11).setValue('Order ID');
-    if (!heads[1]) os.getRange(1, 12).setValue('Payment method');
-    os.getRange(1, 10).copyTo(os.getRange(1, 11, 1, 2), SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+  var heads = os.getRange(1, 11, 1, 3).getValues()[0];
+  if (heads[0] === 'Order ID') {
+    // older layout without Notes: slot a Notes column in right after Total paid
+    os.insertColumnAfter(10);
+    heads = os.getRange(1, 11, 1, 3).getValues()[0];
+  }
+  if (!heads[0] || !heads[1] || !heads[2]) {
+    if (!heads[0]) os.getRange(1, 11).setValue('Notes');
+    if (!heads[1]) os.getRange(1, 12).setValue('Order ID');
+    if (!heads[2]) os.getRange(1, 13).setValue('Payment method');
+    os.getRange(1, 10).copyTo(os.getRange(1, 11, 1, 3), SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
   }
   if (!ss.getSheetByName(MEALS_SHEET_)) {
     var ms = ss.insertSheet(MEALS_SHEET_);
@@ -346,7 +352,7 @@ function readData_() {
         row: i + 2, date: iso, name: String(r[1]).trim(),
         qty: Math.max(1, Math.round(num_(r[2])) || 1),
         food: String(r[3] || ''), pfood: num_(r[4]), extra: String(r[5] || ''), pextra: num_(r[6]), disc: num_(r[7]),
-        paid: num_(r[9]), oid: String(r[10] || ''), method: String(r[11] || '')
+        paid: num_(r[9]), notes: String(r[10] || ''), oid: String(r[11] || ''), method: String(r[12] || '')
       });
     }
   }
@@ -370,7 +376,7 @@ function appendOrder_(o) {
   var row = last + 1;
   if (row > os.getMaxRows()) os.insertRowsAfter(os.getMaxRows(), 50);
   os.getRange(row, 1, 1, 8).setValues([[dateObj_(o.date), o.name, o.qty, o.food, o.pfood, o.extra, o.pextra, o.disc]]);
-  os.getRange(row, 10, 1, 3).setValues([[o.paid, o.oid, o.method]]);
+  os.getRange(row, 10, 1, 4).setValues([[o.paid, o.notes || '', o.oid, o.method]]);
   os.getRange(row, 1).setNumberFormat('dd/mm/yyyy');
   os.getRange(row, 5).setNumberFormat('#,##0');
   os.getRange(row, 7, 1, 2).setNumberFormat('#,##0');
