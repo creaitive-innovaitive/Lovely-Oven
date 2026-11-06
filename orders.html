@@ -623,6 +623,13 @@ function planMove_(p, data) {
   return { id: m.id, date: p.date, info: { name: baseName_(m.name), date: p.date } };
 }
 
+function planDeleteOrder_(p, data) {
+  var ix = indexData_(data), o = ix.byRow[p.row];
+  if (!o || baseName_(o.name) !== baseName_(p.name) || o.date !== p.date) fail_('That order has changed. Refresh and try again.');
+  var n = o.oid ? data.meals.filter(function (m) { return m.oid === o.oid; }).length : 0;
+  return { row: o.row, oid: o.oid || '', info: { name: baseName_(o.name), meals: n } };
+}
+
 function planPayment_(p, data) {
   var ix = indexData_(data), o = ix.byRow[p.row];
   if (!o || baseName_(o.name) !== baseName_(p.name) || o.date !== p.date) fail_('That order has changed. Refresh and try again.');
@@ -702,6 +709,12 @@ function makeMock() {
   function addMeals(list) { list.forEach(function (m) { var r = { row: mRow++ }; for (var k in m) r[k] = m[k]; meals.push(r); }); }
   return {
     getState: function () { return out(); },
+    deleteOrder: function (p) {
+      var plan = planDeleteOrder_(p, data());
+      orders = orders.filter(function (o) { return o.row !== plan.row; });
+      if (plan.oid) meals = meals.filter(function (m) { return m.oid !== plan.oid; });
+      return out(plan.info);
+    },
     dismissWeb: function (p) { web.forEach(function (w) { if (w.id === p.id) w.status = 'Dismissed'; }); return out(); },
     saveOrder: function (p) {
       var plan = planSaveOrder_(p, data()), r = { row: oRow++ };
@@ -773,6 +786,14 @@ var sbApi = {
       return sb.from('orders').insert({ order_date: o.date, customer: o.name, qty: o.qty, food: o.food, pfood: o.pfood, extra: o.extra, pextra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes, items: o.items, oid: o.oid, method: o.method })
         .then(ok).then(function () { return insertMeals(plan.meals); })
         .then(function () { return p.webId ? sb.from('web_orders').update({ status: 'Accepted' }).eq('id', p.webId).then(ok) : null; }).then(function () { return reply(plan.info); });
+    });
+  },
+  deleteOrder: function (p) {
+    return readData().then(function (d) {
+      var plan = planDeleteOrder_(p, d);
+      return (plan.oid ? sb.from('meals').delete().eq('oid', plan.oid).then(ok) : Promise.resolve())
+        .then(function () { return sb.from('orders').delete().eq('id', plan.row).then(ok); })
+        .then(function () { return reply(plan.info); });
     });
   },
   dismissWeb: function (p) { return sb.from('web_orders').update({ status: 'Dismissed' }).eq('id', p.id).then(ok).then(function () { return reply(); }); },
@@ -1423,6 +1444,17 @@ function renderCustomers() {
   renderDetail();
 }
 
+function confirmDelete(o) {
+  openModal([
+    h('h2', { text: 'Delete this order?' }),
+    h('p', { class: 'sub', text: o.name + ' · ' + dayLong(o.date) + ' · ' + plural(o.qty, 'meal') + ' · ' + fmt(o.payable) + (o.paid ? ' (marked paid ' + fmt(o.paid) + ')' : '') }),
+    h('p', { class: 'sub', text: 'It is removed completely, along with any meals booked for it. This cannot be undone.' }),
+    h('div', { class: 'row' },
+      h('button', { type: 'button', class: 'btn danger', text: 'Yes, delete it', onclick: function () { closeModal(); act('deleteOrder', { row: o.row, name: o.name, date: o.date }, function (i) { return 'Deleted ' + i.name + '’s order'; }); } }),
+      h('button', { type: 'button', class: 'btn', text: 'Keep it', onclick: closeModal }))
+  ]);
+}
+
 /* ticks a list of meals off one after another, then shows one message */
 function markServed(list) {
   if (busy || !list.length) return;
@@ -1497,7 +1529,7 @@ function renderDetail() {
   detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Recent orders' }),
     h('div', { class: 'rl', style: 'max-height:460px;overflow:auto;align-content:start' }, mine.map(function (o) {
       return [h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
-        h('span', { class: 'r', text: o.owed ? 'owes ' + fmt(o.owed) : 'paid' })];
+        h('span', { class: 'r' }, (o.owed ? 'owes ' + fmt(o.owed) : 'paid') + ' ', h('button', { type: 'button', class: 'btn small danger', text: 'Delete', 'aria-label': 'Delete this order', onclick: function () { confirmDelete(o); } }))];
     }))));
   host.appendChild(detail);
 }
