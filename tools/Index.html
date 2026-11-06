@@ -78,8 +78,8 @@ p { margin: 0; }
 .field { min-width: 0; }
 .stack { display: flex; flex-direction: column; gap: 16px; }
 
-input[type="text"], input[type="password"], .money input { width: 100%; height: 60px; border: 2px solid var(--line2); border-radius: 15px; background: var(--surface); color: var(--ink); font: 600 22px var(--body); padding: 0 16px; }
-input[type="text"]:focus, .money input:focus { border-color: var(--accent); outline: 3px solid var(--accent-soft); outline-offset: 0; }
+input[type="text"], input[type="email"], input[type="password"], .money input { width: 100%; height: 60px; border: 2px solid var(--line2); border-radius: 15px; background: var(--surface); color: var(--ink); font: 600 22px var(--body); padding: 0 16px; }
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, .money input:focus { border-color: var(--accent); outline: 3px solid var(--accent-soft); outline-offset: 0; }
 input::placeholder { color: var(--muted); font-weight: 500; opacity: .8; }
 .money { position: relative; }
 .money input { font-family: var(--mono); font-weight: 600; text-align: right; padding-right: 62px; font-size: 21px; }
@@ -790,7 +790,7 @@ function load(quiet) {
 
 function askLogin(msg) {
   $('boot').hidden = false; $('boot-retry').hidden = true; $('boot-key').hidden = false;
-  $('boot-msg').textContent = msg || 'Sign in';
+  $('boot-msg').textContent = msg || 'Lovely Oven staff sign-in';
   $('key-in').value = ''; $('email-in').focus();
 }
 
