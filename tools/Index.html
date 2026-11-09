@@ -491,7 +491,7 @@ function credit_(ix, o) {
 /* ---- what the form sees ---- */
 function buildState_(data) {
   var today = data.today, ix = indexData_(data);
-  var cutoff = addDays_(today, -KEEP_DAYS_), mealCut = addDays_(today, -30), recentCut = addDays_(today, -21), priceCut = addDays_(today, -90);
+  var cutoff = addDays_(today, -KEEP_DAYS_), mealCut = addDays_(today, -365), recentCut = addDays_(today, -21), priceCut = addDays_(today, -90);
   var cust = {}, priceCount = {}, orders = [];
 
   var sorted = data.orders.slice().sort(function (a, b) {
