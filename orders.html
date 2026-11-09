@@ -113,6 +113,9 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
 
 .datepick { display: flex; align-items: center; border: 2px solid var(--line2); border-radius: 15px; background: var(--surface); overflow: hidden; }
 .datepick button { min-height: 52px; border: 0; background: transparent; font: 700 17px var(--body); }
+.whenwrap { position: relative; display: flex; flex: 1; }
+.whenwrap .when { flex: 1; }
+.whenwrap input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .datepick .step { width: 56px; font-size: 26px; }
 .datepick .when { padding: 0 14px; min-width: 190px; border-left: 2px solid var(--line); border-right: 2px solid var(--line); }
 
@@ -378,7 +381,7 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
         <h1>Meals</h1>
         <div class="datepick">
           <button type="button" class="step" id="t-prev" aria-label="Day before">‹</button>
-          <button type="button" class="when" id="t-label" aria-label="Back to today"></button>
+          <div class="whenwrap"><button type="button" class="when" id="t-label" aria-label="Pick a date"></button><input type="date" id="t-date" aria-label="Pick a date"></div>
           <button type="button" class="step" id="t-next" aria-label="Day after">›</button>
         </div>
         <div class="stats" id="t-stats"></div>
@@ -1406,6 +1409,7 @@ function makeSchedule(host, cfg) {
 function renderToday() {
   var date = TV.date || S.today, isToday = date === S.today;
   $('t-label').textContent = (isToday ? 'Today · ' : '') + dayLong(date);
+  $('t-date').value = date;
   var day = S.meals.filter(function (m) { return m.date === date; }).sort(function (a, b) {
     var sa = a.status === STATUS_.SERVED ? 1 : 0, sb = b.status === STATUS_.SERVED ? 1 : 0;
     return sa - sb || (a.name < b.name ? -1 : a.name > b.name ? 1 : (a.n || 0) - (b.n || 0));
@@ -1685,7 +1689,7 @@ function init() {
   $('boot-retry').onclick = function () { $('boot-retry').hidden = true; $('boot-msg').textContent = 'Loading orders…'; load(false); };
   $('t-prev').onclick = function () { TV.date = addDays_(TV.date || S.today, -1); renderToday(); };
   $('t-next').onclick = function () { TV.date = addDays_(TV.date || S.today, 1); renderToday(); };
-  $('t-label').onclick = function () { TV.date = S.today; renderToday(); };
+  $('t-date').onchange = function () { if (this.value) { TV.date = this.value; renderToday(); } };
   $('c-search').addEventListener('input', function () { CV.q = $('c-search').value; renderCustomers(); });
   $('modal').addEventListener('click', function (ev) { if (ev.target === $('modal')) closeModal(); });
   document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') closeModal(); });
