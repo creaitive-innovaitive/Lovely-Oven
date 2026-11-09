@@ -511,7 +511,7 @@ function buildState_(data) {
     if (o.date >= recentCut) c.recent++;
     if (unit && o.date >= priceCut) priceCount[unit] = (priceCount[unit] || 0) + 1;
     if (o.date >= cutoff || owed > 0 || credit > 0) {
-      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, food: o.food || '', notes: o.notes || '', items: o.items || [], payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
+      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, pfood: o.pfood || 0, servedN: ((ix.live[o.oid] || []).filter(function (x) { return x.status === STATUS_.SERVED; })).length, food: o.food || '', notes: o.notes || '', items: o.items || [], payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
     }
   });
 
@@ -640,6 +640,39 @@ function planPayment_(p, data) {
   return { row: o.row, paid: (o.paid || 0) + amount, info: { name: baseName_(o.name), amount: amount, owed: owed - amount } };
 }
 
+/* Shrinks an order by n meals so nothing is left to schedule or prepare.
+   kind 'meal': take one scheduled meal off the order (p.refund gives its price back).
+   kind 'refund': drop every meal not yet served and give that money back.
+   kind 'served': erase delivered meals from the record; payment moves with them so what is owed stays the same. */
+function planTrim_(p, data) {
+  var ix = indexData_(data), kind = p.kind, o, m, live, served, n, settle, cancelIds = [], deleteIds = [];
+  if (kind === 'meal') {
+    m = findMeal_(data, p.id);
+    if (m.status !== STATUS_.SCHEDULED) fail_('That meal is already ' + m.status.toLowerCase() + '.');
+    o = ix.byOid[m.oid];
+    if (!o) return { row: null, oid: '', gone: false, cancelIds: [m.id], deleteIds: [], info: { name: baseName_(m.name), n: 1, refunded: 0, gone: false } };
+    cancelIds = [m.id]; n = 1; settle = !!p.refund;
+  } else {
+    o = ix.byRow[p.row];
+    if (!o || baseName_(o.name) !== baseName_(p.name) || o.date !== p.date) fail_('That order has changed. Refresh and try again.');
+    live = o.oid ? (ix.live[o.oid] || []) : [];
+    served = live.filter(function (x) { return x.status === STATUS_.SERVED; });
+    settle = true;
+    if (kind === 'refund') {
+      n = o.qty - served.length;
+      if (n <= 0) fail_('Every meal on this order has been served, so there is nothing to refund.');
+      live.forEach(function (x) { if (x.status === STATUS_.SCHEDULED) cancelIds.push(x.id); });
+    } else if (kind === 'served') {
+      if (!served.length) fail_('There are no served meals on this order.');
+      n = served.length;
+      served.forEach(function (x) { deleteIds.push(x.id); });
+    } else fail_('Unknown action.');
+  }
+  var value = o.qty > 0 ? Math.round((o.pfood || 0) * n / o.qty) : 0, paid = o.paid || 0, back = settle ? Math.min(paid, value) : 0, newQty = o.qty - n;
+  return { row: o.row, oid: o.oid || '', gone: newQty <= 0, qty: newQty, pfood: Math.max(0, (o.pfood || 0) - value), paid: paid - back, cancelIds: cancelIds, deleteIds: deleteIds,
+    info: { name: baseName_(o.name), n: n, refunded: kind === 'served' ? 0 : back, gone: newQty <= 0, kind: kind } };
+}
+
 </script>
 <script>
 (function () {
@@ -713,6 +746,18 @@ function makeMock() {
       var plan = planDeleteOrder_(p, data());
       orders = orders.filter(function (o) { return o.row !== plan.row; });
       if (plan.oid) meals = meals.filter(function (m) { return m.oid !== plan.oid; });
+      return out(plan.info);
+    },
+    trimOrder: function (p) {
+      var plan = planTrim_(p, data());
+      if (plan.gone) {
+        orders = orders.filter(function (o) { return o.row !== plan.row; });
+        meals = meals.filter(function (m) { return m.oid !== plan.oid; });
+      } else {
+        orders.forEach(function (o) { if (o.row === plan.row) { o.qty = plan.qty; o.pfood = plan.pfood; o.paid = plan.paid; } });
+        meals.forEach(function (m) { if (plan.cancelIds.indexOf(m.id) >= 0) m.status = STATUS_.CANCELLED; });
+        meals = meals.filter(function (m) { return plan.deleteIds.indexOf(m.id) < 0; });
+      }
       return out(plan.info);
     },
     dismissWeb: function (p) { web.forEach(function (w) { if (w.id === p.id) w.status = 'Dismissed'; }); return out(); },
@@ -794,6 +839,20 @@ var sbApi = {
       return (plan.oid ? sb.from('meals').delete().eq('oid', plan.oid).then(ok) : Promise.resolve())
         .then(function () { return sb.from('orders').delete().eq('id', plan.row).then(ok); })
         .then(function () { return reply(plan.info); });
+    });
+  },
+  trimOrder: function (p) {
+    return readData().then(function (d) {
+      var plan = planTrim_(p, d), steps = [];
+      if (plan.gone) {
+        steps.push(function () { return plan.oid ? sb.from('meals').delete().eq('oid', plan.oid).then(ok) : null; });
+        steps.push(function () { return sb.from('orders').delete().eq('id', plan.row).then(ok); });
+      } else {
+        if (plan.row != null) steps.push(function () { return sb.from('orders').update({ qty: plan.qty, pfood: plan.pfood, paid: plan.paid }).eq('id', plan.row).then(ok); });
+        if (plan.cancelIds.length) steps.push(function () { return sb.from('meals').update({ status: STATUS_.CANCELLED }).in('id', plan.cancelIds).then(ok); });
+        if (plan.deleteIds.length) steps.push(function () { return sb.from('meals').delete().in('id', plan.deleteIds).then(ok); });
+      }
+      return steps.reduce(function (pr, f) { return pr.then(f); }, Promise.resolve()).then(function () { return reply(plan.info); });
     });
   },
   dismissWeb: function (p) { return sb.from('web_orders').update({ status: 'Dismissed' }).eq('id', p.id).then(ok).then(function () { return reply(); }); },
@@ -1391,9 +1450,22 @@ function mealCard(m, showDate) {
   return h('div', { class: 'meal' + (served ? ' served' : '') },
     h('div', { class: 'who' }, h('strong', { text: m.name }), h('span', { class: 'sub', text: sub })),
     h('div', { class: 'acts' }, acts),
-    ask ? h('div', { class: 'ask' }, h('span', { text: 'Cancel this meal? It goes back to ' + m.name + '’s unscheduled meals.' }),
-      h('button', { type: 'button', class: 'btn danger', text: 'Yes, cancel', onclick: function () { delete TV.confirm[m.id]; act('setMealStatus', { id: m.id, status: STATUS_.CANCELLED }, 'Meal cancelled. ' + m.name + ' has it back to schedule.'); } }),
-      h('button', { type: 'button', class: 'btn', text: 'Keep', onclick: function () { delete TV.confirm[m.id]; renderToday(); } })) : null);
+    ask ? cancelAsk(m) : null);
+}
+
+function cancelAsk(m) {
+  var ord = S.orders.filter(function (o) { return o.oid && o.oid === m.oid; })[0];
+  var back = ord && ord.qty ? Math.min(ord.paid, Math.round(ord.pfood / ord.qty)) : 0;
+  function done() { delete TV.confirm[m.id]; }
+  function remove(refund) {
+    done();
+    act('trimOrder', { kind: 'meal', id: m.id, refund: refund }, function (i) { return 'Removed ' + i.name + '’s meal' + (i.gone ? ' and the order' : '') + (i.refunded ? ' · refund ' + fmt(i.refunded) : ''); });
+  }
+  return h('div', { class: 'ask' }, h('span', { text: 'Cancel this meal for ' + m.name + '?' }),
+    h('button', { type: 'button', class: 'btn danger', text: back ? 'Remove + refund ' + fmt(back) : 'Remove from order', onclick: function () { remove(true); } }),
+    back ? h('button', { type: 'button', class: 'btn', text: 'Remove, no refund', onclick: function () { remove(false); } }) : null,
+    h('button', { type: 'button', class: 'btn', text: 'Rebook later', onclick: function () { done(); act('setMealStatus', { id: m.id, status: STATUS_.CANCELLED }, 'Meal cancelled. ' + m.name + ' has it back to schedule.'); } }),
+    h('button', { type: 'button', class: 'btn', text: 'Keep', onclick: function () { done(); renderToday(); } }));
 }
 
 function openModal(content) { var s = $('sheet'); s.textContent = ''; add(s, content); $('modal').hidden = false; }
@@ -1455,6 +1527,29 @@ function confirmDelete(o) {
     h('div', { class: 'row' },
       h('button', { type: 'button', class: 'btn danger', text: 'Yes, delete it', onclick: function () { closeModal(); act('deleteOrder', { row: o.row, name: o.name, date: o.date }, function (i) { return 'Deleted ' + i.name + '’s order'; }); } }),
       h('button', { type: 'button', class: 'btn', text: 'Keep it', onclick: closeModal }))
+  ]);
+}
+
+function confirmRefund(o) {
+  var n = o.qty - o.servedN, back = o.qty ? Math.min(o.paid, Math.round(o.pfood * n / o.qty)) : 0;
+  openModal([
+    h('h2', { text: 'Refund this order?' }),
+    h('p', { class: 'sub', text: o.name + ' · ' + dayLong(o.date) + ' · ' + plural(n, 'meal') + ' not yet served' }),
+    h('p', { class: 'sub', text: 'Those meals are taken off the order, whether booked or not, and ' + (back ? fmt(back) + ' goes back to the customer.' : 'there is nothing to pay back.') + (o.servedN ? ' The ' + plural(o.servedN, 'served meal') + ' stay.' : ' The whole order is removed.') }),
+    h('div', { class: 'row' },
+      h('button', { type: 'button', class: 'btn danger', text: back ? 'Refund ' + fmt(back) : 'Remove meals', onclick: function () { closeModal(); act('trimOrder', { kind: 'refund', row: o.row, name: o.name, date: o.date }, function (i) { return (i.refunded ? 'Refunded ' + fmt(i.refunded) + ' to ' : 'Removed the unserved meals for ') + i.name + (i.gone ? ' · order removed' : ''); }); } }),
+      h('button', { type: 'button', class: 'btn', text: 'Keep it', onclick: closeModal }))
+  ]);
+}
+
+function confirmDeleteServed(o) {
+  openModal([
+    h('h2', { text: 'Delete served meals?' }),
+    h('p', { class: 'sub', text: o.name + ' · ' + dayLong(o.date) + ' · ' + plural(o.servedN, 'served meal') }),
+    h('p', { class: 'sub', text: 'They are erased from the record and the order total drops by the same amount. What the customer owes does not change. This cannot be undone.' }),
+    h('div', { class: 'row' },
+      h('button', { type: 'button', class: 'btn danger', text: 'Yes, delete them', onclick: function () { closeModal(); act('trimOrder', { kind: 'served', row: o.row, name: o.name, date: o.date }, function (i) { return 'Deleted ' + plural(i.n, 'served meal') + (i.gone ? ' and the order' : '') + ' for ' + i.name; }); } }),
+      h('button', { type: 'button', class: 'btn', text: 'Keep them', onclick: closeModal }))
   ]);
 }
 
@@ -1532,7 +1627,10 @@ function renderDetail() {
   detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Recent orders' }),
     h('div', { class: 'rl', style: 'max-height:460px;overflow:auto;align-content:start' }, mine.map(function (o) {
       return [h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
-        h('span', { class: 'r' }, (o.owed ? 'owes ' + fmt(o.owed) : 'paid') + ' ', h('button', { type: 'button', class: 'btn small danger', text: 'Delete', 'aria-label': 'Delete this order', onclick: function () { confirmDelete(o); } }))];
+        h('span', { class: 'r', style: 'display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;align-items:center' }, (o.owed ? 'owes ' + fmt(o.owed) : 'paid') + ' ',
+          o.qty - o.servedN > 0 ? h('button', { type: 'button', class: 'btn small', text: 'Refund', 'aria-label': 'Refund the meals not yet served', onclick: function () { confirmRefund(o); } }) : null,
+          o.servedN > 0 ? h('button', { type: 'button', class: 'btn small', text: 'Delete served', 'aria-label': 'Delete the served meals', onclick: function () { confirmDeleteServed(o); } }) : null,
+          h('button', { type: 'button', class: 'btn small danger', text: 'Delete order', 'aria-label': 'Delete this order', onclick: function () { confirmDelete(o); } }))];
     }))));
   host.appendChild(detail);
 }
