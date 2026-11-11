@@ -1209,12 +1209,19 @@ function normSide(v) {
   return v;
 }
 function dishesFor(date) {
-  var first = {}, T = { Mains: {}, Chicken: {}, 'Sides and extras': {}, Drinks: {}, Toppings: {} }, loose = [];
+  var first = {}, T = { Mains: {}, Chicken: {}, 'Sides and extras': {}, Drinks: {}, Toppings: {}, Meals: {}, Extras: {} }, loose = [], seen = {};
   S.meals.forEach(function (m) { if (m.oid && (!first[m.oid] || m.date < first[m.oid])) first[m.oid] = m.date; });
   function put(sec, label, n) { T[sec][label] = (T[sec][label] || 0) + n; }
+  function putFree(sec, text, n) {
+    String(text || '').split(/\s*(?:,|&|\+)\s*/).forEach(function (part) {
+      part = part.trim(); if (!part) return;
+      var k = sec + '|' + part.toLowerCase().replace(/\s+/g, ' '), label = seen[k] || (seen[k] = part.charAt(0).toUpperCase() + part.slice(1));
+      put(sec, label, n);
+    });
+  }
   S.orders.forEach(function (o) {
     if (!o.oid || first[o.oid] !== date) return;
-    if (!o.items || !o.items.length) { if (o.food) loose.push({ name: o.name, food: o.food }); return; }
+    if (!o.items || !o.items.length) { putFree('Meals', o.food, o.qty || 1); putFree('Extras', o.extra, 1); return; }
     o.items.forEach(function (it) {
       var q = it.qty, op = it.opts || {}, sec = SECOF[it.value];
       if (it.g === 'chicken') {
@@ -1240,13 +1247,9 @@ function dishesPanel(date) {
     if (!keys.length) return;
     any = true;
     panel.appendChild(h('div', null, h('h3', { text: sec }), h('div', { class: 'dl' }, keys.map(function (k) {
-      return [h('span', { text: k, style: k.charAt(0) === '·' ? 'color:var(--muted);padding-left:10px' : null }), h('b', { text: String(d.tally[sec][k]) })];
+      return [h('span', { text: k, style: k.charAt(0) === '·' ? 'color:var(--muted);padding-left:10px' : null }), h('b', { text: '× ' + d.tally[sec][k] })];
     }))));
   });
-  if (d.loose.length) {
-    any = true;
-    panel.appendChild(h('div', null, h('h3', { text: 'Not itemised' }), h('div', { class: 'dl' }, d.loose.map(function (x) { return [h('span', { text: x.name }), h('span', { class: 'sub', text: x.food })]; }))));
-  }
   if (!any) panel.appendChild(h('p', { class: 'sub', text: 'No dishes yet. Orders made with "Pick dishes", or sent from the website, add up here.' }));
   return panel;
 }
