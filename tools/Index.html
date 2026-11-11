@@ -1228,9 +1228,10 @@ function normSide(v) {
   if (k === 'rice' || /white steamed/.test(k)) return 'Rice';
   return v;
 }
+/* Each meal on the day counts for the dishes on its order, so moving a meal to another day moves its dish too.
+   An order's main dishes are dealt out one per meal in date order; extras and drinks stay with the first meal. */
 function dishesFor(date) {
-  var first = {}, T = { Mains: {}, Chicken: {}, 'Sides and extras': {}, Drinks: {}, Toppings: {}, Meals: {}, Extras: {} }, loose = [], seen = {};
-  S.meals.forEach(function (m) { if (m.oid && (!first[m.oid] || m.date < first[m.oid])) first[m.oid] = m.date; });
+  var T = { Mains: {}, Chicken: {}, 'Sides and extras': {}, Drinks: {}, Toppings: {}, Meals: {}, Extras: {} }, seen = {};
   function put(sec, label, n) { T[sec][label] = (T[sec][label] || 0) + n; }
   function putFree(sec, text, n) {
     String(text || '').split(/\s*(?:,|&|\+)\s*/).forEach(function (part) {
@@ -1239,27 +1240,41 @@ function dishesFor(date) {
       put(sec, label, n);
     });
   }
+  function putMain(it, q) {
+    var op = it.opts || {};
+    if (it.g === 'chicken') {
+      put('Chicken', 'Chicken thigh', q);
+      put('Chicken', '· ' + op.flavour + (op.spice ? ' (' + op.spice + ')' : ''), q);
+      if (op.carb) put('Chicken', '· ' + op.carb, q);
+      if (op.side) put('Sides and extras', normSide(op.side), q);
+    } else {
+      put('Mains', it.value, q);
+      if (op.rice === 'Yes') put('Sides and extras', 'Rice', q);
+      if (op.side) put('Sides and extras', normSide(op.side), q);
+    }
+  }
+  var live = {};
+  S.meals.forEach(function (m) { if (m.oid && m.status !== STATUS_.CANCELLED) (live[m.oid] = live[m.oid] || []).push(m); });
   S.orders.forEach(function (o) {
-    if (!o.oid || first[o.oid] !== date) return;
-    if (!o.items || !o.items.length) { putFree('Meals', o.food, o.qty || 1); putFree('Extras', o.extra, 1); return; }
+    var ms = (live[o.oid] || []).slice().sort(cmpMeal_);
+    if (!o.oid || !ms.length) return;
+    var here = [], first = ms[0].date === date;
+    ms.forEach(function (m, idx) { if (m.date === date) here.push(idx); });
+    if (!here.length) return;
+    if (!o.items || !o.items.length) { putFree('Meals', o.food, here.length); if (first) putFree('Extras', o.extra, 1); return; }
+    var units = [];
+    o.items.forEach(function (it) { if (isMain_(it)) for (var k = 0; k < it.qty; k++) units.push(it); });
+    here.forEach(function (idx) { if (units.length) putMain(units[idx % units.length], 1); });
+    if (!first) return;
     o.items.forEach(function (it) {
-      var q = it.qty, op = it.opts || {}, sec = SECOF[it.value];
-      if (it.g === 'delivery') return;
-      if (it.g === 'chicken') {
-        put('Chicken', 'Chicken thigh', q);
-        put('Chicken', '· ' + op.flavour + (op.spice ? ' (' + op.spice + ')' : ''), q);
-        if (op.carb) put('Chicken', '· ' + op.carb, q);
-        if (op.side) put('Sides and extras', normSide(op.side), q);
-      } else if (it.g === 'setmeal') {
-        put('Mains', it.value, q);
-        if (op.rice === 'Yes') put('Sides and extras', 'Rice', q);
-        if (op.side) put('Sides and extras', normSide(op.side), q);
-      } else if (it.g === 'topping') put('Toppings', it.value, q);
-      else if (sec === 'drinks') put('Drinks', it.value, q);
-      else put('Sides and extras', normSide(it.value), q);
+      var sec = SECOF[it.value];
+      if (isMain_(it) || it.g === 'delivery') return;
+      if (it.g === 'topping') put('Toppings', it.value, it.qty);
+      else if (sec === 'drinks') put('Drinks', it.value, it.qty);
+      else put('Sides and extras', normSide(it.value), it.qty);
     });
   });
-  return { tally: T, loose: loose };
+  return { tally: T, loose: [] };
 }
 function dishesPanel(date) {
   var d = dishesFor(date), panel = h('div', { class: 'dishes' }, h('h2', { text: 'Dishes' })), any = false;
