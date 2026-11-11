@@ -199,7 +199,7 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
 .cust-grid { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 14px; flex: 1; min-height: 0; }
 .cust-grid .list { display: flex; flex-direction: column; gap: 12px; padding: 14px; }
 .cust-grid .list .rows { overflow: auto; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
-.crow { display: grid; gap: 6px; text-align: left; border: 2px solid transparent; background: var(--surface2); border-radius: 16px; padding: 12px 14px; min-height: 64px; width: 100%; }
+.crow { flex-shrink: 0; display: grid; gap: 6px; text-align: left; border: 2px solid transparent; background: var(--surface2); border-radius: 16px; padding: 12px 14px; min-height: 64px; width: 100%; }
 .crow strong { font: 700 20px var(--display); }
 .crow .chips { margin: 0; gap: 6px; }
 .crow[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
@@ -236,6 +236,64 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
   .panel { overflow: visible; }
   .savebox { margin-left: 0; align-items: stretch; width: 100%; }
   .checkout .part { width: 100%; }
+  /* the view scrolls as one page, so nothing inside may shrink to fit */
+  .view > *, .order-grid > *, .cust-grid > *, .scroll > * { flex-shrink: 0; }
+  .order-grid, .cust-grid { flex: none; }
+  .scroll { overflow: visible; flex: none; }
+  .cust-grid .list .rows { max-height: 320px; }
+}
+
+/* phones held upright */
+@media (max-width: 600px) {
+  h1 { font-size: 26px; }
+  h2 { font-size: 19px; }
+  .app { gap: 8px; padding-block: 8px; padding-left: max(10px, env(safe-area-inset-left, 0px)); padding-right: max(10px, env(safe-area-inset-right, 0px)); }
+  .stage { gap: 8px; }
+  .view { gap: 10px; }
+  .vhead { min-height: 0; gap: 8px 12px; }
+  .vhead .grow { display: none; }
+  .vhead .datepick, .vhead .stats { width: 100%; }
+  .datepick .when { flex: 1; min-width: 0; padding: 0 6px; font-size: 16px; }
+  .whenwrap { min-width: 0; }
+  .panel, .dishes { padding: 14px; border-radius: 18px; }
+  input[type="text"], input[type="email"], input[type="password"], .money input { height: 54px; font-size: 18px; }
+  .btn { padding: 0 16px; }
+  .seg { max-width: 100%; }
+  .seg button { padding: 0 10px; font-size: 15px; flex: 1; }
+  #when { flex-wrap: wrap; }
+  #when button { flex: 1 1 40%; white-space: normal; }
+  .inline .stepper, .inline .money, .row .money { width: 100%; flex: 1 1 100%; }
+  .row .grow { min-width: 0; flex-basis: 100%; }
+  .chip { padding: 0 13px; font-size: 16px; }
+  .suggest button { font-size: 17px; }
+  .checkout { padding: 12px 14px; gap: 10px 12px; border-radius: 18px; }
+  .checkout > div:not(.savebox):not(.part) { flex: 1 1 100%; }
+  .checkout .seg { display: flex; }
+  .tot { min-width: 0; }
+  .tot strong { font-size: 30px; }
+  .save { min-width: 0; width: 100%; min-height: 58px; }
+  .mgrid { grid-template-columns: minmax(0, 1fr); }
+  .meal { padding: 12px 14px; gap: 10px; }
+  .meal .who strong { font-size: 21px; }
+  .meal .acts { grid-column: 1 / -1; justify-content: stretch; }
+  .meal .acts .btn { flex: 1; }
+  .meal .ask span { min-width: 0; flex-basis: 100%; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tile b { font-size: 22px; }
+  .rl { grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; }
+  .rl > :nth-child(4n+1) { border-top: 1px solid var(--line); padding-top: 10px; }
+  .rl > :nth-child(4n+2) { border-top: 1px solid var(--line); padding-top: 10px; text-align: right; }
+  .rl > :nth-child(4n+3) { grid-column: 1 / -1; text-align: left; }
+  .rl > :nth-child(4n) { grid-column: 1 / -1; padding-bottom: 8px; }
+  .rl > :nth-child(4n) { justify-content: flex-start !important; }
+  .drops { grid-template-columns: minmax(0, 1fr); }
+  .dl { font-size: 16px; }
+  .sheet { padding: 16px; border-radius: 22px; max-height: 94%; }
+  .modal { padding: 8px; }
+  .toast { bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
+  .rail { justify-content: space-around; }
+  .rail button { width: 72px; min-height: 56px; font-size: 11px; white-space: nowrap; }
+  .view { padding-bottom: 4px; }
 }
 
 .tgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); gap: 16px; align-items: start; }
@@ -1567,7 +1625,7 @@ function renderCustomers() {
   if (!CV.sel || !findCustomer(CV.sel)) CV.sel = list.length ? list[0].name : null;
   var box = $('c-list'); box.textContent = '';
   list.forEach(function (c) {
-    box.appendChild(h('button', { type: 'button', class: 'crow', 'aria-current': c.name === CV.sel ? 'true' : 'false', onclick: function () { CV.sel = c.name; renderCustomers(); } },
+    box.appendChild(h('button', { type: 'button', class: 'crow', 'aria-current': c.name === CV.sel ? 'true' : 'false', onclick: function () { CV.sel = c.name; renderCustomers(); if (window.matchMedia('(max-width: 860px)').matches) setTimeout(function () { $('c-detail').scrollIntoView({ block: 'start' }); }, 0); } },
       h('strong', { text: c.name }),
       h('div', { class: 'chips' },
         c.credit > 0 ? h('span', { class: 'pill warn', text: plural(c.credit, 'meal') + ' to schedule' }) : null,
