@@ -342,13 +342,31 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
               <div class="chips small" id="pchips"></div>
             </div>
           </div>
+          <div class="field" id="f-food"><label for="food">Food ordered (required)</label><input type="text" id="food" autocomplete="off" placeholder="e.g. Chicken meal, Chili con carne set"></div>
+          <div class="field" id="f-extra">
+            <label for="extra">Extras (required)</label>
+            <div class="inline">
+              <input type="text" id="extra" autocomplete="off" placeholder="e.g. Pumpkin soup, Fried egg">
+              <div class="money"><input type="text" id="xprice" inputmode="numeric" autocomplete="off" placeholder="Price"><span>VND</span></div>
+              <button type="button" class="chip" id="noextra" aria-pressed="false">No extras</button>
+            </div>
+          </div>
+          <div class="field" id="f-extra2" hidden>
+            <label>Extras (required)</label>
+            <div class="chips" style="margin-top:0"><button type="button" class="chip" id="noextra2" aria-pressed="false">No extras</button><span class="sub">or add drinks, sides and soups above</span></div>
+          </div>
+          <div class="field" id="f-when" hidden>
+            <label>These meals are</label>
+            <div class="seg" id="when">
+              <button type="button" data-w="same" aria-pressed="false">All on the same day</button>
+              <button type="button" data-w="spread" aria-pressed="false">One a day</button>
+              <button type="button" data-w="bank" aria-pressed="false">Bank for later</button>
+            </div>
+          </div>
           <div class="field">
-            <button type="button" class="more" id="more" aria-expanded="false"><span>Extras, notes or discount</span><span class="pill" id="more-sum">None</span><span aria-hidden="true">▾</span></button>
+            <button type="button" class="more" id="more" aria-expanded="false"><span>Notes or discount</span><span class="pill" id="more-sum">None</span><span aria-hidden="true">▾</span></button>
             <div class="extras" id="extras" hidden>
-              <div class="field"><label for="food">Food ordered</label><input type="text" id="food" autocomplete="off" placeholder="Optional"></div>
               <div class="field"><label for="notes">Notes</label><input type="text" id="notes" autocomplete="off" placeholder="Optional"></div>
-              <div class="field"><label for="extra">Extra ordered</label><input type="text" id="extra" autocomplete="off" placeholder="Optional"></div>
-              <div class="field"><label for="xprice">Price of extra</label><div class="money"><input type="text" id="xprice" inputmode="numeric" autocomplete="off" placeholder="0"><span>VND</span></div></div>
               <div class="field"><label for="disc">Freebie or discount</label><div class="money"><input type="text" id="disc" inputmode="numeric" autocomplete="off" placeholder="0"><span>VND</span></div></div>
             </div>
           </div>
@@ -942,12 +960,13 @@ function askLogin(msg) {
 
 /* ------------------------------------------------------------------ new order */
 function newDraft() {
-  return { date: lastDate || S.today, name: '', qty: 1, unit: S.topPrice || 100000, picker: false, items: [], webId: null, food: '', notes: '', extra: '', extraPrice: 0, disc: 0, payMode: 'full', part: 0, method: lastMethod, counts: {}, touched: false, weekends: false, extrasOpen: false };
+  return { date: lastDate || S.today, name: '', qty: 1, unit: S.topPrice || 100000, picker: false, items: [], webId: null, food: '', notes: '', extra: '', extraPrice: 0, disc: 0, payMode: 'full', part: 0, method: lastMethod, counts: {}, when: '', noExtra: false, touched: false, weekends: false, extrasOpen: false };
 }
 function autoSchedule() {
   if (D.touched) return;
-  var days = D.qty === 1 || D.picker ? [D.date] : spreadDays_(D.date, D.qty, D.weekends), c = {};
-  days.forEach(function (d) { c[d] = (c[d] || 0) + (D.picker ? D.qty : 1); });
+  var c = {};
+  if (D.qty === 1 || D.when === 'same') c[D.date] = D.qty;
+  else if (D.when === 'spread') spreadDays_(D.date, D.qty, D.weekends).forEach(function (d) { c[d] = (c[d] || 0) + 1; });
   D.counts = c;
 }
 function fitCounts() {
@@ -963,10 +982,17 @@ function calc() {
   var paid = D.payMode === 'full' ? payable : D.payMode === 'none' ? 0 : Math.min(D.part, payable);
   return { food: food, payable: payable, paid: paid, owed: payable - paid };
 }
+function hasExtras() {
+  if (D.noExtra) return true;
+  return D.picker ? D.items.some(function (l) { return !isMain_(l); }) : !!(D.extra.trim() || D.extraPrice);
+}
 function problem() {
   var c = calc();
   if (!D.name.trim()) return 'Enter the customer name';
-  if (D.picker && !D.items.length) return 'Pick at least one dish';
+  if (D.picker && !D.items.some(isMain_)) return 'Pick at least one main dish';
+  if (!D.picker && !D.food.trim()) return 'Enter the food ordered';
+  if (!hasExtras()) return 'Enter the extras, or tap No extras';
+  if (D.qty > 1 && !D.when) return 'Choose: same day, one a day, or bank';
   if (!D.picker && !(D.unit > 0)) return 'Enter the price per meal';
   if (c.payable < 0) return 'The discount is bigger than the order';
   if (D.payMode === 'part' && !(D.part > 0 && D.part < c.payable)) return 'Enter how much has been paid';
@@ -1247,10 +1273,14 @@ function updateOrder() {
     pc.appendChild(h('button', { type: 'button', class: 'chip', 'aria-pressed': D.unit === p ? 'true' : 'false', text: fmt(p), onclick: function () { D.unit = p; updateOrder(); } }));
   });
   var xs = [];
-  if (D.food.trim()) xs.push('Food'); if (D.notes.trim()) xs.push('Notes'); if (D.extra.trim() || D.extraPrice) xs.push('Extra'); if (D.disc) xs.push('Discount');
+  if (D.notes.trim()) xs.push('Notes'); if (D.disc) xs.push('Discount');
   $('extras').hidden = !D.extrasOpen; $('more').setAttribute('aria-expanded', D.extrasOpen ? 'true' : 'false');
   $('more-sum').textContent = xs.length ? xs.join(' · ') : 'None'; $('more-sum').className = 'pill' + (xs.length ? ' info' : '');
   renderRecent(); renderHint();
+  $('f-food').hidden = D.picker; $('f-extra').hidden = D.picker; $('f-extra2').hidden = !D.picker;
+  $('noextra').setAttribute('aria-pressed', D.noExtra ? 'true' : 'false'); $('noextra2').setAttribute('aria-pressed', D.noExtra ? 'true' : 'false');
+  $('f-when').hidden = D.qty <= 1;
+  Array.prototype.forEach.call($('when').children, function (b) { b.setAttribute('aria-pressed', b.dataset.w === D.when ? 'true' : 'false'); });
   $('f-qty').hidden = D.picker; $('f-unit').hidden = D.picker; $('picker').hidden = !D.picker;
   Array.prototype.forEach.call($('modebar').querySelectorAll('[data-mode]'), function (b) { b.setAttribute('aria-pressed', (b.dataset.mode === 'pick') === D.picker ? 'true' : 'false'); });
   var wn = (S.web || []).length; $('webbtn').hidden = !wn; $('webbtn').textContent = wn + ' website order' + (wn === 1 ? '' : 's') + ' waiting';
@@ -1297,13 +1327,15 @@ function wireOrder() {
   bindMoney($('xprice'), function (n) { D.extraPrice = n; updateOrder(); });
   bindMoney($('disc'), function (n) { D.disc = n; updateOrder(); });
   bindMoney($('partamt'), function (n) { D.part = n; updateOrder(); });
-  $('food').addEventListener('input', function () { D.food = $('food').value; });
+  $('food').addEventListener('input', function () { D.food = $('food').value; updateOrder(); });
   $('notes').addEventListener('input', function () { D.notes = $('notes').value; });
-  $('extra').addEventListener('input', function () { D.extra = $('extra').value; });
+  $('extra').addEventListener('input', function () { D.extra = $('extra').value; updateOrder(); });
   Array.prototype.forEach.call($('paymode').children, function (b) {
     b.onclick = function () { D.payMode = b.dataset.m; updateOrder(); if (D.payMode === 'part') $('partamt').focus(); };
   });
   Array.prototype.forEach.call($('method').children, function (b) { b.onclick = function () { D.method = b.dataset.v; updateOrder(); }; });
+  Array.prototype.forEach.call($('when').children, function (b) { b.onclick = function () { D.when = b.dataset.w; D.touched = false; scheduleOrder.reset(); updateOrder(); }; });
+  $('noextra').onclick = $('noextra2').onclick = function () { D.noExtra = !D.noExtra; updateOrder(); };
   $('save').onclick = saveOrder;
   $('more').onclick = function () { D.extrasOpen = !D.extrasOpen; updateOrder(); };
 
