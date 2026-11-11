@@ -1231,7 +1231,7 @@ function normSide(v) {
 /* Each meal on the day counts for the dishes on its order, so moving a meal to another day moves its dish too.
    An order's main dishes are dealt out one per meal in date order; extras and drinks stay with the first meal. */
 function dishesFor(date) {
-  var T = { Mains: {}, Chicken: {}, 'Sides and extras': {}, Drinks: {}, Toppings: {}, Meals: {}, Extras: {} }, seen = {};
+  var T = { Mains: {}, 'Sides and extras': {}, Drinks: {}, Toppings: {}, Meals: {}, Extras: {} }, seen = {};
   function put(sec, label, n) { T[sec][label] = (T[sec][label] || 0) + n; }
   function putFree(sec, text, n) {
     String(text || '').split(/\s*(?:,|&|\+)\s*/).forEach(function (part) {
@@ -1243,10 +1243,7 @@ function dishesFor(date) {
   function putMain(it, q) {
     var op = it.opts || {};
     if (it.g === 'chicken') {
-      put('Chicken', 'Chicken thigh', q);
-      put('Chicken', '· ' + op.flavour + (op.spice ? ' (' + op.spice + ')' : ''), q);
-      if (op.carb) put('Chicken', '· ' + op.carb, q);
-      if (op.side) put('Sides and extras', normSide(op.side), q);
+      put('Meals', 'Chicken Meal', q);
     } else {
       put('Mains', it.value, q);
       if (op.rice === 'Yes') put('Sides and extras', 'Rice', q);
