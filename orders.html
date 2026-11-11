@@ -247,6 +247,9 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
 .dl .sub { grid-column: 1 / -1; font-size: 14px; }
 .modebar { display: flex; gap: 8px; }
 .picker { display: grid; gap: 14px; }
+select.pick { width: 100%; height: 56px; border: 2px solid var(--line2); border-radius: 15px; background: var(--surface); color: var(--ink); font: 600 19px var(--body); padding: 0 14px; }
+select.pick:focus { border-color: var(--accent); outline: 3px solid var(--accent-soft); outline-offset: 0; }
+.drops { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 .psec > h3 { font: 700 12px/1.2 var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 6px 0; }
 .prow { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .prow .nm { font-weight: 600; font-size: 17px; }
@@ -317,43 +320,18 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
             <div class="chips" id="recent"></div>
             <div class="hint" id="custhint"></div>
           </div>
-          <div class="modebar" id="modebar">
-            <button type="button" class="chip" data-mode="quick" aria-pressed="true">Quick entry</button>
-            <button type="button" class="chip" data-mode="pick" aria-pressed="false">Pick dishes</button>
-            <div class="grow"></div>
-            <button type="button" class="webbtn" id="webbtn" hidden></button>
+          <div class="modebar" id="modebar"><div class="grow"></div><button type="button" class="webbtn" id="webbtn" hidden></button></div>
+          <div class="picker" id="picker"></div>
+          <div class="field" id="f-extra2">
+            <label>Extras and drinks (required)</label>
+            <div class="chips" style="margin-top:0"><button type="button" class="chip" id="noextra2" aria-pressed="false">No extras</button><span class="sub">or add an extra or drink above</span></div>
           </div>
-          <div class="picker" id="picker" hidden></div>
-          <div class="field" id="f-qty">
-            <label>Meals paid for</label>
+          <div class="field" id="f-deliv">
+            <label>Delivery fee</label>
             <div class="inline">
-              <div class="stepper">
-                <button type="button" id="q-minus" aria-label="One fewer meal">−</button>
-                <output id="qty" aria-live="polite">1</output>
-                <button type="button" id="q-plus" aria-label="One more meal">+</button>
-              </div>
-              <div class="chips small" id="qchips"></div>
+              <div class="seg" id="deliv"><button type="button" data-v="yes" aria-pressed="false">Yes</button><button type="button" data-v="no" aria-pressed="true">No</button></div>
+              <div class="money" id="feewrap" hidden><input type="text" id="fee" inputmode="numeric" autocomplete="off" placeholder="Fee"><span>VND</span></div>
             </div>
-          </div>
-          <div class="field" id="f-unit">
-            <label for="unit">Price per meal</label>
-            <div class="inline">
-              <div class="money"><input type="text" id="unit" inputmode="numeric" autocomplete="off"><span>VND</span></div>
-              <div class="chips small" id="pchips"></div>
-            </div>
-          </div>
-          <div class="field" id="f-food"><label for="food">Food ordered (required)</label><input type="text" id="food" autocomplete="off" placeholder="e.g. Chicken meal, Chili con carne set"></div>
-          <div class="field" id="f-extra">
-            <label for="extra">Extras (required)</label>
-            <div class="inline">
-              <input type="text" id="extra" autocomplete="off" placeholder="e.g. Pumpkin soup, Fried egg">
-              <div class="money"><input type="text" id="xprice" inputmode="numeric" autocomplete="off" placeholder="Price"><span>VND</span></div>
-              <button type="button" class="chip" id="noextra" aria-pressed="false">No extras</button>
-            </div>
-          </div>
-          <div class="field" id="f-extra2" hidden>
-            <label>Extras (required)</label>
-            <div class="chips" style="margin-top:0"><button type="button" class="chip" id="noextra2" aria-pressed="false">No extras</button><span class="sub">or add drinks, sides and soups above</span></div>
           </div>
           <div class="field" id="f-when" hidden>
             <label>These meals are</label>
@@ -960,7 +938,7 @@ function askLogin(msg) {
 
 /* ------------------------------------------------------------------ new order */
 function newDraft() {
-  return { date: lastDate || S.today, name: '', qty: 1, unit: S.topPrice || 100000, picker: false, items: [], webId: null, food: '', notes: '', extra: '', extraPrice: 0, disc: 0, payMode: 'full', part: 0, method: lastMethod, counts: {}, when: '', noExtra: false, touched: false, weekends: false, extrasOpen: false };
+  return { date: lastDate || S.today, name: '', qty: 1, unit: S.topPrice || 100000, picker: true, items: [], webId: null, food: '', notes: '', extra: '', extraPrice: 0, rate: 0, rateSet: false, delivery: false, fee: lastFee, showChicken: false, disc: 0, payMode: 'full', part: 0, method: lastMethod, counts: {}, when: '', noExtra: false, touched: false, weekends: false, extrasOpen: false };
 }
 function autoSchedule() {
   if (D.touched) return;
@@ -977,23 +955,21 @@ function fitCounts() {
   }
 }
 function calc() {
-  var t = D.picker ? itemTotals_(D.items) : null;
-  var food = t ? t.main : D.unit * D.qty, payable = food + (t ? t.other : 0) + D.extraPrice - D.disc;
+  var t = itemTotals_(D.items);
+  var food = t.main, payable = food + t.other + D.extraPrice - D.disc;
   var paid = D.payMode === 'full' ? payable : D.payMode === 'none' ? 0 : Math.min(D.part, payable);
   return { food: food, payable: payable, paid: paid, owed: payable - paid };
 }
 function hasExtras() {
   if (D.noExtra) return true;
-  return D.picker ? D.items.some(function (l) { return !isMain_(l); }) : !!(D.extra.trim() || D.extraPrice);
+  return D.items.some(function (l) { return !isMain_(l) && l.g !== 'delivery'; });
 }
 function problem() {
   var c = calc();
   if (!D.name.trim()) return 'Enter the customer name';
-  if (D.picker && !D.items.some(isMain_)) return 'Pick at least one main dish';
-  if (!D.picker && !D.food.trim()) return 'Enter the food ordered';
+  if (!D.items.some(isMain_)) return 'Choose at least one meal';
   if (!hasExtras()) return 'Enter the extras, or tap No extras';
   if (D.qty > 1 && !D.when) return 'Choose: same day, one a day, or bank';
-  if (!D.picker && !(D.unit > 0)) return 'Enter the price per meal';
   if (c.payable < 0) return 'The discount is bigger than the order';
   if (D.payMode === 'part' && !(D.part > 0 && D.part < c.payable)) return 'Enter how much has been paid';
   return '';
@@ -1005,7 +981,6 @@ function findCustomer(name) {
 }
 function pickCustomer(c) {
   D.name = c.name;
-  if (c.unitPrice > 0) D.unit = c.unitPrice;
   if (c.method) D.method = c.method;
   hideSuggest(); $('cust').value = c.name;
   updateOrder();
@@ -1086,18 +1061,30 @@ function useBanked() {
 /* ------------------------------------------------------------------ dish picker (built from the website menu, see tools/build_orders.py) */
 var RULES = MENU ? MENU.rules : null, BYVAL = {}, SECOF = {};
 if (MENU) MENU.sections.forEach(function (sec) { sec.items.forEach(function (it) { BYVAL[it.value] = it; SECOF[it.value] = sec.id; }); });
+var lastFee = 0;
+try { lastFee = Number(localStorage.getItem('lo-fee')) || 0; } catch (e) { /* ignore */ }
 var PB = { flavour: '', spice: '', carb: '', side: '' };      // chicken meal being built
 
 function sideExtra(v) { var o = RULES.sideOptions.filter(function (x) { return x.value === v; })[0]; return o ? o.extra : 0; }
+/* student / Dr Kumar rate caps the price of a main meal; boxes, extras and drinks keep their own price */
+function rated(base, l) { return D && D.rate && SECOF[l.value] !== 'box' ? Math.min(base, D.rate) : base; }
+function recalcAll() { D.items.forEach(recalcLine); }
+function setRate(r, byHand) { D.rate = r; if (byHand) D.rateSet = true; recalcAll(); updateOrder(); }
+function autoRate() { if (D.rateSet) return; var r = /^dr\.?\s*kumar$/i.test(baseName_(D.name)) ? 70000 : 0; if (r !== D.rate) { D.rate = r; recalcAll(); } }
+function syncDelivery() {
+  D.items = D.items.filter(function (l) { return l.g !== 'delivery'; });
+  if (D.delivery && D.fee > 0) D.items.push({ g: 'delivery', value: 'Delivery', label: 'Delivery', qty: 1, price: D.fee, base: D.fee, detail: '', opts: {} });
+}
 function recalcLine(l) {
   var bits;
+  if (l.g === 'delivery') return;
   if (l.g === 'chicken') {
     var sur = RULES.chickenSideSurcharge[l.opts.side] || 0;
-    l.price = RULES.chickenBase + sur;
+    l.price = rated(RULES.chickenBase, l) + sur;
     l.detail = [l.opts.protein, l.opts.flavour + (l.opts.spice ? ' (' + l.opts.spice + ')' : ''), l.opts.carb, l.opts.side + (sur ? ' (+' + fmt(sur) + ')' : '')].join(' · ');
   } else if (l.g === 'setmeal') {
     var it = BYVAL[l.value];
-    l.price = (l.base != null ? l.base : it ? it.price : l.price) + (l.opts.rice === 'Yes' ? RULES.ricePrice : 0) + sideExtra(l.opts.side);
+    l.price = rated(l.base != null ? l.base : it ? it.price : l.price, l) + (l.opts.rice === 'Yes' ? RULES.ricePrice : 0) + sideExtra(l.opts.side);
     bits = [];
     if (it && it.rice) bits.push('Rice: ' + (l.opts.rice || 'No'));
     if (it && it.side) bits.push('Side: ' + (l.opts.side ? l.opts.side + (sideExtra(l.opts.side) ? ' (+' + fmt(sideExtra(l.opts.side)) + ')' : '') : 'not chosen'));
@@ -1127,7 +1114,7 @@ function addChicken() {
   recalcLine(l);
   var same = D.items.filter(function (x) { return x.g === 'chicken' && x.detail === l.detail; })[0];
   if (same) same.qty++; else D.items.push(l);
-  PB = { flavour: '', spice: '', carb: '', side: '' };
+  PB = { flavour: '', spice: '', carb: '', side: '' }; D.showChicken = false;
   updateOrder();
 }
 function chipRow(title, values, cur, pick) {
@@ -1165,26 +1152,59 @@ function pickRow(it) {
   }
   return row;
 }
+function dropdown(label, groups, onPick) {
+  var sel = h('select', { class: 'pick', 'aria-label': label }, h('option', { value: '', text: label + '…' }));
+  groups.forEach(function (g) {
+    if (!g.items.length) return;
+    sel.appendChild(h('optgroup', { label: g.title }, g.items.map(function (it) { return h('option', { value: it.value, text: it.label || it.value }); })));
+  });
+  sel.addEventListener('change', function () { var v = sel.value; sel.value = ''; if (v) onPick(v); });
+  return sel;
+}
+function secItems(ids) { return MENU.sections.filter(function (x) { return ids.indexOf(x.id) >= 0; }); }
+function cartRow(l) {
+  var it = BYVAL[l.value];
+  var row = h('div', { class: 'prow' },
+    h('div', { class: 'nm' }, l.g === 'chicken' ? 'Chicken meal' : l.value, l.detail ? h('small', { text: l.detail.replace(/ · (rice|side).*$/i, '') }) : null),
+    h('div', { class: 'pq' },
+      h('button', { type: 'button', 'aria-label': 'One fewer ' + l.value, text: '−', onclick: function () { l.qty--; if (l.qty <= 0) D.items.splice(D.items.indexOf(l), 1); if (!hasSoup()) D.items = D.items.filter(function (x) { return x.g !== 'topping'; }); updateOrder(); } }),
+      h('span', { text: String(l.qty) }),
+      h('button', { type: 'button', 'aria-label': 'One more ' + l.value, text: '+', disabled: l.qty >= 60, onclick: function () { l.qty++; updateOrder(); } })));
+  if (it && l.g === 'setmeal' && (it.rice || it.side)) {
+    var o = h('div', { class: 'opts' });
+    if (it.rice) o.appendChild(h('div', { class: 'chips' }, h('span', { class: 'sub', text: 'Add rice?' }),
+      ['Yes', 'No'].map(function (v) { return h('button', { type: 'button', class: 'chip', 'aria-pressed': l.opts.rice === v ? 'true' : 'false', text: v, onclick: function () { l.opts.rice = v; recalcLine(l); updateOrder(); } }); })));
+    if (it.side) o.appendChild(h('div', { class: 'chips' }, h('span', { class: 'sub', text: 'Side:' }),
+      RULES.sideOptions.map(function (so) { return h('button', { type: 'button', class: 'chip', 'aria-pressed': l.opts.side === so.value ? 'true' : 'false', text: so.value, onclick: function () { l.opts.side = so.value; recalcLine(l); updateOrder(); } }); })));
+    row.appendChild(o);
+  }
+  return row;
+}
 function renderPicker() {
   var host = $('picker'); host.textContent = '';
-  if (!D.picker) return;
   if (!MENU) { host.appendChild(h('p', { class: 'sub', text: 'The menu is not loaded.' })); return; }
-  if (D.items.length) {
+  var addItem = function (v) { var it = BYVAL[v]; if (it) bumpItem(it, 1); };
+  var rates = [[0, 'Standard prices'], [100000, 'Student · meals 100,000'], [70000, 'Dr Kumar · meals 70,000']];
+  host.appendChild(h('div', { class: 'chips', style: 'margin-top:0' }, rates.map(function (r) {
+    return h('button', { type: 'button', class: 'chip', 'aria-pressed': D.rate === r[0] ? 'true' : 'false', text: r[1], onclick: function () { setRate(r[0], true); } });
+  })));
+  host.appendChild(h('div', { class: 'drops' },
+    dropdown('Meal', [{ title: 'Chicken', items: [{ value: '__chicken', label: 'Chicken meal (choose marinade, carb, side)' }] }].concat(secItems(['veg', 'set', 'box']).map(function (x) { return { title: x.title, items: x.items }; })), function (v) {
+      if (v === '__chicken') { D.showChicken = true; renderPicker(); } else addItem(v);
+    }),
+    dropdown('Extra', secItems(['add']).map(function (x) { return { title: x.title, items: x.items }; }).concat(hasSoup() ? secItems(['toppings']).map(function (x) { return { title: x.title, items: x.items }; }) : []), addItem),
+    dropdown('Drink', secItems(['drinks']).map(function (x) { return { title: x.title, items: x.items }; }), addItem)));
+  if (D.showChicken) host.appendChild(chickenBuilder());
+  var lines = D.items.filter(function (l) { return l.g !== 'delivery'; });
+  if (lines.length) {
     var t = itemTotals_(D.items);
-    host.appendChild(h('div', { class: 'cart' }, D.items.map(function (l) {
-      return h('div', null, h('span', { text: l.qty + ' × ' + (l.g === 'chicken' ? 'Chicken meal' : l.value) + (l.detail ? ' · ' + l.detail : '') }),
-        h('span', null, fmt(l.price * l.qty) + ' ', h('button', { type: 'button', class: 'btn small', text: '✕', 'aria-label': 'Remove ' + l.value, onclick: function () { D.items.splice(D.items.indexOf(l), 1); if (!hasSoup()) D.items = D.items.filter(function (x) { return x.g !== 'topping'; }); updateOrder(); } })));
-    }), h('div', null, h('strong', { text: plural(t.meals, 'meal') + ' · total' }), h('strong', { text: fmt(t.main + t.other) }))));
+    host.appendChild(h('div', null, lines.map(cartRow)));
   }
-  host.appendChild(chickenBuilder());
-  MENU.sections.forEach(function (sec) {
-    host.appendChild(h('div', { class: 'psec' }, h('h3', { text: sec.title }), sec.items.map(pickRow)));
-  });
 }
 
 /* ------------------------------------------------------------------ website orders waiting */
 function loadWebOrder(w) {
-  D = newDraft(); D.picker = true; D.webId = w.id; D.name = w.customer || ''; D.notes = w.notes || '';
+  D = newDraft(); D.webId = w.id; D.name = w.customer || ''; D.notes = w.notes || '';
   D.items = w.items.map(function (it) { var l = JSON.parse(JSON.stringify(it)); l.base = BYVAL[l.value] ? BYVAL[l.value].price : l.price; l.opts = l.opts || {}; return l; });
   var f = findCustomer(D.name); if (f && f.method) D.method = f.method;
   closeModal(); scheduleOrder.reset(); updateOrder();
@@ -1224,6 +1244,7 @@ function dishesFor(date) {
     if (!o.items || !o.items.length) { putFree('Meals', o.food, o.qty || 1); putFree('Extras', o.extra, 1); return; }
     o.items.forEach(function (it) {
       var q = it.qty, op = it.opts || {}, sec = SECOF[it.value];
+      if (it.g === 'delivery') return;
       if (it.g === 'chicken') {
         put('Chicken', 'Chicken thigh', q);
         put('Chicken', '· ' + op.flavour + (op.spice ? ' (' + op.spice + ')' : ''), q);
@@ -1256,43 +1277,33 @@ function dishesPanel(date) {
 
 function updateOrder() {
   if (!S || !D) return;
-  if (D.picker) D.qty = Math.max(1, itemTotals_(D.items).meals);
+  autoRate(); syncDelivery();
+  D.qty = Math.max(1, itemTotals_(D.items).meals);
   if (!D.touched) autoSchedule(); else fitCounts();
   $('d-label').textContent = (D.date === S.today ? 'Today · ' : '') + dayLong(D.date);
   setVal($('cust'), D.name);
-  $('qty').textContent = D.qty;
-  $('q-minus').disabled = D.qty <= 1; $('q-plus').disabled = D.qty >= 60;
-  setVal($('unit'), D.unit ? fmt(D.unit) : '');
-  setVal($('food'), D.food); setVal($('notes'), D.notes); setVal($('extra'), D.extra);
-  setVal($('xprice'), D.extraPrice ? fmt(D.extraPrice) : ''); setVal($('disc'), D.disc ? fmt(D.disc) : '');
+  setVal($('notes'), D.notes);
+  setVal($('disc'), D.disc ? fmt(D.disc) : '');
   setVal($('partamt'), D.part ? fmt(D.part) : '');
 
-  var qc = $('qchips'); qc.textContent = '';
-  [1, 2, 3, 5, 10].forEach(function (n) {
-    qc.appendChild(h('button', { type: 'button', class: 'chip', 'aria-pressed': D.qty === n ? 'true' : 'false', text: String(n), onclick: function () { D.qty = n; updateOrder(); } }));
-  });
-  var pc = $('pchips'); pc.textContent = '';
-  S.prices.forEach(function (p) {
-    pc.appendChild(h('button', { type: 'button', class: 'chip', 'aria-pressed': D.unit === p ? 'true' : 'false', text: fmt(p), onclick: function () { D.unit = p; updateOrder(); } }));
-  });
   var xs = [];
   if (D.notes.trim()) xs.push('Notes'); if (D.disc) xs.push('Discount');
   $('extras').hidden = !D.extrasOpen; $('more').setAttribute('aria-expanded', D.extrasOpen ? 'true' : 'false');
   $('more-sum').textContent = xs.length ? xs.join(' · ') : 'None'; $('more-sum').className = 'pill' + (xs.length ? ' info' : '');
   renderRecent(); renderHint();
-  $('f-food').hidden = D.picker; $('f-extra').hidden = D.picker; $('f-extra2').hidden = !D.picker;
-  $('noextra').setAttribute('aria-pressed', D.noExtra ? 'true' : 'false'); $('noextra2').setAttribute('aria-pressed', D.noExtra ? 'true' : 'false');
+  $('noextra2').setAttribute('aria-pressed', D.noExtra ? 'true' : 'false');
   $('f-when').hidden = D.qty <= 1;
   Array.prototype.forEach.call($('when').children, function (b) { b.setAttribute('aria-pressed', b.dataset.w === D.when ? 'true' : 'false'); });
-  $('f-qty').hidden = D.picker; $('f-unit').hidden = D.picker; $('picker').hidden = !D.picker;
-  Array.prototype.forEach.call($('modebar').querySelectorAll('[data-mode]'), function (b) { b.setAttribute('aria-pressed', (b.dataset.mode === 'pick') === D.picker ? 'true' : 'false'); });
+  Array.prototype.forEach.call($('deliv').children, function (b) { b.setAttribute('aria-pressed', (b.dataset.v === 'yes') === D.delivery ? 'true' : 'false'); });
+  $('feewrap').hidden = !D.delivery; setVal($('fee'), D.fee ? fmt(D.fee) : '');
   var wn = (S.web || []).length; $('webbtn').hidden = !wn; $('webbtn').textContent = wn + ' website order' + (wn === 1 ? '' : 's') + ' waiting';
   renderPicker();
   scheduleOrder.render();
 
   var c = calc();
   $('total').textContent = fmt(Math.max(0, c.payable));
-  var parts = [D.qty + ' × ' + fmt(D.unit)];
+  var tt = itemTotals_(D.items), parts = [plural(tt.meals, 'meal') + ' ' + fmt(tt.main)];
+  if (tt.other) parts.push('+ ' + fmt(tt.other) + ' extras');
   if (D.extraPrice) parts.push('+ ' + fmt(D.extraPrice) + ' extra');
   if (D.disc) parts.push('− ' + fmt(D.disc) + ' off');
   var bd = $('breakdown');
@@ -1307,10 +1318,9 @@ function updateOrder() {
 }
 
 function wireOrder() {
-  Array.prototype.forEach.call($('modebar').querySelectorAll('[data-mode]'), function (b) { b.onclick = function () { D.picker = b.dataset.mode === 'pick'; updateOrder(); }; });
   $('webbtn').onclick = openWeb;
   var cust = $('cust');
-  cust.addEventListener('input', function () { D.name = cust.value; suggestIdx = -1; showSuggest(); updateOrder(); });
+  cust.addEventListener('input', function () { D.name = cust.value; autoRate(); suggestIdx = -1; showSuggest(); updateOrder(); });
   cust.addEventListener('focus', function () { showSuggest(); });
   cust.addEventListener('blur', function () { setTimeout(hideSuggest, 120); });
   cust.addEventListener('keydown', function (ev) {
@@ -1324,21 +1334,17 @@ function wireOrder() {
   $('d-prev').onclick = function () { shiftDate(-1); };
   $('d-next').onclick = function () { shiftDate(1); };
   $('d-label').onclick = function () { D.date = S.today; lastDate = null; D.touched = false; scheduleOrder.reset(); updateOrder(); };
-  $('q-minus').onclick = function () { D.qty = Math.max(1, D.qty - 1); updateOrder(); };
-  $('q-plus').onclick = function () { D.qty = Math.min(60, D.qty + 1); updateOrder(); };
-  bindMoney($('unit'), function (n) { D.unit = n; updateOrder(); });
-  bindMoney($('xprice'), function (n) { D.extraPrice = n; updateOrder(); });
+  bindMoney($('fee'), function (n) { D.fee = n; lastFee = n; try { localStorage.setItem('lo-fee', String(n)); } catch (e) { /* ignore */ } updateOrder(); });
+  Array.prototype.forEach.call($('deliv').children, function (b) { b.onclick = function () { D.delivery = b.dataset.v === 'yes'; updateOrder(); if (D.delivery && !D.fee) $('fee').focus(); }; });
   bindMoney($('disc'), function (n) { D.disc = n; updateOrder(); });
   bindMoney($('partamt'), function (n) { D.part = n; updateOrder(); });
-  $('food').addEventListener('input', function () { D.food = $('food').value; updateOrder(); });
   $('notes').addEventListener('input', function () { D.notes = $('notes').value; });
-  $('extra').addEventListener('input', function () { D.extra = $('extra').value; updateOrder(); });
   Array.prototype.forEach.call($('paymode').children, function (b) {
     b.onclick = function () { D.payMode = b.dataset.m; updateOrder(); if (D.payMode === 'part') $('partamt').focus(); };
   });
   Array.prototype.forEach.call($('method').children, function (b) { b.onclick = function () { D.method = b.dataset.v; updateOrder(); }; });
   Array.prototype.forEach.call($('when').children, function (b) { b.onclick = function () { D.when = b.dataset.w; D.touched = false; scheduleOrder.reset(); updateOrder(); }; });
-  $('noextra').onclick = $('noextra2').onclick = function () { D.noExtra = !D.noExtra; updateOrder(); };
+  $('noextra2').onclick = function () { D.noExtra = !D.noExtra; updateOrder(); };
   $('save').onclick = saveOrder;
   $('more').onclick = function () { D.extrasOpen = !D.extrasOpen; updateOrder(); };
 
@@ -1363,13 +1369,16 @@ function shiftDate(n) {
   D.touched = false; scheduleOrder.reset(); updateOrder();
 }
 
+function foodText(mains) {
+  return D.items.filter(function (l) { return l.g !== 'delivery' && isMain_(l) === mains; }).map(function (l) { return (l.qty > 1 ? l.qty + ' × ' : '') + (l.g === 'chicken' ? 'Chicken meal' : l.value); }).join(', ').slice(0, 80);
+}
 function saveOrder() {
   if (busy) return;
   var pr = problem();
   if (pr) { toast(pr, 'bad'); return; }
   var c = calc();
   var schedule = Object.keys(D.counts).map(function (d) { return { date: d, count: D.counts[d] }; });
-  var p = { webId: D.webId, items: D.picker ? D.items : [], date: D.date, name: D.name.trim(), qty: D.qty, food: D.food, notes: D.notes, unitPrice: D.unit, extra: D.extra, extraPrice: D.extraPrice, discount: D.disc, paid: c.paid, method: D.method, schedule: schedule };
+  var p = { webId: D.webId, items: D.items, date: D.date, name: D.name.trim(), qty: D.qty, food: foodText(true), notes: D.notes, unitPrice: 0, extra: foodText(false), extraPrice: 0, discount: D.disc, paid: c.paid, method: D.method, schedule: schedule };
   lastMethod = D.method;
   act('saveOrder', p, function (i) {
     var msg = 'Saved ' + i.name + ': ' + plural(i.qty, 'meal');
