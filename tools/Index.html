@@ -358,6 +358,7 @@ select.pick:focus { border-color: var(--accent); outline: 3px solid var(--accent
             <button type="button" data-m="full" aria-pressed="true">Paid</button>
             <button type="button" data-m="part" aria-pressed="false">Part paid</button>
             <button type="button" data-m="none" aria-pressed="false">Unpaid</button>
+            <button type="button" data-m="bank" id="paybank" aria-pressed="false" hidden>Banked</button>
           </div>
         </div>
         <div class="field part" id="partwrap" hidden><label for="partamt">Paid so far</label><div class="money"><input type="text" id="partamt" inputmode="numeric" autocomplete="off" placeholder="0"><span>VND</span></div></div>
@@ -510,7 +511,7 @@ function buildState_(data) {
     if (o.date >= recentCut) c.recent++;
     if (unit && o.date >= priceCut) priceCount[unit] = (priceCount[unit] || 0) + 1;
     if (o.date >= cutoff || owed > 0 || credit > 0) {
-      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, pfood: o.pfood || 0, servedN: ((ix.live[o.oid] || []).filter(function (x) { return x.status === STATUS_.SERVED; })).length, food: o.food || '', notes: o.notes || '', items: o.items || [], payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
+      orders.push({ row: o.row, date: o.date, name: name, qty: o.qty, pfood: o.pfood || 0, servedN: ((ix.live[o.oid] || []).filter(function (x) { return x.status === STATUS_.SERVED; })).length, food: o.food || '', extra: o.extra || '', pextra: o.pextra || 0, disc: o.disc || 0, notes: o.notes || '', items: o.items || [], payable: pay, paid: o.paid || 0, owed: owed, oid: o.oid || '', credit: credit, method: method });
     }
   });
 
@@ -581,6 +582,20 @@ function planSaveOrder_(p, data) {
   if (items.length) ep += tot.other;
   var pay = pfood + ep - disc;
   if (pay < 0) fail_('The discount is bigger than the order.');
+  var trims = [], banked = 0;
+  if (p.bank) {
+    var ixb = indexData_(data), need = qty, got = 0;
+    data.orders.slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.row - b.row; }).forEach(function (o) {
+      if (need <= 0 || !o.oid || baseName_(o.name).toLowerCase() !== name.toLowerCase()) return;
+      var n = Math.min(need, credit_(ixb, o));
+      if (n <= 0) return;
+      var value = o.qty > 0 ? Math.round((o.pfood || 0) * n / o.qty) : 0, moved = Math.min(o.paid || 0, value);
+      need -= n; got += moved; banked += n;
+      trims.push({ row: o.row, oid: o.oid, gone: o.qty - n <= 0, qty: o.qty - n, pfood: Math.max(0, (o.pfood || 0) - value), paid: (o.paid || 0) - moved });
+    });
+    if (!trims.length) fail_('There are no banked meals to use.');
+    paid = Math.min(pay, got);
+  }
   if (paid > pay) fail_('The amount paid is more than the total.');
   var method = p.method === 'Cash' || p.method === 'Transfer' ? p.method : '';
   var sched = cleanSchedule_(p.schedule, p.date, qty);
@@ -588,9 +603,36 @@ function planSaveOrder_(p, data) {
   var meals = expandMeals_(sched, name, oid, food, data.nonce, 0);
   return {
     order: { date: p.date, name: name, qty: qty, food: food, pfood: pfood, extra: String(p.extra || '').trim().slice(0, 80), pextra: ep, disc: disc, paid: paid, notes: notes, items: items, oid: oid, method: method },
-    meals: meals,
-    info: { oid: oid, name: name, qty: qty, scheduled: meals.length, credit: qty - meals.length, days: sched.map(function (s) { return s.date; }), payable: pay, owed: pay - paid }
+    meals: meals, trims: trims,
+    info: { banked: banked, oid: oid, name: name, qty: qty, scheduled: meals.length, credit: qty - meals.length, days: sched.map(function (s) { return s.date; }), payable: pay, owed: pay - paid }
   };
+}
+
+/* Rewrites an order after the fact, served or not. Meals can't drop below the number already served;
+   if the order shrinks, the latest unserved meals are cancelled. If it grows, the extra meals show up as banked. */
+function planEditOrder_(p, data) {
+  var ix = indexData_(data), o = ix.byRow[p.row];
+  if (!o || baseName_(o.name) !== baseName_(p.name) || o.date !== p.date) fail_('That order has changed. Refresh and try again.');
+  var items = cleanItems_(p.items), tot = itemTotals_(items), qty, pfood, pextra, food = o.food || '', extra = o.extra || '';
+  if (items.length) {
+    if (!tot.meals) fail_('Keep at least one meal on the order.');
+    qty = tot.meals; pfood = tot.main; pextra = tot.other;
+    var txt = function (mains) { return items.filter(function (l) { return l.g !== 'delivery' && isMain_(l) === mains; }).map(function (l) { return (l.qty > 1 ? l.qty + ' × ' : '') + (l.g === 'chicken' ? 'Chicken meal' : l.value); }).join(', ').slice(0, 80); };
+    food = txt(true); extra = txt(false);
+  } else {
+    qty = Number(p.qty);
+    if (!isFinite(qty) || Math.floor(qty) !== qty || qty < 1 || qty > 60) fail_('Meals must be a whole number from 1 to 60.');
+    pfood = money_(p.unitPrice, 'price per meal') * qty; pextra = money_(p.extraPrice, 'extra price');
+  }
+  var disc = money_(p.discount, 'discount'), paid = money_(p.paid, 'amount paid'), pay = pfood + pextra - disc;
+  if (pay < 0) fail_('The discount is bigger than the order.');
+  if (paid > pay) fail_('The amount paid is more than the total.');
+  var live = o.oid ? (ix.live[o.oid] || []) : [], served = live.filter(function (x) { return x.status === STATUS_.SERVED; }).length, cancelIds = [];
+  if (qty < served) fail_(served + ' meals are already served, so the order cannot go below that.');
+  var excess = live.length - qty;
+  if (excess > 0) live.filter(function (x) { return x.status === STATUS_.SCHEDULED; }).sort(cmpMeal_).reverse().slice(0, excess).forEach(function (x) { cancelIds.push(x.id); });
+  return { row: o.row, fields: { qty: qty, food: food, pfood: pfood, extra: extra, pextra: pextra, disc: disc, paid: paid, notes: String(p.notes || '').trim().slice(0, 200), items: items }, cancelIds: cancelIds,
+    info: { name: baseName_(o.name), qty: qty, owed: pay - paid, cancelled: cancelIds.length } };
 }
 
 function planSchedule_(p, data) {
@@ -759,11 +801,21 @@ function makeMock() {
       }
       return out(plan.info);
     },
+    editOrder: function (p) {
+      var plan = planEditOrder_(p, data());
+      orders.forEach(function (o) { if (o.row === plan.row) for (var k in plan.fields) o[k] = plan.fields[k]; });
+      meals.forEach(function (m) { if (plan.cancelIds.indexOf(m.id) >= 0) m.status = STATUS_.CANCELLED; });
+      return out(plan.info);
+    },
     dismissWeb: function (p) { web.forEach(function (w) { if (w.id === p.id) w.status = 'Dismissed'; }); return out(); },
     saveOrder: function (p) {
       var plan = planSaveOrder_(p, data()), r = { row: oRow++ };
       for (var k in plan.order) r[k] = plan.order[k];
       orders.push(r); addMeals(plan.meals);
+      plan.trims.forEach(function (t) {
+        if (t.gone) { orders = orders.filter(function (x) { return x.row !== t.row; }); meals = meals.filter(function (m) { return m.oid !== t.oid; }); }
+        else orders.forEach(function (x) { if (x.row === t.row) { x.qty = t.qty; x.pfood = t.pfood; x.paid = t.paid; } });
+      });
       web.forEach(function (w) { if (w.id === p.webId) w.status = 'Accepted'; });
       return out(plan.info);
     },
@@ -829,6 +881,14 @@ var sbApi = {
       var plan = planSaveOrder_(p, withNonce(d)), o = plan.order;
       return sb.from('orders').insert({ order_date: o.date, customer: o.name, qty: o.qty, food: o.food, pfood: o.pfood, extra: o.extra, pextra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes, items: o.items, oid: o.oid, method: o.method })
         .then(ok).then(function () { return insertMeals(plan.meals); })
+        .then(function () {
+          return plan.trims.reduce(function (pr, t) {
+            return pr.then(function () {
+              if (t.gone) return sb.from('meals').delete().eq('oid', t.oid).then(ok).then(function () { return sb.from('orders').delete().eq('id', t.row).then(ok); });
+              return sb.from('orders').update({ qty: t.qty, pfood: t.pfood, paid: t.paid }).eq('id', t.row).then(ok);
+            });
+          }, Promise.resolve());
+        })
         .then(function () { return p.webId ? sb.from('web_orders').update({ status: 'Accepted' }).eq('id', p.webId).then(ok) : null; }).then(function () { return reply(plan.info); });
     });
   },
@@ -852,6 +912,14 @@ var sbApi = {
         if (plan.deleteIds.length) steps.push(function () { return sb.from('meals').delete().in('id', plan.deleteIds).then(ok); });
       }
       return steps.reduce(function (pr, f) { return pr.then(f); }, Promise.resolve()).then(function () { return reply(plan.info); });
+    });
+  },
+  editOrder: function (p) {
+    return readData().then(function (d) {
+      var plan = planEditOrder_(p, d);
+      return sb.from('orders').update(plan.fields).eq('id', plan.row).then(ok)
+        .then(function () { return plan.cancelIds.length ? sb.from('meals').update({ status: STATUS_.CANCELLED }).in('id', plan.cancelIds).then(ok) : null; })
+        .then(function () { return reply(plan.info); });
     });
   },
   dismissWeb: function (p) { return sb.from('web_orders').update({ status: 'Dismissed' }).eq('id', p.id).then(ok).then(function () { return reply(); }); },
@@ -957,8 +1025,19 @@ function fitCounts() {
 function calc() {
   var t = itemTotals_(D.items);
   var food = t.main, payable = food + t.other + D.extraPrice - D.disc;
-  var paid = D.payMode === 'full' ? payable : D.payMode === 'none' ? 0 : Math.min(D.part, payable);
+  var paid = D.payMode === 'full' ? payable : D.payMode === 'none' ? 0 : D.payMode === 'bank' ? Math.min(bankInfo().cover, payable) : Math.min(D.part, payable);
   return { food: food, payable: payable, paid: paid, owed: payable - paid };
+}
+/* banked meals the customer could use on this order, and the money that comes with them */
+function bankInfo() {
+  var key = baseName_(D.name).toLowerCase(), need = D.qty, n = 0, cover = 0;
+  if (!key) return { n: 0, cover: 0 };
+  S.orders.slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.row - b.row; }).forEach(function (o) {
+    if (need <= 0 || !o.oid || o.name.toLowerCase() !== key || o.credit <= 0) return;
+    var k = Math.min(need, o.credit); need -= k; n += k;
+    cover += Math.min(o.paid, o.qty ? Math.round(o.pfood * k / o.qty) : 0);
+  });
+  return { n: n, cover: cover };
 }
 function hasExtras() {
   if (D.noExtra) return true;
@@ -971,6 +1050,7 @@ function problem() {
   if (!hasExtras()) return 'Enter the extras, or tap No extras';
   if (D.qty > 1 && !D.when) return 'Choose: same day, one a day, or bank';
   if (c.payable < 0) return 'The discount is bigger than the order';
+  if (D.payMode === 'bank' && !bankInfo().n) return 'No banked meals to use';
   if (D.payMode === 'part' && !(D.part > 0 && D.part < c.payable)) return 'Enter how much has been paid';
   return '';
 }
@@ -1321,6 +1401,9 @@ function updateOrder() {
   var bd = $('breakdown');
   bd.textContent = parts.join(' ') + (c.owed > 0 && c.payable > 0 ? ' · owes ' + fmt(c.owed) : '');
   bd.className = c.owed > 0 && c.payable > 0 ? 'owes' : '';
+  var bc = D.name.trim() ? findCustomer(D.name) : null, canBank = !!(bc && bc.credit > 0);
+  $('paybank').hidden = !canBank; if (!canBank && D.payMode === 'bank') { D.payMode = 'full'; c = calc(); }
+  if (canBank) $('paybank').textContent = 'Banked (' + Math.min(bc.credit, D.qty) + ')';
   Array.prototype.forEach.call($('paymode').children, function (b) { b.setAttribute('aria-pressed', b.dataset.m === D.payMode ? 'true' : 'false'); });
   Array.prototype.forEach.call($('method').children, function (b) { b.setAttribute('aria-pressed', b.dataset.v === D.method ? 'true' : 'false'); });
   $('partwrap').hidden = D.payMode !== 'part';
@@ -1390,12 +1473,13 @@ function saveOrder() {
   if (pr) { toast(pr, 'bad'); return; }
   var c = calc();
   var schedule = Object.keys(D.counts).map(function (d) { return { date: d, count: D.counts[d] }; });
-  var p = { webId: D.webId, items: D.items, date: D.date, name: D.name.trim(), qty: D.qty, food: foodText(true), notes: D.notes, unitPrice: 0, extra: foodText(false), extraPrice: 0, discount: D.disc, paid: c.paid, method: D.method, schedule: schedule };
+  var p = { webId: D.webId, items: D.items, date: D.date, name: D.name.trim(), qty: D.qty, food: foodText(true), notes: D.notes, unitPrice: 0, extra: foodText(false), extraPrice: 0, discount: D.disc, paid: c.paid, method: D.method, schedule: schedule, bank: D.payMode === 'bank' };
   lastMethod = D.method;
   act('saveOrder', p, function (i) {
     var msg = 'Saved ' + i.name + ': ' + plural(i.qty, 'meal');
     if (i.scheduled) msg += ' on ' + describeDays(i.days);
     if (i.credit > 0) msg += ' · ' + i.credit + ' to schedule later';
+    if (i.banked) msg += ' · used ' + plural(i.banked, 'banked meal');
     if (i.owed > 0) msg += ' · owes ' + fmt(i.owed);
     return msg;
   }).then(function (r) {
@@ -1579,6 +1663,75 @@ function renderCustomers() {
   renderDetail();
 }
 
+function openEdit(o) {
+  var hasItems = !!(o.items && o.items.length);
+  var E = { items: JSON.parse(JSON.stringify(o.items || [])), qty: o.qty, unit: o.qty ? Math.round(o.pfood / o.qty) : 0, extra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes };
+  var totalEl, whyEl, saveBtn, paidInp;
+  function total() { if (hasItems) { var t = itemTotals_(E.items); return t.main + t.other - E.disc; } return E.unit * E.qty + E.extra - E.disc; }
+  function mains() { return itemTotals_(E.items).meals; }
+  function check() {
+    var t = total(), msg = '';
+    if (hasItems && !mains()) msg = 'Keep at least one meal.';
+    else if (t < 0) msg = 'The discount is bigger than the order.';
+    else if (E.paid > t) msg = 'Paid is more than the total.';
+    else if (mains() < o.servedN && hasItems) msg = o.servedN + ' meals are already served.';
+    totalEl.textContent = 'Total ' + fmt(Math.max(0, t)) + (E.paid < t ? ' · owes ' + fmt(t - E.paid) : '');
+    whyEl.textContent = msg; saveBtn.disabled = !!msg;
+  }
+  function money(label, get, set) {
+    var inp = h('input', { type: 'text', inputmode: 'numeric', autocomplete: 'off', 'aria-label': label, value: get() ? fmt(get()) : '' });
+    bindMoney(inp, function (n) { set(n); check(); });
+    return inp;
+  }
+  function addLine(it) {
+    var l = E.items.filter(function (x) { return x.g === it.g && x.value === it.value; })[0];
+    if (l) l.qty = Math.min(60, l.qty + 1);
+    else E.items.push({ g: it.g, value: it.value, label: it.label, qty: 1, price: it.price, base: it.price, detail: '', opts: it.rice ? { rice: 'No' } : {} });
+    draw();
+  }
+  function draw() {
+    var body = [];
+    totalEl = h('strong'); whyEl = h('span', { class: 'sub', style: 'color:var(--warn)' });
+    saveBtn = h('button', { type: 'button', class: 'btn primary', text: 'Save changes', onclick: function () {
+      closeModal();
+      act('editOrder', { row: o.row, name: o.name, date: o.date, items: E.items, qty: E.qty, unitPrice: E.unit, extraPrice: E.extra, discount: E.disc, paid: E.paid, notes: E.notes },
+        function (i) { return 'Updated ' + i.name + '’s order' + (i.cancelled ? ' · ' + plural(i.cancelled, 'booked meal') + ' cancelled' : ''); });
+    } });
+    if (hasItems) {
+      E.items.forEach(function (l) {
+        var q = h('span', { text: String(l.qty) });
+        body.push(h('div', { class: 'prow' },
+          h('div', { class: 'nm' }, l.g === 'chicken' ? 'Chicken meal' : l.value, l.detail ? h('small', { text: l.detail }) : null),
+          h('div', { class: 'money' }, money('Price each', function () { return l.price; }, function (n) { l.price = n; l.base = n; }), h('span', { text: 'each' })),
+          h('div', { class: 'pq' },
+            h('button', { type: 'button', 'aria-label': 'One fewer', text: '−', onclick: function () { l.qty--; if (l.qty <= 0) E.items.splice(E.items.indexOf(l), 1); draw(); } }),
+            q,
+            h('button', { type: 'button', 'aria-label': 'One more', text: '+', disabled: l.qty >= 60, onclick: function () { l.qty++; draw(); } }))));
+      });
+      if (MENU) body.push(dropdown('Add an item', MENU.sections.map(function (x) { return { title: x.title, items: x.items }; }), function (v) { if (BYVAL[v]) addLine(BYVAL[v]); }));
+    } else {
+      body.push(h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Meals' }),
+        h('div', { class: 'pq' },
+          h('button', { type: 'button', text: '−', disabled: E.qty <= 1, onclick: function () { E.qty--; draw(); } }), h('span', { text: String(E.qty) }),
+          h('button', { type: 'button', text: '+', disabled: E.qty >= 60, onclick: function () { E.qty++; draw(); } })),
+        h('span', { class: 'sub', text: 'at' }), h('div', { class: 'money' }, money('Price per meal', function () { return E.unit; }, function (n) { E.unit = n; }), h('span', { text: 'each' }))));
+      body.push(h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Extras' }), h('div', { class: 'money' }, money('Extras', function () { return E.extra; }, function (n) { E.extra = n; }), h('span', { text: 'VND' }))));
+    }
+    body.push(h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Discount' }), h('div', { class: 'money' }, money('Discount', function () { return E.disc; }, function (n) { E.disc = n; }), h('span', { text: 'VND' }))));
+    paidInp = money('Paid', function () { return E.paid; }, function (n) { E.paid = n; });
+    body.push(h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Paid' }), h('div', { class: 'money' }, paidInp, h('span', { text: 'VND' })),
+      h('button', { type: 'button', class: 'btn small', text: 'Paid in full', onclick: function () { E.paid = Math.max(0, total()); paidInp.value = E.paid ? fmt(E.paid) : ''; check(); } })));
+    var notes = h('input', { type: 'text', autocomplete: 'off', placeholder: 'Notes', 'aria-label': 'Notes', value: E.notes });
+    notes.addEventListener('input', function () { E.notes = notes.value; });
+    body.push(notes);
+    openModal([h('h2', { text: 'Edit ' + o.name + '’s order' }), h('p', { class: 'sub', text: dayLong(o.date) + (o.servedN ? ' · ' + plural(o.servedN, 'meal') + ' already served' : '') }),
+      body, h('div', { class: 'row' }, totalEl, h('div', { class: 'grow' }), whyEl),
+      h('div', { class: 'row' }, saveBtn, h('button', { type: 'button', class: 'btn', text: 'Cancel', onclick: closeModal }))]);
+    check();
+  }
+  draw();
+}
+
 function confirmDelete(o) {
   openModal([
     h('h2', { text: 'Delete this order?' }),
@@ -1688,6 +1841,7 @@ function renderDetail() {
     h('div', { class: 'rl', style: 'max-height:460px;overflow:auto;align-content:start' }, mine.map(function (o) {
       return [h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
         h('span', { class: 'r', style: 'display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;align-items:center' }, (o.owed ? 'owes ' + fmt(o.owed) : 'paid') + ' ',
+          h('button', { type: 'button', class: 'btn small', text: 'Edit', 'aria-label': 'Edit this order', onclick: function () { openEdit(o); } }),
           o.qty - o.servedN > 0 ? h('button', { type: 'button', class: 'btn small', text: 'Refund', 'aria-label': 'Refund the meals not yet served', onclick: function () { confirmRefund(o); } }) : null,
           o.servedN > 0 ? h('button', { type: 'button', class: 'btn small', text: 'Delete served', 'aria-label': 'Delete the served meals', onclick: function () { confirmDeleteServed(o); } }) : null,
           h('button', { type: 'button', class: 'btn small danger', text: 'Delete order', 'aria-label': 'Delete this order', onclick: function () { confirmDelete(o); } }))];
