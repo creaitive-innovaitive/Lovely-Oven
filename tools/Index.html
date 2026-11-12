@@ -1576,9 +1576,24 @@ function renderToday() {
   }
   host.appendChild(h('div', { class: 'tgrid' }, body, dishesPanel(date)));
 }
+/* the one dish this meal is for: an order's dishes are dealt out one per meal in date order (same rule as the Dishes panel) */
+function mealDish(m) {
+  var o = S.orders.filter(function (x) { return x.oid && x.oid === m.oid; })[0];
+  if (!o) return m.note;
+  var ms = S.meals.filter(function (x) { return x.oid === m.oid && x.status !== STATUS_.CANCELLED; }).sort(cmpMeal_), idx = -1, i;
+  for (i = 0; i < ms.length; i++) if (ms[i].id === m.id) idx = i;
+  if (idx < 0) return m.note;
+  if (o.items && o.items.length) {
+    var units = [];
+    o.items.forEach(function (it) { if (isMain_(it)) for (var k = 0; k < it.qty; k++) units.push(it); });
+    if (units.length) { var u = units[idx % units.length]; return u.g === 'chicken' ? 'Chicken meal' : u.value; }
+  }
+  var parts = String(m.note || '').split(/\s*,\s*/).filter(Boolean);
+  return parts.length > 1 ? parts[idx % parts.length] : m.note;
+}
 function mealCard(m, showDate) {
   var served = m.status === STATUS_.SERVED, ask = TV.confirm[m.id];
-  var sub = (m.n ? 'Meal ' + m.n + ' of ' + m.of : 'Meal') + (showDate ? ' · ' + dayLong(m.date) : '') + (m.note ? ' · ' + m.note : '');
+  var sub = (m.n ? 'Meal ' + m.n + ' of ' + m.of : 'Meal') + (showDate ? ' · ' + dayLong(m.date) : '') + (mealDish(m) ? ' · ' + mealDish(m) : '');
   var acts;
   if (served) {
     acts = [h('span', { class: 'tick', text: '✓ Served' }), h('button', { type: 'button', class: 'btn small', text: 'Undo', onclick: function () { act('setMealStatus', { id: m.id, status: STATUS_.SCHEDULED }); } })];

@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lovely Oven Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root {
+  --bg: #eef1f6; --surface: #fff; --surface2: #f4f6fb; --ink: #121a2b; --muted: #566077; --line: #d8deea; --line2: #bcc5da;
+  --accent: #2c44c9; --accent-ink: #fff; --accent-soft: #e2e7fb; --ok: #17703f; --ok-soft: #dcf2e5; --warn: #8f4f00; --warn-soft: #fbe8c8; --bad: #b0221a; --bad-soft: #fce3e0;
+  --shadow: 0 1px 2px rgba(18,26,43,.06), 0 8px 24px rgba(18,26,43,.07);
+  --display: 'Bricolage Grotesque', system-ui, sans-serif; --body: 'Figtree', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b101c; --surface: #151c2d; --surface2: #1b2438; --ink: #e8ecf7; --muted: #9ba6bf; --line: #2a3552; --line2: #3b496b;
+    --accent: #93a5ff; --accent-ink: #0b101c; --accent-soft: #232e63; --ok: #62d596; --ok-soft: #143a2a; --warn: #f2b45c; --warn-soft: #3d2c10; --bad: #ff8c80; --bad-soft: #42191b;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3); color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 500 16px/1.4 var(--body); }
+[hidden] { display: none !important; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+h1, h2, h3 { font-family: var(--display); margin: 0; letter-spacing: -.01em; }
+h1 { font-size: 26px; } h2 { font-size: 20px; } h3 { font-size: 15px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 14px max(16px, env(safe-area-inset-left)) 90px; display: grid; gap: 14px; }
+.top { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tab, .btn { min-height: 42px; padding: 0 14px; border-radius: 12px; border: 2px solid var(--line2); background: var(--surface); font-weight: 700; }
+.tab[aria-pressed="true"], .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.small { min-height: 34px; padding: 0 10px; font-size: 14px; }
+.btn.danger { color: var(--bad); }
+.btn:disabled { opacity: .5; }
+.panel { background: var(--surface); border-radius: 20px; padding: 18px; box-shadow: var(--shadow); display: grid; gap: 14px; min-width: 0; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.tile { background: var(--surface2); border-radius: 14px; padding: 12px 14px; }
+.tile b { display: block; font: 600 22px var(--mono); }
+.tile span { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+.tile.ok b { color: var(--ok); } .tile.bad b { color: var(--bad); } .tile.warn b { color: var(--warn); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.grow { flex: 1; }
+.sub { color: var(--muted); font-size: 14px; }
+input, select { min-height: 42px; border: 2px solid var(--line2); border-radius: 10px; padding: 0 10px; background: var(--surface); max-width: 100%; }
+label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 600; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; align-items: end; }
+.bars { display: flex; align-items: flex-end; gap: 6px; height: 160px; }
+.bars .m { flex: 1; display: grid; gap: 4px; justify-items: center; align-content: end; height: 100%; font-size: 11px; color: var(--muted); }
+.bars .pair { display: flex; align-items: flex-end; gap: 2px; height: 130px; width: 100%; justify-content: center; }
+.bars .pair i { display: block; width: 45%; max-width: 22px; border-radius: 4px 4px 0 0; min-height: 1px; }
+.bars .rev { background: var(--accent); } .bars .cost { background: var(--warn); }
+.legend { display: flex; gap: 14px; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; }
+.list { display: grid; gap: 0; }
+.list > div { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 9px 0; border-top: 1px solid var(--line); align-items: center; }
+.list .meter { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--surface2); overflow: hidden; }
+.list .meter i { display: block; height: 100%; background: var(--accent); }
+.mono { font-family: var(--mono); }
+.scroll { overflow: auto; max-height: 70vh; border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 4px 6px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { position: sticky; top: 0; background: var(--surface2); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+td input, td select { min-height: 34px; width: 100%; min-width: 90px; border-width: 1px; font-size: 14px; }
+td input.num { min-width: 100px; text-align: right; font-family: var(--mono); }
+td.ro { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+.flash { background: var(--ok-soft) !important; }
+.note { background: var(--warn-soft); color: var(--warn); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.pill { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 13px; font-weight: 700; background: var(--accent-soft); }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 12px; z-index: 9; max-width: 90vw; }
+.toast.bad { background: var(--bad); color: #fff; }
+.login { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+.login form { display: grid; gap: 12px; width: min(340px, 100%); }
+.thumb { max-width: 100%; max-height: 220px; border-radius: 10px; }
+</style>
+</head>
+<body>
+<div class="login" id="login" hidden>
+  <form id="loginform"><h1>Lovely Oven Admin</h1><p class="sub" id="loginmsg">Sign in with your admin account.</p>
+    <input type="email" id="email" autocomplete="username" placeholder="Email" aria-label="Email" required>
+    <input type="password" id="pw" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
+    <button class="btn primary" type="submit">Sign in</button></form>
+</div>
+
+<div class="wrap" id="app" hidden>
+  <div class="top">
+    <h1>Admin</h1>
+    <div class="tabs" id="tabs"></div>
+    <div class="row"><span class="sub" id="who"></span><button class="btn small" id="refresh">Refresh</button><button class="btn small" id="out">Sign out</button></div>
+  </div>
+  <div class="panel" id="periodbar">
+    <div class="row">
+      <label>Period<select id="period"></select></label>
+      <label id="fromwrap" hidden>From<input type="date" id="from"></label>
+      <label id="towrap" hidden>To<input type="date" id="to"></label>
+      <span class="sub" id="range"></span>
+      <div class="grow"></div>
+      <button class="btn small" id="csv">Export CSV</button>
+    </div>
+  </div>
+  <div id="view"></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function () {
+'use strict';
+var SB = supabase.createClient('https://drkebbkyipipxwcclihc.supabase.co', 'sb_publishable_x2cn9JVmEk5eCUJ3CtiAgA_5zLN4XqM');
+var CATS = ['Ingredients', 'Packaging', 'Delivery', 'Utilities', 'Rent', 'Equipment', 'Marketing', 'Staff', 'Other'];
+var TABS = [['overview', 'Overview'], ['expenses', 'Expenses'], ['tax', 'Tax'], ['data', 'Edit data']];
+var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var DB = { orders: [], meals: [], expenses: [], settings: { vat_rate: 3, pit_rate: 1.5, exempt_threshold: 500000000 } };
+var tab = 'overview', dataTable = 'orders', dataQ = '', pending = null;
+
+function $(id) { return document.getElementById(id); }
+function fmt(n) { return Math.round(n || 0).toLocaleString('en-US'); }
+function p2(n) { return (n < 10 ? '0' : '') + n; }
+function iso(d) { return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
+function today() { return iso(new Date()); }
+function h(tag, a) {
+  var el = document.createElement(tag), i;
+  for (var k in (a || {})) {
+    if (k === 'text') el.textContent = a[k]; else if (k.slice(0, 2) === 'on') el[k] = a[k]; else if (a[k] != null && a[k] !== false) el.setAttribute(k, a[k]);
+  }
+  for (i = 2; i < arguments.length; i++) add(el, arguments[i]);
+  return el;
+}
+function add(p, c) { if (c == null || c === false) return; if (Array.isArray(c)) c.forEach(function (x) { add(p, x); }); else p.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); }
+var toastT;
+function toast(m, bad) { var t = $('toast'); t.textContent = m; t.className = 'toast' + (bad ? ' bad' : ''); t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, bad ? 6000 : 3000); }
+function ok(r) { if (r.error) throw new Error(r.error.message); return r.data; }
+
+/* ---------- data ---------- */
+function fetchAll(table, col) {
+  var all = [];
+  return (function page(from) {
+    return SB.from(table).select('*').order(col).range(from, from + 999).then(ok).then(function (rows) {
+      all = all.concat(rows);
+      return rows.length === 1000 ? page(from + 1000) : all;
+    });
+  })(0);
+}
+function load() {
+  return Promise.all([fetchAll('orders', 'id'), fetchAll('meals', 'seq'), fetchAll('expenses', 'id'), fetchAll('settings', 'key')]).then(function (r) {
+    DB.orders = r[0]; DB.meals = r[1]; DB.expenses = r[2];
+    r[3].forEach(function (s) { DB.settings[s.key] = Number(s.value); });
+    render();
+  }).catch(function (e) { toast(e.message, true); });
+}
+
+/* ---------- period ---------- */
+var PERIODS = [['month', 'This month'], ['lastmonth', 'Last month'], ['quarter', 'This quarter'], ['year', 'This year'], ['lastyear', 'Last year'], ['all', 'All time'], ['custom', 'Custom']];
+function range() {
+  var v = $('period').value, d = new Date(), y = d.getFullYear(), m = d.getMonth(), q = Math.floor(m / 3) * 3, last = function (yy, mm) { return iso(new Date(yy, mm + 1, 0)); };
+  if (v === 'month') return [iso(new Date(y, m, 1)), last(y, m)];
+  if (v === 'lastmonth') return [iso(new Date(y, m - 1, 1)), last(y, m - 1)];
+  if (v === 'quarter') return [iso(new Date(y, q, 1)), last(y, q + 2)];
+  if (v === 'year') return [y + '-01-01', y + '-12-31'];
+  if (v === 'lastyear') return [(y - 1) + '-01-01', (y - 1) + '-12-31'];
+  if (v === 'custom') return [$('from').value || '0000-01-01', $('to').value || '9999-12-31'];
+  return ['0000-01-01', '9999-12-31'];
+}
+function inR(date, r) { return date >= r[0] && date <= r[1]; }
+
+/* ---------- money ---------- */
+function sales(o) { return (o.pfood || 0) + (o.pextra || 0) - (o.disc || 0); }
+function totals(r) {
+  var os = DB.orders.filter(function (o) { return inR(o.order_date, r); }), es = DB.expenses.filter(function (e) { return inR(e.expense_date, r); });
+  var t = { sales: 0, revenue: 0, costs: 0, orders: os.length, os: os, es: es };
+  os.forEach(function (o) { t.sales += sales(o); t.revenue += o.paid || 0; });
+  es.forEach(function (e) { t.costs += e.amount || 0; });
+  t.outstanding = Math.max(0, t.sales - t.revenue); t.profit = t.revenue - t.costs;
+  return t;
+}
+function yearRevenue(y) { var r = [y + '-01-01', y + '-12-31']; return totals(r).revenue; }
+/* flat percentage of revenue, nil while the year's revenue stays under the exemption threshold */
+function taxFor(revenue, year) {
+  var s = DB.settings, exempt = yearRevenue(year) <= s.exempt_threshold;
+  return { exempt: exempt, vat: exempt ? 0 : revenue * s.vat_rate / 100, pit: exempt ? 0 : revenue * s.pit_rate / 100 };
+}
+
+/* ---------- views ---------- */
+function render() {
+  var r = range();
+  $('range').textContent = r[0] === '0000-01-01' ? 'All dates' : r[0] + ' to ' + (r[1] === '9999-12-31' ? 'today' : r[1]);
+  $('fromwrap').hidden = $('towrap').hidden = $('period').value !== 'custom';
+  $('periodbar').hidden = tab === 'data';
+  var tabs = $('tabs'); tabs.textContent = '';
+  TABS.forEach(function (t) { tabs.appendChild(h('button', { class: 'tab', 'aria-pressed': t[0] === tab ? 'true' : 'false', text: t[1], onclick: function () { tab = t[0]; render(); } })); });
+  var v = $('view'); v.textContent = '';
+  if (tab === 'overview') v.appendChild(overview(r));
+  else if (tab === 'expenses') v.appendChild(expenses(r));
+  else if (tab === 'tax') v.appendChild(taxView());
+  else v.appendChild(dataView());
+}
+
+function tile(label, val, cls) { return h('div', { class: 'tile ' + (cls || '') }, h('b', { text: val }), h('span', { text: label })); }
+function listRows(rows, max) {
+  return h('div', { class: 'list' }, rows.map(function (r) {
+    return h('div', null, h('span', { text: r[0] }), h('span', { class: 'mono', text: r[1] }), max ? h('div', { class: 'meter' }, h('i', { style: 'width:' + Math.round(100 * r[2] / max) + '%' })) : null);
+  }));
+}
+function overview(r) {
+  var t = totals(r), y = (r[1] === '9999-12-31' ? today() : r[1]).slice(0, 4), tx = taxFor(t.revenue, y), taxTotal = tx.vat + tx.pit;
+  var box = h('div', { style: 'display:grid;gap:14px' });
+  box.appendChild(h('div', { class: 'panel' }, h('div', { class: 'tiles' },
+    tile('Revenue received', fmt(t.revenue)), tile('Sales invoiced', fmt(t.sales)), tile('Still owed', fmt(t.outstanding), t.outstanding ? 'warn' : ''),
+    tile('Costs', fmt(t.costs)), tile('Profit before tax', fmt(t.profit), t.profit < 0 ? 'bad' : 'ok'),
+    tile('Estimated tax', fmt(taxTotal)), tile('Profit after tax', fmt(t.profit - taxTotal), t.profit - taxTotal < 0 ? 'bad' : 'ok'))));
+
+  var bars = h('div', { class: 'bars' }), months = [], d = new Date(), i, maxv = 1;
+  for (i = 11; i >= 0; i--) { var md = new Date(d.getFullYear(), d.getMonth() - i, 1), key = md.getFullYear() + '-' + p2(md.getMonth() + 1); months.push({ key: key, label: MON[md.getMonth()], rev: 0, cost: 0 }); }
+  DB.orders.forEach(function (o) { months.forEach(function (m) { if (o.order_date.slice(0, 7) === m.key) m.rev += o.paid || 0; }); });
+  DB.expenses.forEach(function (e) { months.forEach(function (m) { if (e.expense_date.slice(0, 7) === m.key) m.cost += e.amount || 0; }); });
+  months.forEach(function (m) { maxv = Math.max(maxv, m.rev, m.cost); });
+  months.forEach(function (m) {
+    bars.appendChild(h('div', { class: 'm', title: m.key + ' revenue ' + fmt(m.rev) + ', costs ' + fmt(m.cost) }, h('div', { class: 'pair' },
+      h('i', { class: 'rev', style: 'height:' + Math.round(130 * m.rev / maxv) + 'px' }), h('i', { class: 'cost', style: 'height:' + Math.round(130 * m.cost / maxv) + 'px' })), m.label));
+  });
+  box.appendChild(h('div', { class: 'panel' }, h('h2', { text: 'Last 12 months' }), bars,
+    h('div', { class: 'legend' }, h('span', null, h('i', { style: 'background:var(--accent)' }), 'Revenue received'), h('span', null, h('i', { style: 'background:var(--warn)' }), 'Costs'))));
+
+  var byCat = {}, byCust = {}, byMethod = {};
+  t.es.forEach(function (e) { byCat[e.category] = (byCat[e.category] || 0) + e.amount; });
+  t.os.forEach(function (o) { var n = (o.customer || '').replace(/\s*\(.*\)$/, ''); byCust[n] = (byCust[n] || 0) + (o.paid || 0); byMethod[o.method || 'Not recorded'] = (byMethod[o.method || 'Not recorded'] || 0) + (o.paid || 0); });
+  function top(m, n) { return Object.keys(m).map(function (k) { return [k, m[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, n); }
+  function rows(m, n) { var l = top(m, n), mx = l.length ? l[0][1] : 1; return listRows(l.map(function (x) { return [x[0], fmt(x[1]), x[1]]; }), mx || 1); }
+  box.appendChild(h('div', { class: 'form', style: 'align-items:start' },
+    h('div', { class: 'panel' }, h('h3', { text: 'Costs by category' }), t.es.length ? rows(byCat, 12) : h('p', { class: 'sub', text: 'No costs in this period.' })),
+    h('div', { class: 'panel' }, h('h3', { text: 'Top customers' }), t.os.length ? rows(byCust, 8) : h('p', { class: 'sub', text: 'No orders in this period.' })),
+    h('div', { class: 'panel' }, h('h3', { text: 'Paid by' }), t.os.length ? rows(byMethod, 4) : null)));
+  return box;
+}
+
+/* ---------- expenses + receipt reading ---------- */
+function numbersIn(line) {
+  var out = [], re = /\d{1,3}(?:[.,]\d{3})+|\d{4,}/g, m;
+  while ((m = re.exec(line))) { var n = parseInt(m[0].replace(/[.,]/g, ''), 10); if (n > 0 && n < 1e10) out.push(n); }
+  return out;
+}
+function parseReceipt(text) {
+  var lines = text.split(/\n/).map(function (l) { return l.trim(); }).filter(Boolean), res = { vendor: '', date: '', amount: 0, category: 'Other' };
+  res.vendor = (lines.filter(function (l) { return /[A-Za-zÀ-ỹ]{3,}/.test(l); })[0] || '').slice(0, 60);
+  var dm = text.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4}|\d{2})\b/), dm2 = text.match(/\b(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})\b/);
+  if (dm2) res.date = dm2[1] + '-' + p2(+dm2[2]) + '-' + p2(+dm2[3]);
+  else if (dm) res.date = (dm[3].length === 2 ? '20' + dm[3] : dm[3]) + '-' + p2(+dm[2]) + '-' + p2(+dm[1]);
+  var keyed = [];
+  lines.forEach(function (l) { if (/t[oổ]ng|total|thanh\s*to[aá]n|th[aà]nh\s*ti[eề]n|amount|grand|c[aầ]n\s*tr[aả]/i.test(l) && !/vat|gtgt|thu[eế]/i.test(l)) keyed = keyed.concat(numbersIn(l)); });
+  var all = []; lines.forEach(function (l) { all = all.concat(numbersIn(l)); });
+  res.amount = keyed.length ? Math.max.apply(null, keyed) : all.length ? Math.max.apply(null, all) : 0;
+  var k = text.toLowerCase();
+  if (/grab|be\s?group|ship|giao\s?h[aà]ng|delivery/.test(k)) res.category = 'Delivery';
+  else if (/[đd]i[eệ]n|electric|n[uư][oớ]c|water|internet|viettel|vnpt|fpt/.test(k)) res.category = 'Utilities';
+  else if (/t[uú]i|h[oộ]p|bao\s?b[iì]|packag|container|nylon/.test(k)) res.category = 'Packaging';
+  else if (/si[eê]u\s?th[iị]|market|winmart|bach\s?hoa|co\.?op|lotte|aeon|g[aạ]o|th[iị]t|rau|ch[iíì]cken|c[aá]|g[aà]|meat|rice|spice|gia\s?v[iị]/.test(k)) res.category = 'Ingredients';
+  return res;
+}
+function loadTesseract() {
+  if (window.Tesseract) return Promise.resolve();
+  return new Promise(function (res, rej) {
+    var s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js'; s.onload = res; s.onerror = function () { rej(new Error('Could not load the receipt reader.')); };
+    document.head.appendChild(s);
+  });
+}
+function expenses(r) {
+  var F = { date: today(), vendor: '', category: 'Ingredients', amount: '', vat: '', notes: '', file: null };
+  var status = h('span', { class: 'sub' }), preview = h('div'), inputs = {};
+  function field(label, key, type, extra) {
+    var el = key === 'category' ? h('select', null, CATS.map(function (c) { return h('option', { value: c, text: c }); })) : h('input', { type: type || 'text', autocomplete: 'off', inputmode: extra });
+    el.value = F[key]; inputs[key] = el;
+    el.oninput = el.onchange = function () { F[key] = el.value; };
+    return h('label', null, label, el);
+  }
+  function fill() { ['date', 'vendor', 'category', 'amount', 'vat', 'notes'].forEach(function (k) { if (inputs[k]) inputs[k].value = F[k]; }); }
+  var pick = h('input', { type: 'file', accept: 'image/*', hidden: true });
+  pick.onchange = function () {
+    var f = pick.files[0]; if (!f) return;
+    F.file = f; preview.textContent = ''; preview.appendChild(h('img', { class: 'thumb', src: URL.createObjectURL(f), alt: 'Receipt' }));
+    status.textContent = 'Reading receipt…';
+    loadTesseract().then(function () { return window.Tesseract.recognize(f, 'eng+vie'); }).then(function (res) {
+      var p = parseReceipt(res.data.text);
+      if (p.vendor) F.vendor = p.vendor; if (p.date) F.date = p.date; if (p.amount) F.amount = fmt(p.amount); F.category = p.category;
+      fill(); status.textContent = 'Read it. Check the fields before saving.';
+    }).catch(function (e) { status.textContent = 'Could not read it (' + e.message + '). Fill in by hand.'; });
+  };
+  var save = h('button', { class: 'btn primary', text: 'Save expense', onclick: function () {
+    var amount = parseInt(String(F.amount).replace(/\D/g, ''), 10) || 0, vat = parseInt(String(F.vat).replace(/\D/g, ''), 10) || 0;
+    if (!F.date || amount <= 0) { toast('Enter a date and an amount.', true); return; }
+    save.disabled = true;
+    var up = F.file ? (function () {
+      var path = F.date.slice(0, 4) + '/' + F.date.slice(5, 7) + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.jpg';
+      return SB.storage.from('receipts').upload(path, F.file, { contentType: F.file.type || 'image/jpeg' }).then(function (x) { if (x.error) throw new Error(x.error.message); return path; });
+    })() : Promise.resolve('');
+    up.then(function (path) { return SB.from('expenses').insert({ expense_date: F.date, vendor: F.vendor.trim(), category: F.category, amount: amount, vat: vat, notes: F.notes.trim(), receipt_path: path }).then(ok); })
+      .then(load).then(function () { toast('Expense saved'); }).catch(function (e) { toast(e.message, true); save.disabled = false; });
+  } });
+  var list = DB.expenses.filter(function (e) { return inR(e.expense_date, r); }).sort(function (a, b) { return a.expense_date < b.expense_date ? 1 : -1; });
+  return h('div', { style: 'display:grid;gap:14px' },
+    h('div', { class: 'panel' }, h('h2', { text: 'Add an expense' }),
+      h('div', { class: 'row' }, h('button', { class: 'btn', text: 'Scan a receipt', onclick: function () { pick.click(); } }), pick, status),
+      preview,
+      h('div', { class: 'form' }, field('Date', 'date', 'date'), field('Vendor', 'vendor'), field('Category', 'category'), field('Amount (VND)', 'amount', 'text', 'numeric'), field('VAT on receipt', 'vat', 'text', 'numeric'), field('Notes', 'notes')),
+      h('div', { class: 'row' }, save)),
+    h('div', { class: 'panel' }, h('h2', { text: 'Expenses · ' + fmt(list.reduce(function (s, e) { return s + e.amount; }, 0)) }),
+      list.length ? h('div', { class: 'list' }, list.map(function (e) {
+        return h('div', null, h('span', null, e.expense_date + ' · ' + (e.vendor || 'No vendor') + ' ', h('span', { class: 'pill', text: e.category }), e.notes ? ' · ' + e.notes : ''),
+          h('span', { class: 'row' }, h('b', { class: 'mono', text: fmt(e.amount) }),
+            e.receipt_path ? h('button', { class: 'btn small', text: 'Receipt', onclick: function () { SB.storage.from('receipts').createSignedUrl(e.receipt_path, 120).then(function (x) { if (x.error) toast(x.error.message, true); else window.open(x.data.signedUrl, '_blank'); }); } }) : null,
+            h('button', { class: 'btn small danger', text: 'Delete', onclick: function () {
+              if (!confirm('Delete this expense?')) return;
+              SB.from('expenses').delete().eq('id', e.id).then(ok).then(function () { return e.receipt_path ? SB.storage.from('receipts').remove([e.receipt_path]) : null; }).then(load).catch(function (x) { toast(x.message, true); });
+            } }))); }) ) : h('p', { class: 'sub', text: 'No expenses in this period.' })));
+}
+
+/* ---------- tax ---------- */
+function taxView() {
+  var s = DB.settings, y = new Date().getFullYear(), yr = +($('taxyear') ? $('taxyear').value : y), box = h('div', { style: 'display:grid;gap:14px' });
+  function setting(label, key, suffix) {
+    var inp = h('input', { type: 'text', inputmode: 'decimal', value: String(s[key]) });
+    inp.onchange = function () {
+      var v = parseFloat(inp.value.replace(/,/g, ''));
+      if (!isFinite(v) || v < 0) { toast('Enter a number.', true); inp.value = String(s[key]); return; }
+      SB.from('settings').upsert({ key: key, value: String(v) }).then(ok).then(function () { s[key] = v; toast('Saved'); render(); }).catch(function (e) { toast(e.message, true); });
+    };
+    return h('label', null, label + (suffix ? ' (' + suffix + ')' : ''), inp);
+  }
+  box.appendChild(h('div', { class: 'panel' }, h('h2', { text: 'Rates' }),
+    h('div', { class: 'form' }, setting('VAT rate', 'vat_rate', '%'), setting('Personal income tax rate', 'pit_rate', '%'), setting('Yearly exemption threshold', 'exempt_threshold', 'VND')),
+    h('p', { class: 'note', text: 'Estimate only: a flat percentage of revenue received, and nothing due while the year stays under the threshold. The defaults are placeholders. Set the rates your accountant gives you.' })));
+  var years = {}; years[y] = 1; DB.orders.forEach(function (o) { years[+o.order_date.slice(0, 4)] = 1; });
+  var sel = h('select', { id: 'taxyear' }, Object.keys(years).sort().reverse().map(function (k) { return h('option', { value: k, text: k }); })); sel.value = String(yr); sel.onchange = render;
+  var rows = [], tot = { rev: 0, vat: 0, pit: 0 }, q;
+  for (q = 0; q < 4; q++) {
+    var r = [yr + '-' + p2(q * 3 + 1) + '-01', iso(new Date(yr, q * 3 + 3, 0))], t = totals(r), tx = taxFor(t.revenue, yr);
+    rows.push(['Q' + (q + 1), t.revenue, tx.vat, tx.pit, t.costs]); tot.rev += t.revenue; tot.vat += tx.vat; tot.pit += tx.pit;
+  }
+  var th = function (x) { return h('th', { text: x }); }, td = function (x, c) { return h('td', { class: c || 'mono', style: c ? null : 'text-align:right', text: typeof x === 'number' ? fmt(x) : x }); };
+  box.appendChild(h('div', { class: 'panel' }, h('div', { class: 'row' }, h('h2', { text: 'Estimated tax' }), sel),
+    yearRevenue(yr) <= s.exempt_threshold ? h('p', { class: 'note', text: 'Revenue for ' + yr + ' is ' + fmt(yearRevenue(yr)) + ', under the ' + fmt(s.exempt_threshold) + ' threshold, so the estimate is nil.' }) : null,
+    h('div', { class: 'scroll' }, h('table', null, h('tr', null, ['Quarter', 'Revenue', 'VAT', 'Income tax', 'Total tax', 'Costs'].map(th)),
+      rows.map(function (x) { return h('tr', null, td(x[0], ''), td(x[1]), td(x[2]), td(x[3]), td(x[2] + x[3]), td(x[4])); }),
+      h('tr', null, td('Year', ''), td(tot.rev), td(tot.vat), td(tot.pit), td(tot.vat + tot.pit), td(rows.reduce(function (a, x) { return a + x[4]; }, 0)))))));
+  return box;
+}
+
+/* ---------- edit database ---------- */
+var TABLES = {
+  orders: { pk: 'id', sort: 'order_date', cols: [['order_date', 'Date', 'date'], ['customer', 'Customer'], ['qty', 'Meals', 'int'], ['food', 'Food'], ['pfood', 'Food price', 'int'], ['extra', 'Extras'], ['pextra', 'Extras price', 'int'], ['disc', 'Discount', 'int'], ['paid', 'Paid', 'int'], ['method', 'Method', ['', 'Cash', 'Transfer']], ['notes', 'Notes'], ['oid', 'Order id', 'ro']],
+    warn: 'Changing meals here does not add or remove booked meals. Use Edit in the orders page for that.' },
+  meals: { pk: 'seq', sort: 'meal_date', cols: [['meal_date', 'Date', 'date'], ['customer', 'Customer'], ['status', 'Status', ['Scheduled', 'Served', 'Cancelled']], ['note', 'Note'], ['oid', 'Order id', 'ro'], ['id', 'Meal id', 'ro']] },
+  expenses: { pk: 'id', sort: 'expense_date', cols: [['expense_date', 'Date', 'date'], ['vendor', 'Vendor'], ['category', 'Category', CATS], ['amount', 'Amount', 'int'], ['vat', 'VAT', 'int'], ['notes', 'Notes']] }
+};
+function dataView() {
+  var T = TABLES[dataTable], rows = DB[dataTable].slice().sort(function (a, b) { return a[T.sort] < b[T.sort] ? 1 : a[T.sort] > b[T.sort] ? -1 : b[T.pk] - a[T.pk]; });
+  var q = dataQ.trim().toLowerCase();
+  if (q) rows = rows.filter(function (r) { return JSON.stringify(r).toLowerCase().indexOf(q) >= 0; });
+  var shown = rows.slice(0, 300);
+  var sel = h('select', null, Object.keys(TABLES).map(function (k) { return h('option', { value: k, text: k }); })); sel.value = dataTable; sel.onchange = function () { dataTable = sel.value; render(); };
+  var search = h('input', { type: 'search', placeholder: 'Search', value: dataQ, 'aria-label': 'Search' });
+  search.oninput = function () { dataQ = search.value; clearTimeout(pending); pending = setTimeout(function () { render(); var s = document.querySelector('#view input[type=search]'); if (s) { s.focus(); s.setSelectionRange(99, 99); } }, 300); };
+  function cell(r, c) {
+    var key = c[0], type = c[2], td = h('td'), el;
+    if (type === 'ro') { td.className = 'ro'; td.textContent = r[key]; return td; }
+    if (Array.isArray(type)) { el = h('select', null, type.map(function (o) { return h('option', { value: o, text: o || '—' }); })); el.value = r[key]; }
+    else { el = h('input', { type: type === 'date' ? 'date' : 'text', class: type === 'int' ? 'num' : '', inputmode: type === 'int' ? 'numeric' : null }); el.value = r[key] == null ? '' : r[key]; }
+    el.onchange = function () {
+      var v = el.value;
+      if (type === 'int') { v = parseInt(String(v).replace(/\D/g, ''), 10) || 0; el.value = v; }
+      if (type === 'date' && !v) { el.value = r[key]; return; }
+      var patch = {}; patch[key] = v;
+      SB.from(dataTable).update(patch).eq(T.pk, r[T.pk]).then(ok).then(function () { r[key] = v; td.classList.add('flash'); setTimeout(function () { td.classList.remove('flash'); }, 700); })
+        .catch(function (e) { toast(e.message, true); el.value = r[key]; });
+    };
+    td.appendChild(el); return td;
+  }
+  return h('div', { class: 'panel' }, h('div', { class: 'row' }, h('h2', { text: 'Edit data' }), sel, search, h('span', { class: 'sub', text: shown.length + ' of ' + rows.length + ' rows' })),
+    T.warn ? h('p', { class: 'note', text: T.warn }) : null,
+    h('p', { class: 'sub', text: 'Changes save as soon as you leave a cell.' }),
+    h('div', { class: 'scroll' }, h('table', null, h('tr', null, T.cols.map(function (c) { return h('th', { text: c[1] }); }), h('th', { text: '' })),
+      shown.map(function (r) {
+        return h('tr', null, T.cols.map(function (c) { return cell(r, c); }), h('td', null, h('button', { class: 'btn small danger', text: 'Delete', onclick: function () {
+          if (!confirm('Delete this row permanently?')) return;
+          SB.from(dataTable).delete().eq(T.pk, r[T.pk]).then(ok).then(load).then(function () { toast('Deleted'); }).catch(function (e) { toast(e.message, true); });
+        } })));
+      }))));
+}
+
+/* ---------- csv ---------- */
+function csv() {
+  var r = range(), t = totals(r), lines = [['type', 'date', 'name', 'category', 'amount', 'received']];
+  t.os.forEach(function (o) { lines.push(['sale', o.order_date, o.customer, o.food, sales(o), o.paid]); });
+  t.es.forEach(function (e) { lines.push(['expense', e.expense_date, e.vendor, e.category, e.amount, '']); });
+  var text = lines.map(function (l) { return l.map(function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+  var a = h('a', { href: URL.createObjectURL(new Blob(['﻿' + text], { type: 'text/csv' })), download: 'lovely-oven-' + r[0] + '-' + r[1] + '.csv' }); document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- login ---------- */
+function showLogin(msg) { $('app').hidden = true; $('login').hidden = false; $('loginmsg').textContent = msg || 'Sign in with your admin account.'; }
+function enter(session) {
+  SB.from('admins').select('email').then(function (r) {
+    if (r.error || !r.data || !r.data.length) { SB.auth.signOut(); showLogin('That account is not an admin.'); return; }
+    $('login').hidden = true; $('app').hidden = false; $('who').textContent = session.user.email;
+    load();
+  });
+}
+function init() {
+  $('period').appendChild(document.createDocumentFragment());
+  PERIODS.forEach(function (p) { $('period').appendChild(h('option', { value: p[0], text: p[1] })); });
+  $('period').value = 'month';
+  ['period', 'from', 'to'].forEach(function (id) { $(id).onchange = render; });
+  $('refresh').onclick = load; $('csv').onclick = csv;
+  $('out').onclick = function () { SB.auth.signOut().then(function () { showLogin('Signed out'); }); };
+  $('loginform').onsubmit = function (ev) {
+    ev.preventDefault(); $('loginmsg').textContent = 'Signing in…';
+    SB.auth.signInWithPassword({ email: $('email').value.trim(), password: $('pw').value }).then(function (r) {
+      if (r.error) showLogin('Wrong email or password.'); else enter(r.data.session);
+    });
+  };
+  SB.auth.getSession().then(function (r) { if (r.data.session) enter(r.data.session); else showLogin(); });
+}
+init();
+})();
+</script>
+</body>
+</html>

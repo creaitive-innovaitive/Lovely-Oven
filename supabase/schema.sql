@@ -59,3 +59,30 @@ create policy "website can add" on web_orders for insert to anon
               and jsonb_typeof(items) = 'array' and jsonb_array_length(items) between 1 and 30);
 create policy "staff manage" on web_orders for all to authenticated using (true) with check (true);
 grant insert on web_orders to anon;
+
+-- ---- Added: admin panel (admin.html). Applied to the live project as migration "admin_panel". ----
+create table if not exists admins (email text primary key);
+insert into admins (email) values ('gbyatt@gmail.com') on conflict do nothing;
+alter table admins enable row level security;
+create or replace function is_admin() returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from admins where lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+$$;
+drop policy if exists "read own admin row" on admins;
+create policy "read own admin row" on admins for select to authenticated using (lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+create table if not exists expenses (
+  id bigint generated always as identity primary key, expense_date date not null, vendor text not null default '',
+  category text not null default 'Other', amount bigint not null default 0, vat bigint not null default 0,
+  notes text not null default '', receipt_path text not null default '', created_at timestamptz not null default now()
+);
+create index if not exists expenses_date_idx on expenses (expense_date);
+alter table expenses enable row level security;
+drop policy if exists "admin only" on expenses;
+create policy "admin only" on expenses for all to authenticated using (is_admin()) with check (is_admin());
+create table if not exists settings (key text primary key, value text not null default '');
+alter table settings enable row level security;
+drop policy if exists "admin only" on settings;
+create policy "admin only" on settings for all to authenticated using (is_admin()) with check (is_admin());
+insert into settings (key, value) values ('vat_rate','3'), ('pit_rate','1.5'), ('exempt_threshold','500000000') on conflict do nothing;
+insert into storage.buckets (id, name, public) values ('receipts', 'receipts', false) on conflict do nothing;
+drop policy if exists "admin receipts" on storage.objects;
+create policy "admin receipts" on storage.objects for all to authenticated using (bucket_id = 'receipts' and is_admin()) with check (bucket_id = 'receipts' and is_admin());
