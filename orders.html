@@ -264,6 +264,13 @@ select.pick:focus { border-color: var(--accent); outline: 3px solid var(--accent
 .cart { background: var(--accent-soft); border-radius: 14px; padding: 10px 14px; display: grid; gap: 4px; font-size: 16px; }
 .cart div { display: flex; justify-content: space-between; gap: 12px; }
 .webbtn { background: var(--warn-soft); color: var(--warn); border: 0; border-radius: 14px; padding: 8px 16px; font: 700 15px var(--body); }
+@media (max-width: 600px) {
+  .meal { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 14px 16px; }
+  .meal .who strong { overflow-wrap: break-word; }
+  .meal .acts { justify-content: stretch; }
+  .meal .acts .btn { flex: 1 1 0; min-width: 0; padding-inline: 10px; }
+  .meal .acts .tick { align-self: center; }
+}
 @media (max-width: 960px) { .tgrid { grid-template-columns: 1fr; } .dishes { position: static; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
