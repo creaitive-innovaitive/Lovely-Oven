@@ -143,3 +143,21 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
   show();
   restart();
 })();
+
+/* ── Staff links: only shown while a staff member is signed in on this browser.
+   The pages themselves still check the login, so this only decides what is visible. ── */
+(function () {
+  try {
+    const raw = localStorage.getItem('sb-drkebbkyipipxwcclihc-auth-token');
+    const session = raw && JSON.parse(raw);
+    if (!session || !session.access_token) return;
+    const links = [['Orders', '/orders']];
+    if (localStorage.getItem('lo-admin') === '1') links.push(['Admin', '/admin']);
+    const list = document.querySelector('.nav-links');
+    const menu = document.getElementById('mobileMenu');
+    links.forEach(([label, href]) => {
+      if (list) { const li = document.createElement('li'); li.innerHTML = '<a></a>'; li.firstChild.textContent = label; li.firstChild.href = href; list.appendChild(li); }
+      if (menu) { const a = document.createElement('a'); a.textContent = label; a.href = href; menu.appendChild(a); }
+    });
+  } catch (e) { /* ignore */ }
+})();

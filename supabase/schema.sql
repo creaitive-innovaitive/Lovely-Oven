@@ -86,3 +86,14 @@ insert into settings (key, value) values ('vat_rate','3'), ('pit_rate','1.5'), (
 insert into storage.buckets (id, name, public) values ('receipts', 'receipts', false) on conflict do nothing;
 drop policy if exists "admin receipts" on storage.objects;
 create policy "admin receipts" on storage.objects for all to authenticated using (bucket_id = 'receipts' and is_admin()) with check (bucket_id = 'receipts' and is_admin());
+
+-- ---- Added: live updates for the admin page ----
+do $$
+declare t text;
+begin
+  foreach t in array array['orders','meals','expenses'] loop
+    if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = t) then
+      execute format('alter publication supabase_realtime add table public.%I', t);
+    end if;
+  end loop;
+end $$;

@@ -7,6 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>Lovely Oven Orders</title>
 <meta name="robots" content="noindex, nofollow">
+<script>(function(){try{if(!localStorage.getItem('sb-drkebbkyipipxwcclihc-auth-token')&&location.hash!=='#login'){document.documentElement.style.display='none';location.replace('/');}}catch(e){}})();</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
@@ -228,11 +229,18 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
 .boot { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; gap: 14px; justify-items: center; background: var(--bg); color: var(--muted); font-weight: 600; text-align: center; padding: 24px; }
 .previewbar { background: var(--warn-soft); color: var(--warn); border-radius: 14px; padding: 8px 16px; font-weight: 600; font-size: 15px; }
 
+.burger { display: none; }
 @media (max-width: 860px) {
-  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
-  .rail { order: 2; flex-direction: row; justify-content: center; padding: 6px; border-radius: 22px; }
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  .burger { display: grid; place-items: center; position: fixed; z-index: 31; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); width: 48px; height: 48px; border: 0; border-radius: 15px; background: var(--rail); color: #fff; box-shadow: var(--shadow); }
+  .burger .dot { position: absolute; top: 6px; right: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--warn); }
+  .rail { display: none; position: fixed; z-index: 30; top: calc(66px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); width: min(300px, calc(100% - 24px)); flex-direction: column; align-items: stretch; gap: 4px; padding: 8px; border-radius: 22px; box-shadow: var(--shadow); }
+  .rail.open { display: flex; }
   .rail .brand, .rail .spacer { display: none; }
-  .rail button { width: 72px; min-height: 60px; }
+  .rail button { width: 100%; min-height: 56px; display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 14px; padding: 0 16px; font-size: 16px; text-align: left; }
+  .rail button .badge { position: static; margin-left: auto; }
+  .rail #who { font-size: 14px !important; max-width: none !important; }
+  .vhead { padding-right: 60px; }
   .view { overflow: auto; }
   .view > * { flex-shrink: 0; }
   .order-grid, .cust-grid { flex: none; }
@@ -284,7 +292,8 @@ select.pick:focus { border-color: var(--accent); outline: 3px solid var(--accent
 </style>
 
 <div class="app" id="app">
-  <nav class="rail" aria-label="Sections">
+  <button type="button" class="burger" id="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="dot" id="burger-dot" hidden></span></button>
+  <nav class="rail" id="rail" aria-label="Sections">
     <div class="brand">Lovely<br>Oven<b>orders</b></div>
     <button type="button" id="nav-order" aria-current="page">
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>
@@ -299,6 +308,10 @@ select.pick:focus { border-color: var(--accent); outline: 3px solid var(--accent
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 13.2c2.6.2 4.5 2.3 4.5 4.8"/></svg>
       Customers
       <span class="badge" id="b-cust" hidden>0</span>
+    </button>
+    <button type="button" id="nav-admin" hidden>
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      Admin
     </button>
     <div class="spacer"></div>
     <button type="button" id="nav-refresh" aria-label="Refresh">
@@ -652,6 +665,20 @@ function planEditOrder_(p, data) {
     info: { name: baseName_(o.name), qty: qty, owed: pay - paid, cancelled: cancelIds.length } };
 }
 
+/* money paid ahead with no order to put it on: stored as an order of unscheduled, paid-for meals, so it shows as banked */
+function planBank_(p, data) {
+  var name = baseName_(p.name);
+  if (!name) fail_('Pick a customer.');
+  data.orders.some(function (o) { if (baseName_(o.name).toLowerCase() === name.toLowerCase()) { name = baseName_(o.name); return true; } return false; });
+  var qty = Number(p.qty), unit = money_(p.unitPrice, 'price per meal');
+  if (!isFinite(qty) || Math.floor(qty) !== qty || qty < 1 || qty > 60) fail_('Meals must be a whole number from 1 to 60.');
+  if (unit <= 0) fail_('Enter the price per meal.');
+  if (!isISO_(p.date)) fail_('Pick the date it was paid.');
+  var method = p.method === 'Cash' || p.method === 'Transfer' ? p.method : '';
+  return { order: { date: p.date, name: name, qty: qty, food: 'Banked meal', pfood: unit * qty, extra: '', pextra: 0, disc: 0, paid: unit * qty, notes: 'Banked', items: [], oid: 'O' + data.nonce, method: method },
+    info: { name: name, qty: qty, amount: unit * qty } };
+}
+
 function planSchedule_(p, data) {
   var ix = indexData_(data), o = ix.byOid[p.oid];
   if (!o) fail_('Could not find that order. Refresh and try again.');
@@ -824,6 +851,7 @@ function makeMock() {
       meals.forEach(function (m) { if (plan.cancelIds.indexOf(m.id) >= 0) m.status = STATUS_.CANCELLED; });
       return out(plan.info);
     },
+    bankMeals: function (p) { var plan = planBank_(p, data()), r = { row: oRow++ }; for (var k in plan.order) r[k] = plan.order[k]; orders.push(r); return out(plan.info); },
     dismissWeb: function (p) { web.forEach(function (w) { if (w.id === p.id) w.status = 'Dismissed'; }); return out(); },
     saveOrder: function (p) {
       var plan = planSaveOrder_(p, data()), r = { row: oRow++ };
@@ -937,6 +965,13 @@ var sbApi = {
       return sb.from('orders').update(plan.fields).eq('id', plan.row).then(ok)
         .then(function () { return plan.cancelIds.length ? sb.from('meals').update({ status: STATUS_.CANCELLED }).in('id', plan.cancelIds).then(ok) : null; })
         .then(function () { return reply(plan.info); });
+    });
+  },
+  bankMeals: function (p) {
+    return readData().then(function (d) {
+      var plan = planBank_(p, withNonce(d)), o = plan.order;
+      return sb.from('orders').insert({ order_date: o.date, customer: o.name, qty: o.qty, food: o.food, pfood: o.pfood, extra: o.extra, pextra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes, items: o.items, oid: o.oid, method: o.method })
+        .then(ok).then(function () { return reply(plan.info); });
     });
   },
   dismissWeb: function (p) { return sb.from('web_orders').update({ status: 'Dismissed' }).eq('id', p.id).then(ok).then(function () { return reply(); }); },
@@ -1695,6 +1730,33 @@ function renderCustomers() {
   renderDetail();
 }
 
+function openBank(c) {
+  var B = { qty: 1, unit: c.unitPrice || S.topPrice || 100000, date: S.today, method: c.method || 'Transfer' }, totalEl;
+  function draw() {
+    var unitInp = h('input', { type: 'text', inputmode: 'numeric', autocomplete: 'off', 'aria-label': 'Price per meal', value: fmt(B.unit) });
+    totalEl = h('strong', { text: fmt(B.qty * B.unit) });
+    bindMoney(unitInp, function (n) { B.unit = n; totalEl.textContent = fmt(B.qty * B.unit); });
+    var dateInp = h('input', { type: 'date', value: B.date, 'aria-label': 'Date paid' });
+    dateInp.onchange = function () { if (dateInp.value) B.date = dateInp.value; };
+    openModal([h('h2', { text: 'Bank money for ' + c.name }),
+      h('p', { class: 'sub', text: 'Money paid ahead with no order yet. It shows as banked meals, to book later or use on a new order with the Banked payment option.' }),
+      h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Meals' }), h('div', { class: 'pq' },
+        h('button', { type: 'button', text: '−', disabled: B.qty <= 1, onclick: function () { B.qty--; draw(); } }), h('span', { text: String(B.qty) }),
+        h('button', { type: 'button', text: '+', disabled: B.qty >= 60, onclick: function () { B.qty++; draw(); } }))),
+      h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Price each' }), h('div', { class: 'money' }, unitInp, h('span', { text: 'VND' }))),
+      h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Paid on' }), dateInp),
+      h('div', { class: 'seg' }, ['Cash', 'Transfer'].map(function (m) { return h('button', { type: 'button', 'aria-pressed': B.method === m ? 'true' : 'false', text: m, onclick: function () { B.method = m; draw(); } }); })),
+      h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Total received' }), totalEl),
+      h('div', { class: 'row' },
+        h('button', { type: 'button', class: 'btn primary', text: 'Bank it', onclick: function () {
+          closeModal();
+          act('bankMeals', { name: c.name, qty: B.qty, unitPrice: B.unit, date: B.date, method: B.method }, function (i) { return 'Banked ' + plural(i.qty, 'meal') + ' (' + fmt(i.amount) + ') for ' + i.name; });
+        } }),
+        h('button', { type: 'button', class: 'btn', text: 'Cancel', onclick: closeModal }))]);
+  }
+  draw();
+}
+
 function openEdit(o) {
   var hasItems = !!(o.items && o.items.length);
   var E = { items: JSON.parse(JSON.stringify(o.items || [])), qty: o.qty, unit: o.qty ? Math.round(o.pfood / o.qty) : 0, extra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes };
@@ -1828,6 +1890,8 @@ function renderDetail() {
     h('div', { class: 'tile' }, h('b', { text: String(c.served) }), h('span', { text: 'Served' })),
     h('div', { class: 'tile' + (c.owed ? ' bad' : '') }, h('b', { text: fmt(c.owed) }), h('span', { text: 'Owes' }))));
 
+  detail.appendChild(h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn small', text: 'Add banked money', onclick: function () { openBank(c); } })));
+
   toSched.forEach(function (o) {
     var st = CV.sched[o.oid] || (CV.sched[o.oid] = { counts: {}, weekends: false });
     var min = o.date > S.today ? o.date : S.today, hostEl = h('div'), saveBtn;
@@ -1883,17 +1947,27 @@ function renderDetail() {
 
 /* ------------------------------------------------------------------ shell */
 function go(v) {
-  view = v;
+  view = v; closeMenu();
   ['order', 'today', 'customers'].forEach(function (x) {
     $('view-' + x).hidden = x !== v;
     $('nav-' + x).setAttribute('aria-current', x === v ? 'page' : 'false');
   });
   if (S) renderAll();
 }
+/* the Admin button only shows for accounts on the admins list; the admin page and database enforce it too */
+function checkAdmin() {
+  if (!useSb) return;
+  sb.from('admins').select('email').then(function (r) {
+    var yes = !r.error && r.data && r.data.length > 0;
+    $('nav-admin').hidden = !yes;
+    try { localStorage.setItem('lo-admin', yes ? '1' : ''); } catch (e) { /* ignore */ }
+  });
+}
+function closeMenu() { $('rail').classList.remove('open'); $('burger').setAttribute('aria-expanded', 'false'); }
 function renderNav() {
   var t = S.meals.filter(function (m) { return m.status === STATUS_.SCHEDULED && m.date <= S.today; }).length;
   var c = S.customers.filter(needsAttention).length;
-  $('b-today').textContent = t; $('b-today').hidden = !t;
+  $('b-today').textContent = t; $('b-today').hidden = !t; $('burger-dot').hidden = !(t || c);
   $('b-cust').textContent = c; $('b-cust').hidden = !c;
 }
 function renderAll() {
@@ -1914,19 +1988,22 @@ function init() {
       if (r.error) askLogin('Wrong email or password.'); else { $('boot-msg').textContent = 'Loading orders…'; load(false); }
     }).catch(function () { askLogin('Could not reach the server.'); });
   };
+  $('burger').onclick = function (ev) { ev.stopPropagation(); var open = $('rail').classList.toggle('open'); $('burger').setAttribute('aria-expanded', open ? 'true' : 'false'); };
+  document.addEventListener('click', function (ev) { if (!$('rail').contains(ev.target)) closeMenu(); });
+  $('nav-admin').onclick = function () { location.href = '/admin'; };
   $('nav-order').onclick = function () { go('order'); };
   $('nav-today').onclick = function () { go('today'); };
   $('nav-customers').onclick = function () { go('customers'); };
-  $('nav-refresh').onclick = function () { if (!busy) load(false); };
+  $('nav-refresh').onclick = function () { closeMenu(); if (!busy) load(false); };
   if (useSb) {
     sb.auth.getSession().then(function (r) {
-      if (r.data.session) { $('who').textContent = r.data.session.user.email; $('nav-out').hidden = false; $('nav-out').title = 'Signed in as ' + r.data.session.user.email + '. Tap to sign out.'; }
+      if (r.data.session) { checkAdmin(); $('who').textContent = r.data.session.user.email; $('nav-out').hidden = false; $('nav-out').title = 'Signed in as ' + r.data.session.user.email + '. Tap to sign out.'; }
     });
     sb.auth.onAuthStateChange(function (ev, session) {
       $('nav-out').hidden = !session;
-      if (session) $('who').textContent = session.user.email;
+      if (session) { $('who').textContent = session.user.email; checkAdmin(); }
     });
-    $('nav-out').onclick = function () { sb.auth.signOut().then(function () { S = null; D = null; askLogin('Signed out'); }); };
+    $('nav-out').onclick = function () { try { localStorage.removeItem('lo-admin'); } catch (e) { /* ignore */ } sb.auth.signOut().then(function () { location.replace('/'); }); };
   }
   $('boot-retry').onclick = function () { $('boot-retry').hidden = true; $('boot-msg').textContent = 'Loading orders…'; load(false); };
   $('t-prev').onclick = function () { TV.date = addDays_(TV.date || S.today, -1); renderToday(); };

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lovely Oven Admin</title>
 <meta name="robots" content="noindex, nofollow">
+<script>(function(){try{if(!localStorage.getItem('sb-drkebbkyipipxwcclihc-auth-token')&&location.hash!=='#login'){document.documentElement.style.display='none';location.replace('/');}}catch(e){}})();</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 :root {
@@ -88,7 +89,7 @@ td.ro { color: var(--muted); font-family: var(--mono); font-size: 12px; }
   <div class="top">
     <h1>Admin</h1>
     <div class="tabs" id="tabs"></div>
-    <div class="row"><span class="sub" id="who"></span><button class="btn small" id="refresh">Refresh</button><button class="btn small" id="out">Sign out</button></div>
+    <div class="row"><span class="sub" id="who"></span><a class="btn small" href="/orders" style="display:inline-grid;place-items:center;text-decoration:none">Orders</a><button class="btn small" id="refresh">Refresh</button><button class="btn small" id="out">Sign out</button></div>
   </div>
   <div class="panel" id="periodbar">
     <div class="row">
@@ -114,6 +115,7 @@ var TABS = [['overview', 'Overview'], ['expenses', 'Expenses'], ['tax', 'Tax'], 
 var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var DB = { orders: [], meals: [], expenses: [], settings: { vat_rate: 3, pit_rate: 1.5, exempt_threshold: 500000000 } };
 var tab = 'overview', dataTable = 'orders', dataQ = '', pending = null;
+var EF = { date: today(), vendor: '', category: 'Ingredients', amount: '', vat: '', notes: '', file: null };
 
 function $(id) { return document.getElementById(id); }
 function fmt(n) { return Math.round(n || 0).toLocaleString('en-US'); }
@@ -266,7 +268,7 @@ function loadTesseract() {
   });
 }
 function expenses(r) {
-  var F = { date: today(), vendor: '', category: 'Ingredients', amount: '', vat: '', notes: '', file: null };
+  var F = EF;
   var status = h('span', { class: 'sub' }), preview = h('div'), inputs = {};
   function field(label, key, type, extra) {
     var el = key === 'category' ? h('select', null, CATS.map(function (c) { return h('option', { value: c, text: c }); })) : h('input', { type: type || 'text', autocomplete: 'off', inputmode: extra });
@@ -275,6 +277,7 @@ function expenses(r) {
     return h('label', null, label, el);
   }
   function fill() { ['date', 'vendor', 'category', 'amount', 'vat', 'notes'].forEach(function (k) { if (inputs[k]) inputs[k].value = F[k]; }); }
+  if (F.file) preview.appendChild(h('img', { class: 'thumb', src: URL.createObjectURL(F.file), alt: 'Receipt' }));
   var pick = h('input', { type: 'file', accept: 'image/*', hidden: true });
   pick.onchange = function () {
     var f = pick.files[0]; if (!f) return;
@@ -295,7 +298,7 @@ function expenses(r) {
       return SB.storage.from('receipts').upload(path, F.file, { contentType: F.file.type || 'image/jpeg' }).then(function (x) { if (x.error) throw new Error(x.error.message); return path; });
     })() : Promise.resolve('');
     up.then(function (path) { return SB.from('expenses').insert({ expense_date: F.date, vendor: F.vendor.trim(), category: F.category, amount: amount, vat: vat, notes: F.notes.trim(), receipt_path: path }).then(ok); })
-      .then(load).then(function () { toast('Expense saved'); }).catch(function (e) { toast(e.message, true); save.disabled = false; });
+      .then(function () { EF.date = today(); EF.vendor = ''; EF.category = 'Ingredients'; EF.amount = ''; EF.vat = ''; EF.notes = ''; EF.file = null; return load(); }).then(function () { toast('Expense saved'); }).catch(function (e) { toast(e.message, true); save.disabled = false; });
   } });
   var list = DB.expenses.filter(function (e) { return inR(e.expense_date, r); }).sort(function (a, b) { return a.expense_date < b.expense_date ? 1 : -1; });
   return h('div', { style: 'display:grid;gap:14px' },
@@ -397,13 +400,31 @@ function csv() {
   var a = h('a', { href: URL.createObjectURL(new Blob(['﻿' + text], { type: 'text/csv' })), download: 'lovely-oven-' + r[0] + '-' + r[1] + '.csv' }); document.body.appendChild(a); a.click(); a.remove();
 }
 
+/* ---------- keep the numbers current ---------- */
+var liveOn = false, dirty = false, liveT;
+function editing() { var a = document.activeElement; return !!(a && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && $('view').contains(a)); }
+function refreshSoon() {
+  clearTimeout(liveT);
+  liveT = setTimeout(function () { if (editing()) { dirty = true; return; } dirty = false; load(); }, 600);
+}
+function watchLive() {
+  if (liveOn) return; liveOn = true;
+  ['orders', 'meals', 'expenses'].forEach(function (t) {
+    SB.channel('live-' + t).on('postgres_changes', { event: '*', schema: 'public', table: t }, refreshSoon).subscribe();
+  });
+  document.addEventListener('focusout', function () { if (dirty) setTimeout(refreshSoon, 300); });
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') refreshSoon(); });
+  setInterval(function () { if (document.visibilityState === 'visible') refreshSoon(); }, 30000);
+}
+
 /* ---------- login ---------- */
 function showLogin(msg) { $('app').hidden = true; $('login').hidden = false; $('loginmsg').textContent = msg || 'Sign in with your admin account.'; }
 function enter(session) {
   SB.from('admins').select('email').then(function (r) {
     if (r.error || !r.data || !r.data.length) { SB.auth.signOut(); showLogin('That account is not an admin.'); return; }
     $('login').hidden = true; $('app').hidden = false; $('who').textContent = session.user.email;
-    load();
+    try { localStorage.setItem('lo-admin', '1'); } catch (e) { /* ignore */ }
+    load(); watchLive();
   });
 }
 function init() {
@@ -412,7 +433,7 @@ function init() {
   $('period').value = 'month';
   ['period', 'from', 'to'].forEach(function (id) { $(id).onchange = render; });
   $('refresh').onclick = load; $('csv').onclick = csv;
-  $('out').onclick = function () { SB.auth.signOut().then(function () { showLogin('Signed out'); }); };
+  $('out').onclick = function () { SB.auth.signOut().then(function () { location.replace('/'); }); };
   $('loginform').onsubmit = function (ev) {
     ev.preventDefault(); $('loginmsg').textContent = 'Signing in…';
     SB.auth.signInWithPassword({ email: $('email').value.trim(), password: $('pw').value }).then(function (r) {
