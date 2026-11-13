@@ -673,7 +673,8 @@ function planEditOrder_(p, data) {
   if (qty < served) fail_(served + ' meals are already served, so the order cannot go below that.');
   var excess = live.length - qty;
   if (excess > 0) live.filter(function (x) { return x.status === STATUS_.SCHEDULED; }).sort(cmpMeal_).reverse().slice(0, excess).forEach(function (x) { cancelIds.push(x.id); });
-  return { row: o.row, fields: { qty: qty, food: food, pfood: pfood, extra: extra, pextra: pextra, disc: disc, paid: paid, notes: String(p.notes || '').trim().slice(0, 200), items: items }, cancelIds: cancelIds,
+  var method = p.method === 'Cash' || p.method === 'Transfer' ? p.method : '';
+  return { row: o.row, fields: { method: method, qty: qty, food: food, pfood: pfood, extra: extra, pextra: pextra, disc: disc, paid: paid, notes: String(p.notes || '').trim().slice(0, 200), items: items }, cancelIds: cancelIds,
     info: { name: baseName_(o.name), qty: qty, owed: pay - paid, cancelled: cancelIds.length } };
 }
 
@@ -1771,7 +1772,7 @@ function openBank(c) {
 
 function openEdit(o) {
   var hasItems = !!(o.items && o.items.length);
-  var E = { items: JSON.parse(JSON.stringify(o.items || [])), qty: o.qty, unit: o.qty ? Math.round(o.pfood / o.qty) : 0, extra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes };
+  var E = { items: JSON.parse(JSON.stringify(o.items || [])), qty: o.qty, unit: o.qty ? Math.round(o.pfood / o.qty) : 0, extra: o.pextra, disc: o.disc, paid: o.paid, notes: o.notes, method: o.method || '' };
   var totalEl, whyEl, saveBtn, paidInp;
   function total() { if (hasItems) { var t = itemTotals_(E.items); return t.main + t.other - E.disc; } return E.unit * E.qty + E.extra - E.disc; }
   function mains() { return itemTotals_(E.items).meals; }
@@ -1800,7 +1801,7 @@ function openEdit(o) {
     totalEl = h('strong'); whyEl = h('span', { class: 'sub', style: 'color:var(--warn)' });
     saveBtn = h('button', { type: 'button', class: 'btn primary', text: 'Save changes', onclick: function () {
       closeModal();
-      act('editOrder', { row: o.row, name: o.name, date: o.date, items: E.items, qty: E.qty, unitPrice: E.unit, extraPrice: E.extra, discount: E.disc, paid: E.paid, notes: E.notes },
+      act('editOrder', { row: o.row, name: o.name, date: o.date, items: E.items, qty: E.qty, unitPrice: E.unit, extraPrice: E.extra, discount: E.disc, paid: E.paid, notes: E.notes, method: E.method },
         function (i) { return 'Updated ' + i.name + '’s order' + (i.cancelled ? ' · ' + plural(i.cancelled, 'booked meal') + ' cancelled' : ''); });
     } });
     if (hasItems) {
@@ -1830,6 +1831,7 @@ function openEdit(o) {
     var notes = h('input', { type: 'text', autocomplete: 'off', placeholder: 'Notes', 'aria-label': 'Notes', value: E.notes });
     notes.addEventListener('input', function () { E.notes = notes.value; });
     body.push(notes);
+    body.push(h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Paid by' }), h('div', { class: 'seg' }, ['Cash', 'Transfer'].map(function (m) { return h('button', { type: 'button', 'aria-pressed': E.method === m ? 'true' : 'false', text: m, onclick: function () { E.method = m; draw(); } }); }))));
     openModal([h('h2', { text: 'Edit ' + o.name + '’s order' }), h('p', { class: 'sub', text: dayLong(o.date) + (o.servedN ? ' · ' + plural(o.servedN, 'meal') + ' already served' : '') }),
       body, h('div', { class: 'row' }, totalEl, h('div', { class: 'grow' }), whyEl),
       h('div', { class: 'row' }, saveBtn, h('button', { type: 'button', class: 'btn', text: 'Cancel', onclick: closeModal }))]);
@@ -1948,7 +1950,7 @@ function renderDetail() {
   detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Recent orders' }),
     h('div', { class: 'rl', style: 'max-height:460px;overflow:auto;align-content:start' }, mine.map(function (o) {
       return h('div', { class: 'orow' }, h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
-        h('span', { class: 'r ra' }, h('span', { class: 'rs' + (o.owed ? ' owes' : ''), text: o.owed ? 'owes ' + fmt(o.owed) : 'paid' }), h('span', { class: 'rb' },
+        h('span', { class: 'r ra' }, h('span', { class: 'rs' + (o.owed ? ' owes' : ''), text: o.owed ? 'owes ' + fmt(o.owed) : 'paid' + (o.method ? ' · ' + o.method : '') }), h('span', { class: 'rb' },
           h('button', { type: 'button', class: 'btn small', text: 'Edit', 'aria-label': 'Edit this order', onclick: function () { openEdit(o); } }),
           o.qty - o.servedN > 0 ? h('button', { type: 'button', class: 'btn small', text: 'Refund', 'aria-label': 'Refund the meals not yet served', onclick: function () { confirmRefund(o); } }) : null,
           o.servedN > 0 ? h('button', { type: 'button', class: 'btn small', text: 'Delete served', 'aria-label': 'Delete the served meals', onclick: function () { confirmDeleteServed(o); } }) : null,
