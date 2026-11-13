@@ -309,6 +309,10 @@ select.pick:focus { border-color: var(--accent); outline: 3px solid var(--accent
       Customers
       <span class="badge" id="b-cust" hidden>0</span>
     </button>
+    <button type="button" id="nav-site">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      Website
+    </button>
     <button type="button" id="nav-admin" hidden>
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
       Admin
@@ -1991,6 +1995,7 @@ function init() {
   $('burger').onclick = function (ev) { ev.stopPropagation(); var open = $('rail').classList.toggle('open'); $('burger').setAttribute('aria-expanded', open ? 'true' : 'false'); };
   document.addEventListener('click', function (ev) { if (!$('rail').contains(ev.target)) closeMenu(); });
   $('nav-admin').onclick = function () { location.href = '/admin'; };
+  $('nav-site').onclick = function () { location.href = '/'; };
   $('nav-order').onclick = function () { go('order'); };
   $('nav-today').onclick = function () { go('today'); };
   $('nav-customers').onclick = function () { go('customers'); };

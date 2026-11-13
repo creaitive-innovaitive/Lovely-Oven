@@ -74,6 +74,18 @@ td.ro { color: var(--muted); font-family: var(--mono); font-size: 12px; }
 .toast.bad { background: var(--bad); color: #fff; }
 .login { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
 .login form { display: grid; gap: 12px; width: min(340px, 100%); }
+a.btn { display: inline-grid; place-items: center; text-decoration: none; color: inherit; }
+.burger { display: none; width: 46px; padding: 0; place-items: center; }
+@media (max-width: 700px) {
+  .top { position: relative; }
+  .top h1 { flex: 1; }
+  .burger { display: grid; order: 2; }
+  .tabs { order: 3; width: 100%; }
+  .menu { display: none; position: absolute; z-index: 20; top: 50px; right: 0; width: min(260px, 100%); flex-direction: column; align-items: stretch; background: var(--surface); padding: 10px; border-radius: 16px; box-shadow: var(--shadow); }
+  .menu.open { display: flex; }
+  .menu .btn { min-height: 46px; justify-content: flex-start; padding: 0 14px; font-size: 16px; }
+  .menu .sub { padding: 2px 6px; }
+}
 .thumb { max-width: 100%; max-height: 220px; border-radius: 10px; }
 </style>
 </head>
@@ -89,7 +101,8 @@ td.ro { color: var(--muted); font-family: var(--mono); font-size: 12px; }
   <div class="top">
     <h1>Admin</h1>
     <div class="tabs" id="tabs"></div>
-    <div class="row"><span class="sub" id="who"></span><a class="btn small" href="/orders" style="display:inline-grid;place-items:center;text-decoration:none">Orders</a><button class="btn small" id="refresh">Refresh</button><button class="btn small" id="out">Sign out</button></div>
+    <button class="btn burger" id="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <div class="row menu" id="menu"><span class="sub" id="who"></span><a class="btn small" href="/orders">Orders</a><a class="btn small" href="/">Website</a><button class="btn small" id="refresh">Refresh</button><button class="btn small" id="out">Sign out</button></div>
   </div>
   <div class="panel" id="periodbar">
     <div class="row">
@@ -432,7 +445,9 @@ function init() {
   PERIODS.forEach(function (p) { $('period').appendChild(h('option', { value: p[0], text: p[1] })); });
   $('period').value = 'month';
   ['period', 'from', 'to'].forEach(function (id) { $(id).onchange = render; });
-  $('refresh').onclick = load; $('csv').onclick = csv;
+  $('refresh').onclick = function () { $('menu').classList.remove('open'); load(); }; $('csv').onclick = csv;
+  $('burger').onclick = function (ev) { ev.stopPropagation(); var o = $('menu').classList.toggle('open'); $('burger').setAttribute('aria-expanded', o ? 'true' : 'false'); };
+  document.addEventListener('click', function (ev) { if (!$('menu').contains(ev.target)) $('menu').classList.remove('open'); });
   $('out').onclick = function () { SB.auth.signOut().then(function () { location.replace('/'); }); };
   $('loginform').onsubmit = function (ev) {
     ev.preventDefault(); $('loginmsg').textContent = 'Signing in…';
