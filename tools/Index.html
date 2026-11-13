@@ -233,7 +233,8 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
   .rail button { width: 72px; min-height: 60px; }
   .view { overflow: auto; }
   .view > * { flex-shrink: 0; }
-  .order-grid { flex: none; }
+  .order-grid, .cust-grid { flex: none; }
+  .cust-grid .list .rows { max-height: 280px; }
   .order-grid, .cust-grid, .split, .extras { grid-template-columns: minmax(0, 1fr); }
   .panel { overflow: visible; }
   .savebox { margin-left: 0; align-items: stretch; width: 100%; }
