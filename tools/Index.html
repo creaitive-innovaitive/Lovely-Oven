@@ -215,7 +215,9 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
 .row .money { width: 190px; }
 .row .money input { height: 52px; font-size: 19px; }
 .rl { display: grid; grid-template-columns: auto 1fr auto auto; gap: 4px 16px; font-size: 16px; }
-.rl span:nth-child(4n+1) { color: var(--muted); font-family: var(--mono); font-size: 14px; }
+.orow { display: contents; }
+.orow .ra { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; }
+.rl .orow > span:first-child { color: var(--muted); font-family: var(--mono); font-size: 14px; }
 .rl .r { text-align: right; font-family: var(--mono); }
 
 /* overlays */
@@ -266,6 +268,11 @@ select.pick:focus { border-color: var(--accent); outline: 3px solid var(--accent
 .cart div { display: flex; justify-content: space-between; gap: 12px; }
 .webbtn { background: var(--warn-soft); color: var(--warn); border: 0; border-radius: 14px; padding: 8px 16px; font: 700 15px var(--body); }
 @media (max-width: 600px) {
+  .rl { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .orow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 12px 0; border-top: 1px solid var(--line); align-items: center; }
+  .orow > :nth-child(3) { grid-column: 2; grid-row: 1 / 3; font-size: 18px; }
+  .orow .ra { grid-column: 1 / -1; justify-content: flex-start; margin-top: 6px; text-align: left; }
+  .orow .btn.small { min-height: 36px; padding: 0 12px; font-size: 14px; }
   .meal { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 14px 16px; }
   .meal .who strong { overflow-wrap: break-word; }
   .meal .acts { justify-content: stretch; }
@@ -1864,12 +1871,12 @@ function renderDetail() {
 
   detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Recent orders' }),
     h('div', { class: 'rl', style: 'max-height:460px;overflow:auto;align-content:start' }, mine.map(function (o) {
-      return [h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
-        h('span', { class: 'r', style: 'display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;align-items:center' }, (o.owed ? 'owes ' + fmt(o.owed) : 'paid') + ' ',
+      return h('div', { class: 'orow' }, h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
+        h('span', { class: 'r ra' }, (o.owed ? 'owes ' + fmt(o.owed) : 'paid') + ' ',
           h('button', { type: 'button', class: 'btn small', text: 'Edit', 'aria-label': 'Edit this order', onclick: function () { openEdit(o); } }),
           o.qty - o.servedN > 0 ? h('button', { type: 'button', class: 'btn small', text: 'Refund', 'aria-label': 'Refund the meals not yet served', onclick: function () { confirmRefund(o); } }) : null,
           o.servedN > 0 ? h('button', { type: 'button', class: 'btn small', text: 'Delete served', 'aria-label': 'Delete the served meals', onclick: function () { confirmDeleteServed(o); } }) : null,
-          h('button', { type: 'button', class: 'btn small danger', text: 'Delete order', 'aria-label': 'Delete this order', onclick: function () { confirmDelete(o); } }))];
+          h('button', { type: 'button', class: 'btn small danger', text: 'Delete order', 'aria-label': 'Delete this order', onclick: function () { confirmDelete(o); } })));
     }))));
   host.appendChild(detail);
 }
