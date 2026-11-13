@@ -494,7 +494,7 @@ function money_(v, label) {
 }
 
 /* a basket line is one dish (or drink) with its options; chicken and main meals count as meals, the rest are extras */
-function isMain_(it) { return it.g === 'chicken' || it.g === 'setmeal'; }
+function isMain_(it) { return it.g === 'chicken' || it.g === 'setmeal' || it.g === 'burger'; }
 function cleanItems_(list) {
   var out = [];
   (Array.isArray(list) ? list : []).slice(0, 30).forEach(function (it) {
@@ -1209,6 +1209,7 @@ if (MENU) MENU.sections.forEach(function (sec) { sec.items.forEach(function (it)
 var lastFee = 0;
 try { lastFee = Number(localStorage.getItem('lo-fee')) || 0; } catch (e) { /* ignore */ }
 var PB = { flavour: '', spice: '', carb: '', side: '' };      // chicken meal being built
+var BB = { flavour: '', tops: {}, side: '' };                 // chicken burger being built
 
 function sideExtra(v) { var o = RULES.sideOptions.filter(function (x) { return x.value === v; })[0]; return o ? o.extra : 0; }
 /* student / Dr Kumar rate caps the price of a main meal; boxes, extras and drinks keep their own price */
@@ -1227,6 +1228,10 @@ function recalcLine(l) {
     var sur = RULES.chickenSideSurcharge[l.opts.side] || 0;
     l.price = rated(RULES.chickenBase, l) + sur;
     l.detail = [l.opts.protein, l.opts.flavour + (l.opts.spice ? ' (' + l.opts.spice + ')' : ''), l.opts.carb, l.opts.side + (sur ? ' (+' + fmt(sur) + ')' : '')].join(' · ');
+  } else if (l.g === 'burger') {
+    var B = MENU.burger, tops = (l.opts.toppings || []).filter(function (t) { return B.toppings.some(function (x) { return x.value === t; }); });
+    l.price = rated(B.base, l) + (l.opts.side ? B.sidePrice : 0) + tops.reduce(function (n, t) { return n + B.toppings.filter(function (x) { return x.value === t; })[0].price; }, 0);
+    l.detail = [l.opts.flavour, tops.join(', ') || 'no extra toppings', l.opts.side || 'no side'].join(' · ');
   } else if (l.g === 'setmeal') {
     var it = BYVAL[l.value];
     l.price = rated(l.base != null ? l.base : it ? it.price : l.price, l) + (l.opts.rice === 'Yes' ? RULES.ricePrice : 0) + sideExtra(l.opts.side);
@@ -1261,6 +1266,28 @@ function addChicken() {
   if (same) same.qty++; else D.items.push(l);
   PB = { flavour: '', spice: '', carb: '', side: '' }; D.showChicken = false;
   updateOrder();
+}
+function addBurger() {
+  var l = { g: 'burger', value: 'Chicken burger', label: 'Chicken burger', qty: 1, price: 0, detail: '', opts: { flavour: BB.flavour, side: BB.side, toppings: Object.keys(BB.tops) } };
+  recalcLine(l);
+  var same = D.items.filter(function (x) { return x.g === 'burger' && x.detail === l.detail; })[0];
+  if (same) same.qty++; else D.items.push(l);
+  BB = { flavour: '', tops: {}, side: '' }; D.showBurger = false;
+  updateOrder();
+}
+function burgerBuilder() {
+  var B = MENU.burger, ready = !!BB.flavour;
+  var price = B.base + (BB.side ? B.sidePrice : 0) + Object.keys(BB.tops).reduce(function (n, t) { return n + BB.tops[t]; }, 0);
+  return h('div', { class: 'psec' }, h('h3', { text: 'Build your own chicken burger' }),
+    h('div', { class: 'box' },
+      h('div', { class: 'sub', text: 'Lettuce, tomato and mayonnaise included' }),
+      chipRow('Flavour', B.flavour, BB.flavour, function (v) { BB.flavour = v; renderPicker(); }),
+      h('div', null, h('div', { class: 'lbl', text: 'Toppings' }), h('div', { class: 'chips', style: 'margin-top:0' }, B.toppings.map(function (t) {
+        return h('button', { type: 'button', class: 'chip', 'aria-pressed': BB.tops[t.value] != null ? 'true' : 'false', text: t.value + ' +' + fmt(t.price), onclick: function () { if (BB.tops[t.value] != null) delete BB.tops[t.value]; else BB.tops[t.value] = t.price; renderPicker(); } });
+      }))),
+      h('div', null, h('div', { class: 'lbl', text: 'Side (+' + fmt(B.sidePrice) + ')' }), h('div', { class: 'chips', style: 'margin-top:0' },
+        ['No side'].concat(B.side).map(function (v) { var val = v === 'No side' ? '' : v; return h('button', { type: 'button', class: 'chip', 'aria-pressed': BB.side === val ? 'true' : 'false', text: v, onclick: function () { BB.side = val; renderPicker(); } }); }))),
+      h('button', { type: 'button', class: 'btn primary', text: ready ? 'Add chicken burger · ' + fmt(price) : 'Choose a flavour', disabled: !ready, onclick: addBurger })));
 }
 function chipRow(title, values, cur, pick) {
   return h('div', null, h('div', { class: 'lbl', text: title }), h('div', { class: 'chips', style: 'margin-top:0' }, values.map(function (v) {
@@ -1334,12 +1361,13 @@ function renderPicker() {
     return h('button', { type: 'button', class: 'chip', 'aria-pressed': D.rate === r[0] ? 'true' : 'false', text: r[1], onclick: function () { setRate(r[0], true); } });
   })));
   host.appendChild(h('div', { class: 'drops' },
-    dropdown('Meal', [{ title: 'Chicken', items: [{ value: '__chicken', label: 'Chicken meal (choose marinade, carb, side)' }] }].concat(secItems(['veg', 'set', 'box']).map(function (x) { return { title: x.title, items: x.items }; })), function (v) {
-      if (v === '__chicken') { D.showChicken = true; renderPicker(); } else addItem(v);
+    dropdown('Meal', [{ title: 'Chicken', items: [{ value: '__chicken', label: 'Chicken meal (choose marinade, carb, side)' }, { value: '__burger', label: 'Chicken burger (choose flavour, toppings, side)' }] }].concat(secItems(['veg', 'set', 'box']).map(function (x) { return { title: x.title, items: x.items }; })), function (v) {
+      if (v === '__chicken') { D.showChicken = true; renderPicker(); } else if (v === '__burger') { D.showBurger = true; renderPicker(); } else addItem(v);
     }),
     dropdown('Extra', secItems(['add']).map(function (x) { return { title: x.title, items: x.items }; }).concat(hasSoup() ? secItems(['toppings']).map(function (x) { return { title: x.title, items: x.items }; }) : []), addItem),
     dropdown('Drink', secItems(['drinks']).map(function (x) { return { title: x.title, items: x.items }; }), addItem)));
   if (D.showChicken) host.appendChild(chickenBuilder());
+  if (D.showBurger) host.appendChild(burgerBuilder());
   var lines = D.items.filter(function (l) { return l.g !== 'delivery'; });
   if (lines.length) {
     var t = itemTotals_(D.items);
@@ -1389,6 +1417,10 @@ function dishesFor(date) {
     var op = it.opts || {};
     if (it.g === 'chicken') {
       put('Meals', 'Chicken Meal', q);
+    } else if (it.g === 'burger') {
+      put('Meals', 'Chicken Burger · ' + (op.flavour || ''), q);
+      if (op.side) put('Sides and extras', normSide(op.side), q);
+      (op.toppings || []).forEach(function (t) { put('Sides and extras', t, q); });
     } else {
       put('Mains', it.value, q);
       if (op.rice === 'Yes') put('Sides and extras', 'Rice', q);

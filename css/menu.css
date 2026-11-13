@@ -1913,7 +1913,6 @@ a.morder-link:hover .morder-icon { opacity: 0.9; }
 .p2-right .extras-title { font-size:9.5pt; margin-bottom:2mm; }
 .p2-right .extras-grid { gap:1.5mm; }
 .p2-right .extra-row { padding:1.5mm 3mm; font-size:7.5pt; }
-.p2-right .veg-card .special-body { padding-top:3mm; padding-bottom:3mm; }
 .p2-right .extras-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5mm; }
 .p2-meal-images { min-height:30mm; }
 .p2-cols { gap:3mm 6mm; }

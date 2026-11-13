@@ -8,7 +8,7 @@ order = open(os.path.join(ROOT, "order.html"), encoding="utf-8").read()
 menu_path = os.path.join(ROOT, "menu.html")
 menu = open(menu_path, encoding="utf-8").read()
 
-LEFT = ["o-veg", "o-set", "o-toppings"]
+LEFT = ["o-set", "o-toppings"]
 RIGHT = ["o-drinks", "o-add", "o-box"]
 
 
@@ -64,6 +64,21 @@ def build():
             '    <div class="pg2-build-sub">%s</div>\n    <div class="pg2-steps">\n%s    </div>\n  </div>\n') % (price, sub, steps)
 
 
+def build_burger():
+    m = re.search(r'<section class="o-sec o-build" id="o-burger">(.*?)\n    </section>', order, re.S)
+    body = m.group(1)
+    price = re.search(r'class="o-badge">(.*?)</span>', body).group(1)
+    sub = re.search(r'<p class="o-sub">(.*?)</p>', body, re.S).group(1)
+    steps = ""
+    for label, group in (("1 · Flavour", "bflavour"), ("2 · Toppings", "btop"), ("3 · Side", "bside")):
+        opts = [re.sub(r"&amp;", "&", o) for o in re.findall(r'data-group="%s" data-value="[^"]*"[^>]*>([^<]*(?:&amp;[^<]*)?)<' % group, body)]
+        steps += '      <div class="pg2-step"><b>%s</b>%s</div>\n' % (label, "".join("<span>%s</span>" % o.replace("&", "&amp;") for o in opts))
+        if group == "bflavour":
+            steps += '      <div class="pg2-step"><b>Comes with</b><span>Lettuce</span><span>Tomato</span><span>Mayonnaise</span></div>\n'
+    return ('  <div class="pg2-build">\n    <div class="pg2-build-title">Build your own <em>Chicken Burger</em><span class="pg2-badge">Burger — %s</span></div>\n'
+            '    <div class="pg2-build-sub">%s</div>\n    <div class="pg2-steps">\n%s    </div>\n  </div>\n') % (price, sub, steps)
+
+
 PHOTOS = ('        <div class="pg2-photos">\n'
           '          <figure><img data-cover src="img/menu/cottage-pie-single.jpg" alt="Cottage pie"><figcaption>Cottage Pie</figcaption></figure>\n'
           '          <figure><img data-cover src="img/menu/pumpkin-soup.jpg" alt="Pumpkin soup"><figcaption>Pumpkin Soup</figcaption></figure>\n'
@@ -75,8 +90,8 @@ HEAD = ('  <div class="pg2-head">\n    <div class="pg2-brand">Lovely <em>Oven</e
 FOOT = ('  <div class="pg2-foot"><span><strong>Order:</strong> phone, Zalo or WhatsApp +84 987 390 140 · lovelyoven.com/order</span>'
         '<span>Free delivery in the FPT area · Danang &amp; Hoi An: book on Grab</span></div>\n')
 
-block = ('<div class="page pg2">\n' + HEAD + build() + '  <div class="pg2-cols">\n    <div class="pg2-stack">\n' + "".join(card(i) for i in LEFT) +
-         '    </div>\n    <div class="pg2-stack">\n' + "".join(card(i) for i in RIGHT) + PHOTOS + '    </div>\n  </div>\n' + FOOT + '</div><!-- end page 2 -->\n')
+block = ('<div class="page pg2">\n' + HEAD + build() + build_burger() + '  <div class="pg2-cols">\n    <div class="pg2-stack">\n' + "".join(card(i) for i in LEFT) + PHOTOS +
+         '    </div>\n    <div class="pg2-stack">\n' + "".join(card(i) for i in RIGHT) + '    </div>\n  </div>\n' + FOOT + '</div><!-- end page 2 -->\n')
 menu = re.sub(r"<!-- MENU:START -->.*?<!-- MENU:END -->", lambda _: "<!-- MENU:START -->\n" + block + "<!-- MENU:END -->", menu, flags=re.S)
 open(menu_path, "w", encoding="utf-8").write(menu)
 print("menu.html page 2 rebuilt from order.html")

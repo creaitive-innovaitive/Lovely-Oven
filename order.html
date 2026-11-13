@@ -72,7 +72,7 @@
   </header>
 
   <nav class="o-tabs" aria-label="Menu sections">
-    <a href="#o-chicken">Chicken meal</a><a href="#o-veg">Vegetarian</a><a href="#o-set">Main meals</a><a href="#o-toppings">Soup toppings</a><a href="#o-drinks">Drinks</a><a href="#o-add">Add-ons &amp; extras</a><a href="#o-box">Boxes to share</a>
+    <a href="#o-chicken">Chicken meal</a><a href="#o-burger">Chicken burger</a><a href="#o-set">Main meals</a><a href="#o-toppings">Soup toppings</a><a href="#o-drinks">Drinks</a><a href="#o-add">Add-ons &amp; extras</a><a href="#o-box">Boxes to share</a>
   </nav>
 
   <div class="o-wrap">
@@ -90,26 +90,22 @@
       </div>
     </section>
 
-    <div class="o-cols">
-    <div class="o-col">
-    <section class="o-sec" id="o-veg"><h2>Vegetarian</h2><p class="o-sub">Cooked to order. Pescatarian on request.</p>
-      <div class="o-item" data-group="setmeal" data-value="Aloo Gobi" data-label="Aloo Gobi" data-price="100000">
-        <img class="o-thumb" src="img/dishes/aloo-gobi.jpg" alt="" loading="lazy"><div class="o-info"><strong>Aloo Gobi</strong><span>Potato, cauliflower and peppers in a lightly spiced sauce, with basmati rice.</span></div><span class="o-price">₫100,000</span>
-      </div>
-      <div class="o-item" data-group="setmeal" data-value="Moong Dal" data-label="Moong Dal" data-price="100000">
-        <img class="o-thumb" src="img/dishes/moong-dal.jpg" alt="" loading="lazy"><div class="o-info"><strong>Moong Dal</strong><span>Creamy mung beans, warm spices and a golden turmeric finish.</span></div><span class="o-price">₫100,000</span>
-      </div>
-      <div class="o-item" data-group="setmeal" data-value="Raja Masala" data-label="Raja Masala" data-price="100000">
-        <img class="o-thumb" src="img/dishes/raja-masala.jpg" alt="" loading="lazy"><div class="o-info"><strong>Raja Masala</strong><span>Red kidney beans in a rich, tangy onion-tomato sauce, with rice.</span></div><span class="o-price">₫100,000</span>
-      </div>
-      <div class="o-item" data-group="setmeal" data-soup="1" data-value="Pumpkin Soup — Small" data-label="Pumpkin Soup — Small" data-price="60000">
-        <img class="o-thumb" src="img/menu/pumpkin-soup.jpg" alt="" loading="lazy"><div class="o-info"><strong>Pumpkin Soup · Small</strong><span>Pumpkin, cream, butter, potato and herbs. Soup toppings available.</span></div><span class="o-price">₫60,000</span>
-      </div>
-      <div class="o-item" data-group="setmeal" data-soup="1" data-value="Pumpkin Soup — Medium" data-label="Pumpkin Soup — Medium" data-price="90000">
-        <img class="o-thumb" src="img/menu/pumpkin-soup.jpg" alt="" loading="lazy"><div class="o-info"><strong>Pumpkin Soup · Medium</strong><span>Pumpkin, cream, butter, potato and herbs. Soup toppings available.</span></div><span class="o-price">₫90,000</span>
+    <section class="o-sec o-build" id="o-burger">
+      <h2>Build Your Own Chicken Burger <span class="o-badge">₫100,000</span></h2>
+      <p class="o-sub">Boneless chicken thigh in a burger, with lettuce, tomato and mayonnaise. Add a side for ₫20,000.</p>
+      <div class="o-build-grid">
+        <img class="o-build-img" src="img/gallery/chicken-meal.jpg" alt="Chicken burger" loading="lazy">
+        <div class="o-steps">
+          <div class="o-step"><b>1 · Flavour</b><div><span class="o-chip" data-group="bflavour" data-value="BBQ">BBQ</span><span class="o-chip" data-group="bflavour" data-value="Peri Peri">Peri Peri</span><span class="o-chip" data-group="bflavour" data-value="Honey Mustard">Honey Mustard</span></div></div>
+          <div class="o-step"><b>2 · Toppings</b><div><span class="o-chip" data-group="btop" data-value="Cheese" data-price="5000">Cheese +5,000</span><span class="o-chip" data-group="btop" data-value="Fried egg" data-price="10000">Fried egg +10,000</span><span class="o-chip" data-group="btop" data-value="Sweet &amp; sour onion" data-price="10000">Sweet &amp; sour onion +10,000</span></div></div>
+          <div class="o-step"><b>3 · Side</b><div><span class="o-chip" data-group="bside" data-value="Wedges">Wedges +20,000</span><span class="o-chip" data-group="bside" data-value="Potato salad">Potato salad +20,000</span><span class="o-chip" data-group="bside" data-value="Coleslaw">Coleslaw +20,000</span></div></div>
+        </div>
       </div>
     </section>
-    <section class="o-sec" id="o-set"><h2>Main Meals <small>non-vegetarian</small></h2>
+
+    <div class="o-cols">
+    <div class="o-col">
+    <section class="o-sec" id="o-set"><h2>Main Meals</h2>
       <div class="o-item" data-group="setmeal" data-rice="1" data-value="Bolognaise 200g" data-label="Bolognaise 200g (Beef & Pork)" data-price="100000">
         <img class="o-thumb" src="img/menu/bolognaise.jpg" alt="" loading="lazy"><div class="o-info"><strong>Bolognaise 200g</strong><span>Homemade, beef &amp; pork. Add rice +₫10,000.</span></div><span class="o-price">₫100,000</span>
       </div>
@@ -226,7 +222,6 @@
     <li><a href="/order">Order</a></li>
           <li><a href="/nutrition">Nutrition</a></li>
           <li><a href="/social">Social</a></li>
-          <li><a href="/orders" rel="nofollow">Admin</a></li>
         </ul>
       </div>
 

@@ -1613,16 +1613,8 @@ footer {
 .hero-half-chicken {
   background-image: url('../img/hero/chicken-hero.jpg?v=20261030c');
   /* shifted 16vw left and 5vh down; element overhangs the top so the shift never exposes a gap; clip compensates */
-  inset: -6vh 16vw 0 -16vw;
-  background-position: 50% calc(50% + 5vh);
-  clip-path: polygon(0 6vh, calc(62% + 16vw) 6vh, calc(38% + 16vw) 100%, 0 100%);
-}
-.hero-half-veg {
-  background-image: url('../img/hero/veg-hero.jpg?v=20261030c');
-  background-position: 0% 40%;
-  /* shifted 20vw right so the dish sits further right; clip compensates to keep the divider put */
-  inset: 0 -20vw 0 20vw;
-  clip-path: polygon(calc(62% - 20vw) 0, 100% 0, 100% 100%, calc(38% - 20vw) 100%);
+  inset: 0;
+  background-position: 50% 50%;
 }
 .hero-split-line { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; }
 .hero-split-line line { filter: drop-shadow(0 0 6px rgba(0,0,0,0.45)); }
@@ -1636,16 +1628,13 @@ footer {
   border: 1px solid var(--accent); border-radius: 999px;
 }
 .hero-split-label-a { bottom: 2rem; left: 2rem; }
-.hero-split-label-b { bottom: 2rem; right: 2rem; }
 @media (max-width: 600px) {
   .hero-split-label { font-size: 0.65rem; letter-spacing: 0.15em; }
   .hero-split-label-a { left: 1rem; bottom: 1rem; }
-  .hero-split-label-b { right: 1rem; bottom: 1rem; }
 }
 .hero-eyebrow, .hero-title, .hero-divider, .hero-sub, .hero-cta, .diet-pills { position: relative; z-index: 2; }
 .hero-title, .hero-sub, .hero-eyebrow { text-shadow: 0 2px 14px rgba(0,0,0,0.65); }
 .hero-half::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
-.hero-half-veg::after { background: rgba(0,0,0,0.1); }
 .diet-section-alt { background: var(--olive); }
 .diet-grid-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .diet-tag-warm { background: #A0522D; }
@@ -1673,21 +1662,12 @@ footer {
 
 /* ── Phone fixes ── */
 @media (max-width: 600px) {
-  .hero-half-chicken {
-    inset: -6vh 6vw 0 -6vw;
-    background-position: 50% 50%;
-    clip-path: polygon(0 6vh, calc(62% + 6vw) 6vh, calc(38% + 6vw) 100%, 0 100%);
-  }
-  .hero-half-veg {
-    inset: 0 -8vw 0 8vw;
-    clip-path: polygon(calc(62% - 8vw) 0, 100% 0, 100% 100%, calc(38% - 8vw) 100%);
-  }
+  .hero-half-chicken { inset: 0; background-position: 50% 50%; }
   .hero-eyebrow { font-size: 0.62rem; letter-spacing: 0.14em; padding: 0.5rem 0.8rem; }
   .hero-eyebrow::before, .hero-eyebrow::after { margin: 0 0.4em; }
   .hero-sub { font-size: 0.95rem; padding: 0.7rem 1rem; }
   .hero-split-label { font-size: 0.55rem; letter-spacing: 0.08em; padding: 0.35rem 0.6rem; }
   .hero-split-label-a { left: 0.6rem; bottom: 0.9rem; }
-  .hero-split-label-b { right: 0.6rem; bottom: 2.9rem; }
   .hero { padding-bottom: 6rem; }
   .diet-pills { gap: 0.4rem; }
   .diet-pill { font-size: 0.68rem; padding: 0.45rem 0.8rem; }
@@ -1729,7 +1709,7 @@ footer {
 .path-btn-text strong { font-family: 'Cormorant Garamond', serif; font-size: 1.45rem; font-weight: 700; line-height: 1.1; }
 .path-btn-text em { font-style: normal; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85; }
 .path-btn-meat { background: var(--accent); color: var(--ink); }
-.path-btn-veg { background: var(--olive-dark); color: #fff; border-color: rgba(255,255,255,0.35); }
+.path-btn-menu { background: var(--olive-dark); color: #fff; border-color: rgba(255,255,255,0.35); }
 .hero-menu-link {
   display: inline-block; margin-top: 1.1rem; position: relative; z-index: 2;
   color: #fff; text-decoration: underline; text-underline-offset: 4px;
@@ -1745,7 +1725,6 @@ footer {
 .page-hero::before { content: ''; position: absolute; inset: 0; background: rgba(20,32,25,0.62); }
 .page-hero > * { position: relative; }
 .page-hero-meat { background-image: url('../img/hero/chicken-hero.jpg?v=20261030c'); }
-.page-hero-veg { background-image: url('../img/hero/veg-hero.jpg?v=20261030c'); }
 .page-hero-title {
   font-family: 'Cormorant Garamond', serif; font-weight: 600;
   font-size: clamp(2.6rem, 7vw, 4.5rem); line-height: 1.05; margin: 0.4rem 0 1rem; color: #fff;
@@ -1793,7 +1772,7 @@ footer {
   .hero-paths { margin-top: clamp(0.7rem, 2.2vh, 1.75rem); }
   .path-btn { padding: clamp(0.5rem, 1.4vh, 1.05rem) 1.6rem; }
   .hero-menu-link { margin-top: clamp(0.4rem, 1.2vh, 1.1rem); }
-  .hero-split-label-a, .hero-split-label-b { bottom: calc(1.25rem + var(--banner-h, 0px)); }
+  .hero-split-label-a { bottom: calc(1.25rem + var(--banner-h, 0px)); }
 }
 
 /* ── Home sections: each is at least one hero tall ── */
@@ -1927,8 +1906,8 @@ footer {
 .path-btn:hover { transform: none; box-shadow: none; }
 .path-btn-meat { background: var(--accent); color: var(--ink); }
 .path-btn-meat:hover { background: var(--parchment); border-color: var(--parchment); }
-.path-btn-veg { background: rgba(28,40,32,0.45); color: var(--parchment); border-color: rgba(250,247,242,0.7); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
-.path-btn-veg:hover { background: var(--parchment); color: var(--ink); border-color: var(--parchment); }
+.path-btn-menu { background: rgba(28,40,32,0.45); color: var(--parchment); border-color: rgba(250,247,242,0.7); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.path-btn-menu:hover { background: var(--parchment); color: var(--ink); border-color: var(--parchment); }
 @media (max-width: 600px) { .path-btn { min-width: 0; padding: 0.85rem 1.2rem; font-size: 1.1rem; } }
 
 /* Hero labels stay on one row on small screens */
@@ -1938,7 +1917,6 @@ footer {
     bottom: calc(0.9rem + var(--banner-h, 0px));
   }
   .hero-split-label-a { left: 0.5rem; }
-  .hero-split-label-b { right: 0.5rem; }
 }
 
 /* Nutrition: items waiting for values */

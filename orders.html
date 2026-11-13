@@ -494,7 +494,7 @@ function money_(v, label) {
 }
 
 /* a basket line is one dish (or drink) with its options; chicken and main meals count as meals, the rest are extras */
-function isMain_(it) { return it.g === 'chicken' || it.g === 'setmeal'; }
+function isMain_(it) { return it.g === 'chicken' || it.g === 'setmeal' || it.g === 'burger'; }
 function cleanItems_(list) {
   var out = [];
   (Array.isArray(list) ? list : []).slice(0, 30).forEach(function (it) {
@@ -888,7 +888,7 @@ function makeMock() {
   };
 }
 /* ---- Supabase: fill these in from Project Settings > API. The anon key is meant to be public; row-level security (supabase/schema.sql) keeps the data behind the login. ---- */
-var MENU = {"chicken": {"protein": ["Chicken Thigh (Boneless)"], "flavour": ["Peri Peri", "Salt & Pepper", "Chilli & Lime", "BBQ"], "carb": ["White Steamed Rice", "Turmeric Basmati"], "side": ["Coleslaw", "Wedges", "Broccoli", "Mashed Potato", "Roasted Veggies", "Cauliflower Mash"], "spice": ["Mild", "Medium", "Hot"]}, "sections": [{"id": "veg", "title": "Vegetarian", "items": [{"g": "setmeal", "value": "Aloo Gobi", "label": "Aloo Gobi", "price": 100000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Moong Dal", "label": "Moong Dal", "price": 100000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Raja Masala", "label": "Raja Masala", "price": 100000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Pumpkin Soup — Small", "label": "Pumpkin Soup — Small", "price": 60000, "rice": false, "side": false, "soup": true}, {"g": "setmeal", "value": "Pumpkin Soup — Medium", "label": "Pumpkin Soup — Medium", "price": 90000, "rice": false, "side": false, "soup": true}]}, {"id": "set", "title": "Main Meals", "items": [{"g": "setmeal", "value": "Bolognaise 200g", "label": "Bolognaise 200g (Beef & Pork)", "price": 100000, "rice": true, "side": false, "soup": false}, {"g": "setmeal", "value": "Chilli Con Carne Set", "label": "Chilli Con Carne Set (Beef & Pork)", "price": 100000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Beef Ragout — Medium Bowl", "label": "Beef Ragout — Medium Bowl", "price": 90000, "rice": true, "side": false, "soup": false}, {"g": "setmeal", "value": "Beef Ragout — Big Bowl", "label": "Beef Ragout — Big Bowl", "price": 120000, "rice": true, "side": false, "soup": false}, {"g": "setmeal", "value": "Cottage Pie & 1 side", "label": "Cottage Pie & 1 side", "price": 100000, "rice": false, "side": true, "soup": false}, {"g": "setmeal", "value": "Pumpkin Soup with Crunchy Bacon — Small", "label": "Pumpkin Soup with Crunchy Bacon — Small", "price": 60000, "rice": false, "side": false, "soup": true}, {"g": "setmeal", "value": "Pumpkin Soup with Crunchy Bacon — Medium", "label": "Pumpkin Soup with Crunchy Bacon — Medium", "price": 90000, "rice": false, "side": false, "soup": true}]}, {"id": "toppings", "title": "Soup Toppings", "items": [{"g": "topping", "value": "Roast chicken breast", "label": "Roast chicken breast (soup topping)", "price": 50000, "rice": false, "side": false, "soup": false}, {"g": "topping", "value": "Extra crunchy bacon", "label": "Extra crunchy bacon (soup topping)", "price": 20000, "rice": false, "side": false, "soup": false}, {"g": "topping", "value": "Croutons", "label": "Croutons (soup topping)", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "topping", "value": "Pumpkin seeds", "label": "Pumpkin seeds (soup topping)", "price": 10000, "rice": false, "side": false, "soup": false}]}, {"id": "drinks", "title": "Drinks", "items": [{"g": "extra", "value": "Lemon Juice", "label": "Lemon Juice", "price": 20000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Coca Cola", "label": "Coca Cola", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Coke Zero", "label": "Coke Zero", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "7-Up", "label": "7-Up", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Fanta Orange", "label": "Fanta Orange", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Mineral Water", "label": "Mineral Water", "price": 10000, "rice": false, "side": false, "soup": false}]}, {"id": "add", "title": "Add-ons & Extras", "items": [{"g": "extra", "value": "Extra coleslaw / rice", "label": "Extra coleslaw / rice", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Extra potato wedges", "label": "Extra potato wedges", "price": 20000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Cauliflower Mash", "label": "Cauliflower Mash", "price": 30000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Roasted veggies", "label": "Roasted veggies", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Fried egg", "label": "Fried egg", "price": 10000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Boiled egg", "label": "Boiled egg", "price": 10000, "rice": false, "side": false, "soup": false}]}, {"id": "box", "title": "Boxes to Share", "items": [{"g": "setmeal", "value": "Bolognaise box — 500g", "label": "Bolognaise box — 500g (Beef & Pork)", "price": 160000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Bolognaise box — 1kg", "label": "Bolognaise box — 1kg (Beef & Pork)", "price": 300000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Chilli box — 500g", "label": "Chilli Con Carne box — 500g (Beef & Pork)", "price": 160000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Chilli box — 1kg", "label": "Chilli Con Carne box — 1kg (Beef & Pork)", "price": 300000, "rice": false, "side": false, "soup": false}]}], "rules": {"chickenBase": 130000, "ricePrice": 10000, "sideOptions": [{"value": "Coleslaw", "extra": 0}, {"value": "Rice", "extra": 0}, {"value": "Potato wedges", "extra": 10000}, {"value": "Cauliflower mash", "extra": 20000}, {"value": "Fried egg", "extra": 0}, {"value": "Boiled egg", "extra": 0}], "chickenSideSurcharge": {"Cauliflower Mash": 10000}}};   // filled in by tools/build_orders.py from order.html
+var MENU = {"chicken": {"protein": ["Chicken Thigh (Boneless)"], "flavour": ["Peri Peri", "Salt & Pepper", "Chilli & Lime", "BBQ"], "carb": ["White Steamed Rice", "Turmeric Basmati"], "side": ["Coleslaw", "Wedges", "Broccoli", "Mashed Potato", "Roasted Veggies", "Cauliflower Mash"], "spice": ["Mild", "Medium", "Hot"]}, "sections": [{"id": "set", "title": "Main Meals", "items": [{"g": "setmeal", "value": "Bolognaise 200g", "label": "Bolognaise 200g (Beef & Pork)", "price": 100000, "rice": true, "side": false, "soup": false}, {"g": "setmeal", "value": "Chilli Con Carne Set", "label": "Chilli Con Carne Set (Beef & Pork)", "price": 100000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Beef Ragout — Medium Bowl", "label": "Beef Ragout — Medium Bowl", "price": 90000, "rice": true, "side": false, "soup": false}, {"g": "setmeal", "value": "Beef Ragout — Big Bowl", "label": "Beef Ragout — Big Bowl", "price": 120000, "rice": true, "side": false, "soup": false}, {"g": "setmeal", "value": "Cottage Pie & 1 side", "label": "Cottage Pie & 1 side", "price": 100000, "rice": false, "side": true, "soup": false}, {"g": "setmeal", "value": "Pumpkin Soup with Crunchy Bacon — Small", "label": "Pumpkin Soup with Crunchy Bacon — Small", "price": 60000, "rice": false, "side": false, "soup": true}, {"g": "setmeal", "value": "Pumpkin Soup with Crunchy Bacon — Medium", "label": "Pumpkin Soup with Crunchy Bacon — Medium", "price": 90000, "rice": false, "side": false, "soup": true}]}, {"id": "toppings", "title": "Soup Toppings", "items": [{"g": "topping", "value": "Roast chicken breast", "label": "Roast chicken breast (soup topping)", "price": 50000, "rice": false, "side": false, "soup": false}, {"g": "topping", "value": "Extra crunchy bacon", "label": "Extra crunchy bacon (soup topping)", "price": 20000, "rice": false, "side": false, "soup": false}, {"g": "topping", "value": "Croutons", "label": "Croutons (soup topping)", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "topping", "value": "Pumpkin seeds", "label": "Pumpkin seeds (soup topping)", "price": 10000, "rice": false, "side": false, "soup": false}]}, {"id": "drinks", "title": "Drinks", "items": [{"g": "extra", "value": "Lemon Juice", "label": "Lemon Juice", "price": 20000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Coca Cola", "label": "Coca Cola", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Coke Zero", "label": "Coke Zero", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "7-Up", "label": "7-Up", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Fanta Orange", "label": "Fanta Orange", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Mineral Water", "label": "Mineral Water", "price": 10000, "rice": false, "side": false, "soup": false}]}, {"id": "add", "title": "Add-ons & Extras", "items": [{"g": "extra", "value": "Extra coleslaw / rice", "label": "Extra coleslaw / rice", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Extra potato wedges", "label": "Extra potato wedges", "price": 20000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Cauliflower Mash", "label": "Cauliflower Mash", "price": 30000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Roasted veggies", "label": "Roasted veggies", "price": 15000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Fried egg", "label": "Fried egg", "price": 10000, "rice": false, "side": false, "soup": false}, {"g": "extra", "value": "Boiled egg", "label": "Boiled egg", "price": 10000, "rice": false, "side": false, "soup": false}]}, {"id": "box", "title": "Boxes to Share", "items": [{"g": "setmeal", "value": "Bolognaise box — 500g", "label": "Bolognaise box — 500g (Beef & Pork)", "price": 160000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Bolognaise box — 1kg", "label": "Bolognaise box — 1kg (Beef & Pork)", "price": 300000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Chilli box — 500g", "label": "Chilli Con Carne box — 500g (Beef & Pork)", "price": 160000, "rice": false, "side": false, "soup": false}, {"g": "setmeal", "value": "Chilli box — 1kg", "label": "Chilli Con Carne box — 1kg (Beef & Pork)", "price": 300000, "rice": false, "side": false, "soup": false}]}], "burger": {"flavour": ["BBQ", "Peri Peri", "Honey Mustard"], "toppings": [{"value": "Cheese", "price": 5000}, {"value": "Fried egg", "price": 10000}, {"value": "Sweet & sour onion", "price": 10000}], "side": ["Wedges", "Potato salad", "Coleslaw"], "base": 100000, "sidePrice": 20000}, "rules": {"chickenBase": 130000, "ricePrice": 10000, "sideOptions": [{"value": "Coleslaw", "extra": 0}, {"value": "Rice", "extra": 0}, {"value": "Potato wedges", "extra": 10000}, {"value": "Cauliflower mash", "extra": 20000}, {"value": "Fried egg", "extra": 0}, {"value": "Boiled egg", "extra": 0}], "chickenSideSurcharge": {"Cauliflower Mash": 10000}}};   // filled in by tools/build_orders.py from order.html
 var SUPABASE_URL = 'https://drkebbkyipipxwcclihc.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_x2cn9JVmEk5eCUJ3CtiAgA_5zLN4XqM';
 var useSb = !!(SUPABASE_URL && SUPABASE_KEY && window.supabase);
@@ -1209,6 +1209,7 @@ if (MENU) MENU.sections.forEach(function (sec) { sec.items.forEach(function (it)
 var lastFee = 0;
 try { lastFee = Number(localStorage.getItem('lo-fee')) || 0; } catch (e) { /* ignore */ }
 var PB = { flavour: '', spice: '', carb: '', side: '' };      // chicken meal being built
+var BB = { flavour: '', tops: {}, side: '' };                 // chicken burger being built
 
 function sideExtra(v) { var o = RULES.sideOptions.filter(function (x) { return x.value === v; })[0]; return o ? o.extra : 0; }
 /* student / Dr Kumar rate caps the price of a main meal; boxes, extras and drinks keep their own price */
@@ -1227,6 +1228,10 @@ function recalcLine(l) {
     var sur = RULES.chickenSideSurcharge[l.opts.side] || 0;
     l.price = rated(RULES.chickenBase, l) + sur;
     l.detail = [l.opts.protein, l.opts.flavour + (l.opts.spice ? ' (' + l.opts.spice + ')' : ''), l.opts.carb, l.opts.side + (sur ? ' (+' + fmt(sur) + ')' : '')].join(' · ');
+  } else if (l.g === 'burger') {
+    var B = MENU.burger, tops = (l.opts.toppings || []).filter(function (t) { return B.toppings.some(function (x) { return x.value === t; }); });
+    l.price = rated(B.base, l) + (l.opts.side ? B.sidePrice : 0) + tops.reduce(function (n, t) { return n + B.toppings.filter(function (x) { return x.value === t; })[0].price; }, 0);
+    l.detail = [l.opts.flavour, tops.join(', ') || 'no extra toppings', l.opts.side || 'no side'].join(' · ');
   } else if (l.g === 'setmeal') {
     var it = BYVAL[l.value];
     l.price = rated(l.base != null ? l.base : it ? it.price : l.price, l) + (l.opts.rice === 'Yes' ? RULES.ricePrice : 0) + sideExtra(l.opts.side);
@@ -1261,6 +1266,28 @@ function addChicken() {
   if (same) same.qty++; else D.items.push(l);
   PB = { flavour: '', spice: '', carb: '', side: '' }; D.showChicken = false;
   updateOrder();
+}
+function addBurger() {
+  var l = { g: 'burger', value: 'Chicken burger', label: 'Chicken burger', qty: 1, price: 0, detail: '', opts: { flavour: BB.flavour, side: BB.side, toppings: Object.keys(BB.tops) } };
+  recalcLine(l);
+  var same = D.items.filter(function (x) { return x.g === 'burger' && x.detail === l.detail; })[0];
+  if (same) same.qty++; else D.items.push(l);
+  BB = { flavour: '', tops: {}, side: '' }; D.showBurger = false;
+  updateOrder();
+}
+function burgerBuilder() {
+  var B = MENU.burger, ready = !!BB.flavour;
+  var price = B.base + (BB.side ? B.sidePrice : 0) + Object.keys(BB.tops).reduce(function (n, t) { return n + BB.tops[t]; }, 0);
+  return h('div', { class: 'psec' }, h('h3', { text: 'Build your own chicken burger' }),
+    h('div', { class: 'box' },
+      h('div', { class: 'sub', text: 'Lettuce, tomato and mayonnaise included' }),
+      chipRow('Flavour', B.flavour, BB.flavour, function (v) { BB.flavour = v; renderPicker(); }),
+      h('div', null, h('div', { class: 'lbl', text: 'Toppings' }), h('div', { class: 'chips', style: 'margin-top:0' }, B.toppings.map(function (t) {
+        return h('button', { type: 'button', class: 'chip', 'aria-pressed': BB.tops[t.value] != null ? 'true' : 'false', text: t.value + ' +' + fmt(t.price), onclick: function () { if (BB.tops[t.value] != null) delete BB.tops[t.value]; else BB.tops[t.value] = t.price; renderPicker(); } });
+      }))),
+      h('div', null, h('div', { class: 'lbl', text: 'Side (+' + fmt(B.sidePrice) + ')' }), h('div', { class: 'chips', style: 'margin-top:0' },
+        ['No side'].concat(B.side).map(function (v) { var val = v === 'No side' ? '' : v; return h('button', { type: 'button', class: 'chip', 'aria-pressed': BB.side === val ? 'true' : 'false', text: v, onclick: function () { BB.side = val; renderPicker(); } }); }))),
+      h('button', { type: 'button', class: 'btn primary', text: ready ? 'Add chicken burger · ' + fmt(price) : 'Choose a flavour', disabled: !ready, onclick: addBurger })));
 }
 function chipRow(title, values, cur, pick) {
   return h('div', null, h('div', { class: 'lbl', text: title }), h('div', { class: 'chips', style: 'margin-top:0' }, values.map(function (v) {
@@ -1334,12 +1361,13 @@ function renderPicker() {
     return h('button', { type: 'button', class: 'chip', 'aria-pressed': D.rate === r[0] ? 'true' : 'false', text: r[1], onclick: function () { setRate(r[0], true); } });
   })));
   host.appendChild(h('div', { class: 'drops' },
-    dropdown('Meal', [{ title: 'Chicken', items: [{ value: '__chicken', label: 'Chicken meal (choose marinade, carb, side)' }] }].concat(secItems(['veg', 'set', 'box']).map(function (x) { return { title: x.title, items: x.items }; })), function (v) {
-      if (v === '__chicken') { D.showChicken = true; renderPicker(); } else addItem(v);
+    dropdown('Meal', [{ title: 'Chicken', items: [{ value: '__chicken', label: 'Chicken meal (choose marinade, carb, side)' }, { value: '__burger', label: 'Chicken burger (choose flavour, toppings, side)' }] }].concat(secItems(['veg', 'set', 'box']).map(function (x) { return { title: x.title, items: x.items }; })), function (v) {
+      if (v === '__chicken') { D.showChicken = true; renderPicker(); } else if (v === '__burger') { D.showBurger = true; renderPicker(); } else addItem(v);
     }),
     dropdown('Extra', secItems(['add']).map(function (x) { return { title: x.title, items: x.items }; }).concat(hasSoup() ? secItems(['toppings']).map(function (x) { return { title: x.title, items: x.items }; }) : []), addItem),
     dropdown('Drink', secItems(['drinks']).map(function (x) { return { title: x.title, items: x.items }; }), addItem)));
   if (D.showChicken) host.appendChild(chickenBuilder());
+  if (D.showBurger) host.appendChild(burgerBuilder());
   var lines = D.items.filter(function (l) { return l.g !== 'delivery'; });
   if (lines.length) {
     var t = itemTotals_(D.items);
@@ -1389,6 +1417,10 @@ function dishesFor(date) {
     var op = it.opts || {};
     if (it.g === 'chicken') {
       put('Meals', 'Chicken Meal', q);
+    } else if (it.g === 'burger') {
+      put('Meals', 'Chicken Burger · ' + (op.flavour || ''), q);
+      if (op.side) put('Sides and extras', normSide(op.side), q);
+      (op.toppings || []).forEach(function (t) { put('Sides and extras', t, q); });
     } else {
       put('Mains', it.value, q);
       if (op.rice === 'Yes') put('Sides and extras', 'Rice', q);

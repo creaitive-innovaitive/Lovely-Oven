@@ -18,6 +18,7 @@
   // extras / setMeals: quantity-based, each keyed by item value
   const ORDER = {
     protein: null, flavour: null, spiceLevel: null, carb: null, side: null,
+    bflavour: null, bside: null, btop: {},   // chicken burger: flavour, optional side, topping extras { name: price }
     extras:   {},  // { key: { label, price, qty } }
     toppings: {},  // soup-only options, only orderable alongside a soup
     setMeals: {}   // { key: { label, price, qty } }
@@ -43,6 +44,14 @@
   ];
   const sideExtra = v => (SIDE_OPTIONS.find(o => o.value === v) || {}).extra || 0;
   const fmt = n => '₫' + n.toLocaleString();
+
+  /* Chicken burger: ₫100,000 with lettuce, tomato and mayonnaise; a side adds ₫20,000; toppings are extras */
+  const BURGER_BASE = 100000, BURGER_SIDE = 20000;
+  const burgerStarted  = () => !!(ORDER.bflavour || ORDER.bside || Object.keys(ORDER.btop).length);
+  const burgerComplete = () => !!ORDER.bflavour;
+  const burgerPrice    = () => BURGER_BASE + (ORDER.bside ? BURGER_SIDE : 0) + Object.values(ORDER.btop).reduce((n, p) => n + p, 0);
+  const burgerToppings = () => Object.keys(ORDER.btop);
+  const burgerDetail   = () => [ORDER.bflavour, burgerToppings().join(', ') || 'no extra toppings', ORDER.bside ? ORDER.bside : 'no side'].join(' · ');
 
   function recalc(item) {
     item.price = item.base + (item.rice === 'Yes' ? RICE_PRICE : 0) + sideExtra(item.side);
@@ -91,6 +100,7 @@
     Object.values(ORDER.extras).forEach(v => n += v.qty);
     Object.values(ORDER.setMeals).forEach(v => n += v.qty);
     Object.values(ORDER.toppings).forEach(v => n += v.qty);
+    if (burgerComplete()) n += 1;
     return n;
   }
 
@@ -131,6 +141,8 @@
       const g = el.dataset.group;
       if (g === 'extra' || g === 'setmeal' || g === 'topping') {
         el.addEventListener('click', handleQtySelect);
+      } else if (g === 'btop') {
+        el.addEventListener('click', handleBurgerTop);
       } else {
         el.addEventListener('click', handleSelect);
       }
@@ -159,6 +171,14 @@
       }
     }
 
+    updateBar();
+  }
+
+  /* Burger toppings: tap to add, tap again to remove */
+  function handleBurgerTop(e) {
+    const el = e.currentTarget, key = el.dataset.value;
+    if (ORDER.btop[key] != null) { delete ORDER.btop[key]; el.classList.remove('order-selected'); }
+    else { ORDER.btop[key] = parseInt(el.dataset.price || '0', 10); el.classList.add('order-selected'); }
     updateBar();
   }
 
@@ -226,7 +246,7 @@
 
     const hasChicken = STEPS.some(s => ORDER[s.key]);
     const totalQty   = getTotalQty();
-    const hasAny     = hasChicken || totalQty > 0;
+    const hasAny     = hasChicken || totalQty > 0 || burgerStarted();
     bar.classList.toggle('lo-bar-visible', hasAny);
 
     STEPS.forEach(s => {
@@ -257,7 +277,8 @@
     }
 
     const allChickenChosen = STEPS.every(s => ORDER[s.key]);
-    const orderComplete    = allChickenChosen || (!hasChicken && totalQty > 0);
+    const burgerOK         = !burgerStarted() || burgerComplete();
+    const orderComplete    = (allChickenChosen || (!hasChicken && totalQty > 0)) && burgerOK && (!hasChicken || allChickenChosen);
     const btn = document.getElementById('loBarBtn');
     if (btn) {
       btn.textContent = orderComplete ? 'Send Order →' : 'Review Order';
@@ -268,6 +289,7 @@
   /* ── Clear everything ────────────────────────────────── */
   window.loClearSelection = function () {
     ['protein', 'flavour', 'carb', 'side', 'spiceLevel'].forEach(k => { ORDER[k] = null; });
+    ORDER.bflavour = null; ORDER.bside = null; ORDER.btop = {};
     ORDER.extras = {};
     ORDER.toppings = {};
     ORDER.setMeals = {};
@@ -337,6 +359,16 @@
       }
     }
 
+    /* ── Chicken burger ── */
+    if (burgerStarted()) {
+      html += `<div class="lo-section-title">🍔 Chicken Burger</div>`;
+      if (!burgerComplete()) html += `<div class="lo-incomplete"><span>⚠️</span> Still need: <strong>Flavour</strong></div>`;
+      [['Flavour', ORDER.bflavour], ['Toppings', burgerToppings().join(', ') || 'Lettuce, tomato and mayonnaise only'], ['Side', ORDER.bside ? ORDER.bside + ' (+' + fmt(BURGER_SIDE) + ')' : 'No side']].forEach(([label, val]) => {
+        html += `<div class="lo-sum-row ${val ? 'lo-row-done' : 'lo-row-empty'}"><span class="lo-sum-icon">🍔</span><div class="lo-sum-text"><span class="lo-sum-label">${label}</span><span class="lo-sum-val">${val || '<em>Not chosen yet</em>'}</span></div>${val ? '<span class="lo-sum-tick">✓</span>' : ''}</div>`;
+      });
+      if (burgerComplete()) html += `<div class="lo-sum-subtotal"><span>Chicken burger</span><strong>₫${burgerPrice().toLocaleString()}</strong></div>`;
+    }
+
     /* ── Main Meals ── */
     if (setKeys.length > 0) {
       html += `<div class="lo-section-title">🍲 Main Meals</div>`;
@@ -400,6 +432,7 @@
     /* ── Grand total ── */
     let grandTotal = 0;
     if (allChosen) grandTotal += chickenPrice();
+    if (burgerComplete()) grandTotal += burgerPrice();
     Object.values(ORDER.setMeals).forEach(v => grandTotal += v.price * v.qty);
     Object.values(ORDER.extras).forEach(v => grandTotal += v.price * v.qty);
     Object.values(ORDER.toppings).forEach(v => grandTotal += v.price * v.qty);
@@ -451,6 +484,15 @@
       msg += `   Carb:     ${ORDER.carb || '—'}\n`;
       msg += `   Side:     ${sideText(ORDER.side) || '—'}\n`;
       if (STEPS.every(s => ORDER[s.key])) { msg += `   Subtotal: ₫${chickenPrice().toLocaleString()}\n`; grand += chickenPrice(); }
+      msg += '\n';
+    }
+
+    if (burgerStarted()) {
+      msg += `🍔 CHICKEN BURGER\n`;
+      msg += `   Flavour:  ${ORDER.bflavour || '—'}\n`;
+      msg += `   Toppings: ${burgerToppings().join(', ') || 'lettuce, tomato, mayonnaise only'}\n`;
+      msg += `   Side:     ${ORDER.bside || 'none'}\n`;
+      if (burgerComplete()) { msg += `   Subtotal: ₫${burgerPrice().toLocaleString()}\n`; grand += burgerPrice(); }
       msg += '\n';
     }
 
@@ -511,6 +553,10 @@
       items.push({ g: 'chicken', value: 'chicken', label: 'Chicken meal', qty: 1, price: chickenPrice(),
         detail: [ORDER.protein, ORDER.flavour + (ORDER.spiceLevel ? ` (${ORDER.spiceLevel})` : ''), ORDER.carb, sideText(ORDER.side)].join(' · '),
         opts: { protein: ORDER.protein, flavour: ORDER.flavour, spice: ORDER.spiceLevel || '', carb: ORDER.carb, side: ORDER.side } });
+    }
+    if (burgerComplete()) {
+      items.push({ g: 'burger', value: 'Chicken burger', label: 'Chicken burger', qty: 1, price: burgerPrice(), detail: burgerDetail(),
+        opts: { flavour: ORDER.bflavour, side: ORDER.bside || '', toppings: burgerToppings() } });
     }
     [['setmeal', ORDER.setMeals], ['topping', ORDER.toppings], ['extra', ORDER.extras]].forEach(([g, group]) => {
       Object.keys(group).forEach(k => {
