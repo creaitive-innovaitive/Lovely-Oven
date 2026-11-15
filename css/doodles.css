@@ -1,0 +1,5 @@
+/* ── Ink doodles behind the menu and order pages ── */
+.order-page, body.doodle-bg { background-image: url(../img/doodles/food-doodles.svg?v=2); background-size: 1300px 1300px; background-repeat: repeat; }
+@media print { body.doodle-bg { background-image: none; } }
+.print-pages { background: transparent; }
+@media print { .print-pages { background: var(--cream-dark); } }
