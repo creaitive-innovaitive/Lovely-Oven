@@ -2000,7 +2000,7 @@ footer {
 .promo { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 12px; background: transparent; opacity: 0; transition: opacity .4s; }
 .promo.open { display: flex; }
 .promo.show { opacity: 1; }
-.xm-card { --w: min(92vw, 1080px, calc(86vh * 1.957)); position: relative; width: var(--w); aspect-ratio: 1440 / 736; overflow: hidden; border-radius: calc(var(--w) * .022);
+.xm-card { --w: min(94vw, 1360px, calc(88vh * 1.957)); position: relative; width: var(--w); aspect-ratio: 1440 / 736; overflow: hidden; border-radius: calc(var(--w) * .022);
   box-shadow: 0 30px 80px rgba(0,0,0,.55); background: #7a0f1f;
   transform: translateY(18px) scale(.97); transition: transform .5s cubic-bezier(.2,.8,.2,1); }
 .promo.show .xm-card { transform: none; }
@@ -2010,6 +2010,24 @@ footer {
   background: #fff; color: #3a3a3a; border-radius: calc(var(--w) * .011); text-decoration: none; font: 700 calc(var(--w) * .0165)/1 'Jost', sans-serif; letter-spacing: .06em; text-transform: uppercase;
   box-shadow: 0 3px 10px rgba(40,0,10,.3); transition: transform .2s, box-shadow .2s; }
 .xm-cta:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 18px rgba(40,0,10,.4); }
+.xm-launch { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; margin: 0; pointer-events: none; text-align: center;
+  padding: calc(var(--w) * .035) 1rem calc(var(--w) * .014); background: linear-gradient(to top, rgba(50,0,10,.88), rgba(50,0,10,0));
+  font: 500 calc(var(--w) * .0185)/1.2 'Jost', sans-serif; letter-spacing: .22em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+.xm-launch strong { font-weight: 700; color: #f1d77a; }
+.xm-m { display: none; }
+@media (max-width: 640px) {
+  /* portrait version: the artwork re-cut into two stacked halves (text above, burger below) */
+  .xm-card { --w: min(94vw, calc(86vh * .5095)); aspect-ratio: 750 / 1472; }
+  .xm-bg { display: none; }
+  .xm-m { display: block; position: absolute; inset: 0; }
+  .xm-m-top, .xm-m-bot { height: 50%; background: url(../img/promo/merry-peri.webp) no-repeat; background-size: 192% auto; }
+  .xm-m-top { background-size: 189.5% auto; background-position: 0 0; }
+  .xm-m-bot { background-position: 100% 0; }
+  .xm-cta { left: 22.2%; top: 32.9%; width: 28.9%; height: 4%; font-size: calc(var(--w) * .0317); border-radius: calc(var(--w) * .02); }
+  .xm-launch { font-size: calc(var(--w) * .033); letter-spacing: .12em; padding-top: calc(var(--w) * .06); }
+  .xm-launch strong { display: block; }
+  .promo-close { top: 10px; right: 10px; }
+}
 .promo-close { position: absolute; top: calc(var(--w) * .02); right: calc(var(--w) * .02); z-index: 6; width: 38px; height: 38px; border: 0; border-radius: 50%; background: rgba(0,0,0,.35); font-size: 24px; line-height: 1; color: #fff; cursor: pointer; }
 .promo-close:hover { background: rgba(0,0,0,.55); }
 
