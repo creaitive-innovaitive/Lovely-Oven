@@ -74,7 +74,7 @@ def build_burger():
         opts = [re.sub(r"&amp;", "&", o) for o in re.findall(r'data-group="%s" data-value="[^"]*"[^>]*>([^<]*(?:&amp;[^<]*)?)<' % group, body)]
         steps += '      <div class="pg2-step"><b>%s</b>%s</div>\n' % (label, "".join("<span>%s</span>" % o.replace("&", "&amp;") for o in opts))
         if group == "bflavour":
-            steps += '      <div class="pg2-step"><b>Comes with</b><span>Lettuce</span><span>Tomato</span><span>Mayonnaise</span></div>\n'
+            steps += '      <div class="pg2-step"><b>Comes with</b><span>Lettuce</span><span>Tomato</span><span>Your choice of topping</span></div>\n'
     return ('  <div class="pg2-build">\n    <div class="pg2-build-title">Build your own <em>Merry Peri Chicken Burger</em><span class="pg2-badge">Burger — %s</span></div>\n'
             '    <div class="pg2-build-sub">%s</div>\n    <div class="pg2-steps">\n%s    </div>\n  </div>\n') % (price, sub, steps)
 

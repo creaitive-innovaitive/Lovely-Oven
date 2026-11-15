@@ -45,7 +45,7 @@
   const sideExtra = v => (SIDE_OPTIONS.find(o => o.value === v) || {}).extra || 0;
   const fmt = n => '₫' + n.toLocaleString();
 
-  /* Chicken burger: ₫100,000 with lettuce, tomato and mayonnaise; a side adds ₫20,000; toppings are extras */
+  /* Chicken burger: ₫100,000 with lettuce, tomato and your choice of topping; a side adds ₫20,000; toppings are extras */
   const BURGER_BASE = 100000, BURGER_SIDE = 20000;
   const burgerStarted  = () => !!(ORDER.bflavour || ORDER.bside || Object.keys(ORDER.btop).length);
   const burgerComplete = () => !!ORDER.bflavour;
@@ -363,7 +363,7 @@
     if (burgerStarted()) {
       html += `<div class="lo-section-title">🍔 Chicken Burger</div>`;
       if (!burgerComplete()) html += `<div class="lo-incomplete"><span>⚠️</span> Still need: <strong>Flavour</strong></div>`;
-      [['Flavour', ORDER.bflavour], ['Toppings', burgerToppings().join(', ') || 'Lettuce, tomato and mayonnaise only'], ['Side', ORDER.bside ? ORDER.bside + ' (+' + fmt(BURGER_SIDE) + ')' : 'No side']].forEach(([label, val]) => {
+      [['Flavour', ORDER.bflavour], ['Toppings', burgerToppings().join(', ') || 'Lettuce and tomato only'], ['Side', ORDER.bside ? ORDER.bside + ' (+' + fmt(BURGER_SIDE) + ')' : 'No side']].forEach(([label, val]) => {
         html += `<div class="lo-sum-row ${val ? 'lo-row-done' : 'lo-row-empty'}"><span class="lo-sum-icon">🍔</span><div class="lo-sum-text"><span class="lo-sum-label">${label}</span><span class="lo-sum-val">${val || '<em>Not chosen yet</em>'}</span></div>${val ? '<span class="lo-sum-tick">✓</span>' : ''}</div>`;
       });
       if (burgerComplete()) html += `<div class="lo-sum-subtotal"><span>Chicken burger</span><strong>₫${burgerPrice().toLocaleString()}</strong></div>`;
@@ -490,7 +490,7 @@
     if (burgerStarted()) {
       msg += `🍔 CHICKEN BURGER\n`;
       msg += `   Flavour:  ${ORDER.bflavour || '—'}\n`;
-      msg += `   Toppings: ${burgerToppings().join(', ') || 'lettuce, tomato, mayonnaise only'}\n`;
+      msg += `   Toppings: ${burgerToppings().join(', ') || 'lettuce and tomato only'}\n`;
       msg += `   Side:     ${ORDER.bside || 'none'}\n`;
       if (burgerComplete()) { msg += `   Subtotal: ₫${burgerPrice().toLocaleString()}\n`; grand += burgerPrice(); }
       msg += '\n';
