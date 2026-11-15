@@ -9,7 +9,7 @@
 }
 
 /* ── Hero: pinned, layers drift at different depths ── */
-.hero { --p: 0; --mx: 0; --my: 0; }
+.hero { --p: 0; --mx: 0; --my: 0; z-index: 0; }
 .hero::after {
   content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none;
   background: radial-gradient(ellipse at 50% 40%, rgba(28,40,32,0.2), #0f1a13 90%);

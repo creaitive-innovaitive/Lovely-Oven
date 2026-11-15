@@ -2017,14 +2017,12 @@ footer {
 .xm-m { display: none; }
 @media (max-width: 640px) {
   /* portrait version: the artwork re-cut into two stacked halves (text above, burger below) */
-  .xm-card { --w: min(94vw, calc(86vh * .465)); }
+  .xm-card { --w: min(94vw, calc(86vh * .43)); }
   .xm-bg { display: none; }
-  .xm-art { aspect-ratio: 750 / 1472; }
+  .xm-art { aspect-ratio: 800 / 1500; }
   .xm-m { display: block; position: absolute; inset: 0; }
-  .xm-m-top, .xm-m-bot { height: 50%; background: url(../img/promo/merry-peri.webp) no-repeat; background-size: 192% auto; }
-  .xm-m-top { background-size: 189.5% auto; background-position: 0 0; }
-  .xm-m-bot { background-position: 100% 0; }
-  .xm-cta { left: 22.2%; top: 32.9%; width: 28.9%; height: 4%; font-size: calc(var(--w) * .0317); border-radius: calc(var(--w) * .02); }
+  .xm-m { background: url(../img/promo/merry-peri-portrait.jpg) center / 100% 100% no-repeat; }
+  .xm-cta { left: 29%; top: 86.6%; width: 42%; height: 4.8%; font-size: calc(var(--w) * .04); border-radius: calc(var(--w) * .02); }
   .xm-launch { font-size: calc(var(--w) * .03); letter-spacing: .1em; padding: calc(var(--w) * .03) 1rem; }
   .xm-launch strong { display: block; }
   .promo-close { top: 10px; right: 10px; }
