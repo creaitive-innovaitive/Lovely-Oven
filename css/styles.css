@@ -1997,7 +1997,7 @@ footer {
 @media (prefers-reduced-motion: reduce) { .reviews-track { transition: none; } }
 
 /* ── Christmas burger pop-up ── */
-.promo { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 12px; background: rgba(0,0,0,0.85); opacity: 0; transition: opacity .4s; }
+.promo { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 12px; background: transparent; opacity: 0; transition: opacity .4s; }
 .promo.open { display: flex; }
 .promo.show { opacity: 1; }
 .xm-card { --w: min(92vw, 1080px, calc(86vh * 1.957)); position: relative; width: var(--w); aspect-ratio: 1440 / 736; overflow: hidden; border-radius: calc(var(--w) * .022);
