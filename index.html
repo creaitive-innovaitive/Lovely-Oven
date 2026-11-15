@@ -20,8 +20,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("fx")</script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="css/styles.css?v=20261115o">
+  <link rel="stylesheet" href="css/home-fx.css?v=1">
 </head>
 <body>
 
@@ -100,9 +102,10 @@
 
   <p class="hero-eyebrow">Fresh · Chicken · Beef · Pork</p>
   <h1 class="hero-title">
-    Home cooked, Fresh<br>
-    <span class="accent-line">&amp; Healthy.</span>
-    <span class="highlight">The Lovely<br>Oven.</span>
+    <span class="ln"><span>Home cooked, Fresh</span></span>
+    <span class="accent-line ln"><span>&amp; Healthy.</span></span>
+    <span class="highlight ln"><span>The Lovely</span></span>
+    <span class="highlight ln"><span>Oven.</span></span>
   </h1>
   <div class="hero-divider"></div>
   <div class="hero-info">
@@ -114,10 +117,20 @@
     <a href="/order" class="path-btn path-btn-meat">Order Now</a>
     <a href="/menu" class="path-btn path-btn-menu">View the Menu</a>
   </div>
+  <div class="hero-dust" aria-hidden="true"></div>
+  <a class="scroll-cue" href="#story" aria-label="Scroll to our story"><span>Scroll</span><i></i></a>
 </section>
 
+<!-- ── Marquee ── -->
+<div class="fx-marquee" aria-hidden="true">
+  <div class="fx-marquee-track">
+    <span>Home cooked ✦ Fresh ✦ Healthy ✦ Chicken ✦ Beef ✦ Pork ✦ Made by Mika ✦ </span>
+    <span>Home cooked ✦ Fresh ✦ Healthy ✦ Chicken ✦ Beef ✦ Pork ✦ Made by Mika ✦ </span>
+  </div>
+</div>
+
 <!-- ── Our Story ── -->
-<section class="home-sec story-sec" id="story">
+<section class="home-sec story-sec" id="story" data-ghost="Story">
   <div class="story-grid">
     <div class="story-copy">
       <p class="section-label">Where we began</p>
@@ -129,7 +142,7 @@
 </section>
 
 <!-- ── Reviews ── -->
-<section class="home-sec reviews-sec" id="reviews">
+<section class="home-sec reviews-sec" id="reviews" data-ghost="Kind words">
   <div class="home-head">
     <p class="section-label">Kind words</p>
     <h2 class="home-title">Your Pleasure <em>Inspires Me</em></h2>
@@ -151,7 +164,7 @@
 </section>
 
 <!-- ── Our Food ── -->
-<section class="home-sec food-sec" id="food">
+<section class="home-sec food-sec" id="food" data-ghost="Fresh">
   <div class="food-head">
     <p class="section-label">What we cook</p>
     <h2 class="home-title">Our <em>Food</em></h2>
@@ -169,13 +182,13 @@
    <div class="g-row">
     <figure class="g-item fit soft"><img src="img/gallery/lasagne.jpg" style="object-fit:contain" alt="Lasagne"></figure>
     <figure class="g-item"><img src="img/gallery/beef-ragout.jpg" alt="Beef Ragout"></figure>
-    <figure class="g-item fit" style="--bg:url('img/gallery/pre-order.jpg')"><img src="img/gallery/pre-order.jpg" style="object-fit:contain" alt="Chicken Pre-Order"></figure>
+    <figure class="g-item fit" style="--bg:url('/img/gallery/pre-order.jpg')"><img src="img/gallery/pre-order.jpg" style="object-fit:contain" alt="Chicken Pre-Order"></figure>
    </div>
   </div>
 </section>
 
 <!-- ── Our Location ── -->
-<section class="home-sec loc-sec" id="location">
+<section class="home-sec loc-sec" id="location" data-ghost="Find us">
   <div class="home-head">
     <p class="section-label">Where to find us</p>
     <h2 class="home-title">Our <em>Location</em></h2>
@@ -196,7 +209,7 @@
 </section>
 
 <!-- ── Payment Options ── -->
-<section class="home-sec pay-sec" id="payment">
+<section class="home-sec pay-sec" id="payment" data-ghost="Pay">
   <div class="home-head">
     <p class="section-label">How to pay</p>
     <h2 class="home-title">Payment <em>Options</em></h2>
@@ -224,7 +237,7 @@
 </section>
 
 <!-- ── Contact Us & Socials ── -->
-<section class="home-sec contact-sec" id="contact">
+<section class="home-sec contact-sec" id="contact" data-ghost="Hello">
   <div class="home-head">
     <p class="section-label">Get in touch</p>
     <h2 class="home-title">Contact Us <em>&amp; Socials</em></h2>
@@ -342,5 +355,6 @@
 </div>
 
 <script src="js/script.js?v=20261115o"></script>
+<script src="js/home-fx.js?v=1" defer></script>
 </body>
 </html>
