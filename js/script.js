@@ -167,25 +167,39 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
   const el = document.getElementById('promo');
   if (!el) return;
   if (new Date() > new Date(2026, 10, 30, 23, 59, 59)) return;
+
+  // One clip per burger. Both point at the same file for now; drop a Normal clip in and change its path.
+  const SIZES = {
+    normal: { price: '₫100,000', video: 'img/promo/burger-full.mp4', ing: 'Bun, sauce, lettuce, cheese, tomato, grilled chicken' },
+    full:   { price: '₫150,000', video: 'img/promo/burger-full.mp4', ing: 'Bun, sauce, lettuce, cheese, tomato, grilled chicken, red onion garnish, egg, bacon, avocado' }
+  };
+  const vid = document.getElementById('promo-video');
+  const still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pick = key => {
+    const o = SIZES[key];
+    document.getElementById('promo-price').textContent = o.price;
+    document.getElementById('promo-ing').innerHTML = '<strong>' + (key === 'full' ? 'Full burger' : 'Normal burger') + ':</strong> ' + o.ing + '.';
+    el.querySelectorAll('.promo-opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.size === key)));
+    if (!vid.src.endsWith(o.video)) vid.src = o.video;   // same file: keep playing, no restart
+    if (!still) vid.play().catch(() => {});
+  };
+
+  const onKey = e => { if (e.key === 'Escape') close(); };
   const close = () => {
     el.classList.remove('show');
-    if (window.LOBurger3D) window.LOBurger3D.stop();
+    vid.pause();
     setTimeout(() => { el.classList.remove('open'); }, 400);
     document.removeEventListener('keydown', onKey);
   };
-  // 3D burger: three.js is only fetched when the pop-up opens; the flat layered image stays as the fallback
-  const load = src => new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
-  const load3d = () => (window.THREE ? Promise.resolve() : load('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'))
-    .then(() => window.LOBurger3D ? 0 : load('js/burger3d.js?v=20261115k'))
-    .then(() => { return window.LOBurger3D.start(document.getElementById('promo-3d'), '/'); })
-    .then(ok => { if (ok) el.classList.add('is3d'); })
-    .catch(() => {});
-  const onKey = e => { if (e.key === 'Escape') close(); };
   setTimeout(() => {
     el.classList.add('open');
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
     document.addEventListener('keydown', onKey);
-    load3d();
+    pick('full');
   }, 700);
-  el.addEventListener('click', e => { if (e.target === el || e.target.closest('[data-promo-close]')) close(); });
+  el.addEventListener('click', e => {
+    const opt = e.target.closest('.promo-opt');
+    if (opt) return pick(opt.dataset.size);
+    if (e.target === el || e.target.closest('[data-promo-close]')) close();
+  });
 })();
