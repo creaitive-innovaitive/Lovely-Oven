@@ -70,7 +70,7 @@
     items.push({ el, ref, mode, speed: typeof speed === 'function' ? speed(i) : speed });
   });
   par('.story-photo img', '.story-photo', 'y', -0.1);
-  par('.g-item img', '.food-gallery', 'y', -0.03);
+  par('.g-item:not(.nz) img', '.food-gallery', 'y', -0.03);
   par('.g-row', '.food-gallery', 'x', (i) => (i % 2 ? 0.09 : -0.09));
   par('.pay-card', '.pay-sec', 'y', (i) => -0.02 - i * 0.03);
   par('.contact-zalo', '.contact-sec', 'y', -0.05);

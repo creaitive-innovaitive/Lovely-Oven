@@ -133,3 +133,6 @@ html.fx .rv-label.in::before, html.fx .rv-label.in::after { transform: none; }
   font: italic 500 clamp(1.4rem, 2.3vw, 1.9rem)/1.4 'Cormorant Garamond', serif; color: var(--olive-darker);
   border-left: 2px solid var(--accent); padding-left: 1.1rem; margin-top: 1.5rem;
 }
+
+/* burger diamond is pre-fitted so nothing may crop or shift it */
+.g-item.nz img, .g-item.nz:hover img { transform: none; translate: none !important; }
