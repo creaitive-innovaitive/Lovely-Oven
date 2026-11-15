@@ -75,7 +75,7 @@ def build_burger():
         steps += '      <div class="pg2-step"><b>%s</b>%s</div>\n' % (label, "".join("<span>%s</span>" % o.replace("&", "&amp;") for o in opts))
         if group == "bflavour":
             steps += '      <div class="pg2-step"><b>Comes with</b><span>Lettuce</span><span>Tomato</span><span>Mayonnaise</span></div>\n'
-    return ('  <div class="pg2-build">\n    <div class="pg2-build-title">Build your own <em>Chicken Burger</em><span class="pg2-badge">Burger — %s</span></div>\n'
+    return ('  <div class="pg2-build">\n    <div class="pg2-build-title">Build your own <em>Merry Peri Chicken Burger</em><span class="pg2-badge">Burger — %s</span></div>\n'
             '    <div class="pg2-build-sub">%s</div>\n    <div class="pg2-steps">\n%s    </div>\n  </div>\n') % (price, sub, steps)
 
 
