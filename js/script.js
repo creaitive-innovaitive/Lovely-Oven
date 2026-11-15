@@ -170,15 +170,23 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
   try { if (sessionStorage.getItem('lo-promo-seen')) return; } catch (e) { /* private mode: show anyway */ }
   const close = () => {
     el.classList.remove('show');
+    if (window.LOBurger3D) window.LOBurger3D.stop();
     setTimeout(() => { el.classList.remove('open'); }, 400);
     document.removeEventListener('keydown', onKey);
     try { sessionStorage.setItem('lo-promo-seen', '1'); } catch (e) { /* ignore */ }
   };
+  // 3D burger: three.js is only fetched when the pop-up opens; the flat layered image stays as the fallback
+  const load = src => new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
+  const load3d = () => (window.THREE ? Promise.resolve() : load('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'))
+    .then(() => window.LOBurger3D ? 0 : load('js/burger3d.js?v=20261115d'))
+    .then(() => { if (window.LOBurger3D.start(document.getElementById('promo-3d'))) el.classList.add('is3d'); })
+    .catch(() => {});
   const onKey = e => { if (e.key === 'Escape') close(); };
   setTimeout(() => {
     el.classList.add('open');
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
     document.addEventListener('keydown', onKey);
+    load3d();
   }, 700);
   el.addEventListener('click', e => { if (e.target === el || e.target.closest('[data-promo-close]')) close(); });
 })();

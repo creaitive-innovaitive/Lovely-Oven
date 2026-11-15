@@ -2038,6 +2038,10 @@ footer {
 .promo-cta:hover { background: var(--charcoal); }
 .promo-later { display: block; margin: 10px auto 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--text-muted); text-decoration: underline; cursor: pointer; }
 
+/* 3D canvas replaces the flat fallback once WebGL is running */
+.promo-3d { display: none; width: min(78vw, 300px); aspect-ratio: 6 / 7; max-height: 54vh; margin: 0 auto 0; touch-action: pan-y; }
+.promo.is3d .promo-3d { display: block; }
+.promo.is3d .promo-stage { display: none; }
 @media (max-height: 640px) { .promo-stage { --w: min(44vw, 170px); } }
 @media (prefers-reduced-motion: reduce) {
   .promo-turn, .promo-layer, .promo-shadow { animation: none; }
