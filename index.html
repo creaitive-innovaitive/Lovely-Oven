@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/styles.css?v=20261115m">
+  <link rel="stylesheet" href="css/styles.css?v=20261115o">
 </head>
 <body>
 
@@ -307,23 +307,40 @@
 </div>
 
 <div class="promo" id="promo" role="dialog" aria-modal="true" aria-labelledby="promo-title">
-  <div class="promo-card">
+  <div class="xm-card">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <symbol id="xm-tree" viewBox="0 0 60 92">
+        <rect x="26" y="78" width="8" height="12" rx="1" fill="#6b3f22"/>
+        <path d="M30 34 L52 62 H8 Z" fill="#1f6b3b"/><path d="M30 18 L48 44 H12 Z" fill="#2a8049"/><path d="M30 4 L44 26 H16 Z" fill="#35965a"/>
+        <path d="M30 56 L56 80 H4 Z" fill="#17572f"/>
+        <path d="M16 26 L30 4 L35 11 Q26 16 24 26 Z M12 44 L19 34 Q26 40 38 36 L48 44 Z" fill="#fff" opacity=".8"/>
+        <circle cx="22" cy="66" r="2.4" fill="#f6d65a"/><circle cx="40" cy="70" r="2.4" fill="#e8434f"/><circle cx="30" cy="50" r="2.2" fill="#f6d65a"/><circle cx="36" cy="36" r="2" fill="#e8434f"/><circle cx="25" cy="30" r="2" fill="#f6d65a"/>
+        <path d="M30 -4 l2.6 5.6 6 .8 -4.4 4.2 1.1 6 -5.3 -2.9 -5.3 2.9 1.1 -6 -4.4 -4.2 6 -.8 Z" fill="#f6d65a"/>
+      </symbol>
+    </svg>
+    <div class="xm-tinsel"></div>
+    <div class="xm-fx" id="xm-fx" aria-hidden="true"></div>
     <button class="promo-close" type="button" aria-label="Close" data-promo-close>&times;</button>
-    <span class="promo-tag">New on the menu</span>
-    <h2 id="promo-title">Build Your Own <em>Chicken Burger</em></h2>
-    <video class="promo-media" id="promo-video" muted loop playsinline preload="none" poster="img/promo/burger-poster.jpg" aria-label="The chicken burger lifting apart into its ingredients"></video>
-    <div class="promo-toggle" role="group" aria-label="Choose your burger">
-      <button class="promo-opt" type="button" data-size="normal" aria-pressed="false">Normal <b>₫100,000</b></button>
-      <button class="promo-opt" type="button" data-size="full" aria-pressed="true">Full burger <b>₫150,000</b></button>
+    <svg class="xm-tree xm-tree-a" aria-hidden="true"><use href="#xm-tree"/></svg>
+    <svg class="xm-tree xm-tree-b" aria-hidden="true"><use href="#xm-tree"/></svg>
+    <svg class="xm-tree xm-tree-c" aria-hidden="true"><use href="#xm-tree"/></svg>
+    <div class="xm-copy">
+      <h2 id="promo-title">Holly Jolly <span>Chicken Burger</span></h2>
+      <a class="xm-cta" href="/order#o-burger">Order now</a>
     </div>
-    <div class="promo-price" id="promo-price">₫150,000</div>
-    <p class="promo-ing" id="promo-ing"></p>
-    <p class="promo-note"><strong>Special price until 30 November.</strong><br>Available until 31 December.</p>
-    <a class="promo-cta" href="/order#o-burger">Order now</a>
-    <button class="promo-later" type="button" data-promo-close>Maybe later</button>
+    <div class="xm-burger">
+      <img src="img/promo/xmas-burger.webp" alt="The Holly Jolly chicken burger with avocado, tomato, red onion and cheese">
+      <svg class="xm-hat" viewBox="0 0 200 150" aria-hidden="true">
+        <path d="M18 120 C26 70 62 22 136 26 C160 28 172 38 170 52 C150 66 150 96 184 120 Z" fill="#c8182b"/>
+        <path d="M40 112 C48 72 74 40 120 34" fill="none" stroke="#ef6a74" stroke-width="7" stroke-linecap="round" opacity=".7"/>
+        <rect x="6" y="108" width="190" height="34" rx="17" fill="#fff"/>
+        <rect x="6" y="108" width="190" height="12" rx="6" fill="#e9eef0"/>
+        <circle cx="168" cy="56" r="19" fill="#fff"/><circle cx="162" cy="50" r="7" fill="#e9eef0"/>
+      </svg>
+    </div>
   </div>
 </div>
 
-<script src="js/script.js?v=20261115m"></script>
+<script src="js/script.js?v=20261115o"></script>
 </body>
 </html>

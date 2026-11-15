@@ -162,32 +162,29 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
   } catch (e) { /* ignore */ }
 })();
 
-/* ── Burger offer pop-up: every page load, only while the November price is running ── */
+/* ── Christmas burger pop-up: every page load, until the offer ends on 31 December ── */
 (function () {
   const el = document.getElementById('promo');
   if (!el) return;
-  if (new Date() > new Date(2026, 10, 30, 23, 59, 59)) return;
+  if (new Date() > new Date(2026, 11, 31, 23, 59, 59)) return;
 
-  // One clip per burger. Both point at the same file for now; drop a Normal clip in and change its path.
-  const SIZES = {
-    normal: { price: '₫100,000', video: 'img/promo/burger-full.mp4', ing: 'Bun, sauce, lettuce, cheese, tomato, grilled chicken' },
-    full:   { price: '₫150,000', video: 'img/promo/burger-full.mp4', ing: 'Bun, sauce, lettuce, cheese, tomato, grilled chicken, red onion garnish, egg, bacon, avocado' }
-  };
-  const vid = document.getElementById('promo-video');
-  const still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const pick = key => {
-    const o = SIZES[key];
-    document.getElementById('promo-price').textContent = o.price;
-    document.getElementById('promo-ing').innerHTML = '<strong>' + (key === 'full' ? 'Full burger' : 'Normal burger') + ':</strong> ' + o.ing + '.';
-    el.querySelectorAll('.promo-opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.size === key)));
-    if (!vid.src.endsWith(o.video)) vid.src = o.video;   // same file: keep playing, no restart
-    if (!still) vid.play().catch(() => {});
-  };
+  // sparkles and a little snow, scattered at random each time
+  const fx = document.getElementById('xm-fx');
+  const r = (a, b) => a + Math.random() * (b - a);
+  for (let i = 0; i < 18; i++) {
+    const s = document.createElement('i'); s.className = 'xm-spark';
+    s.style.cssText = `left:${r(2, 96)}%;top:${r(8, 90)}%;--s:${r(10, 26).toFixed(0)}px;--d:${r(0, 3).toFixed(2)}s`;
+    fx.appendChild(s);
+  }
+  for (let i = 0; i < 24; i++) {
+    const f = document.createElement('i'); f.className = 'xm-flake';
+    f.style.cssText = `--l:${r(0, 100).toFixed(1)}%;--s:${r(3, 7).toFixed(1)}px;--t:${r(6, 12).toFixed(1)}s;--d:-${r(0, 10).toFixed(1)}s;--x:${r(-30, 30).toFixed(0)}px`;
+    fx.appendChild(f);
+  }
 
   const onKey = e => { if (e.key === 'Escape') close(); };
   const close = () => {
     el.classList.remove('show');
-    vid.pause();
     setTimeout(() => { el.classList.remove('open'); }, 400);
     document.removeEventListener('keydown', onKey);
   };
@@ -195,11 +192,6 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
     el.classList.add('open');
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
     document.addEventListener('keydown', onKey);
-    pick('full');
   }, 700);
-  el.addEventListener('click', e => {
-    const opt = e.target.closest('.promo-opt');
-    if (opt) return pick(opt.dataset.size);
-    if (e.target === el || e.target.closest('[data-promo-close]')) close();
-  });
+  el.addEventListener('click', e => { if (e.target === el || e.target.closest('[data-promo-close]')) close(); });
 })();
