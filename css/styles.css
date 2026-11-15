@@ -2042,3 +2042,9 @@ footer {
   .xm-flake { display: none; }
   .xm-spark { animation: none; opacity: .85; }
 }
+
+/* ── Sticky hero: sections below scroll up over it ── */
+@media (min-width: 768px) and (min-height: 650px) {
+  .hero { position: sticky; top: 0; z-index: 0; }
+  .home-sec, footer { position: relative; z-index: 1; }
+}
