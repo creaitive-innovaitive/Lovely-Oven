@@ -2000,48 +2000,18 @@ footer {
 .promo { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 12px; background: rgba(10,34,20,0.8); opacity: 0; transition: opacity .4s; }
 .promo.open { display: flex; }
 .promo.show { opacity: 1; }
-.xm-card { --w: min(90vw, 1080px, calc(86vh * 2)); position: relative; width: var(--w); aspect-ratio: 2 / 1; overflow: hidden; border-radius: calc(var(--w) * .022); color: #fff;
-  background: radial-gradient(circle at 24% -8%, #f07a55 0%, #d83a3f 30%, #c1212f 62%, #a5172a 100%);
-  box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 0 0 2px rgba(246,214,110,.55);
+.xm-card { --w: min(92vw, 1080px, calc(86vh * 1.957)); position: relative; width: var(--w); aspect-ratio: 1440 / 736; overflow: hidden; border-radius: calc(var(--w) * .022);
+  box-shadow: 0 30px 80px rgba(0,0,0,.55); background: #7a0f1f;
   transform: translateY(18px) scale(.97); transition: transform .5s cubic-bezier(.2,.8,.2,1); }
 .promo.show .xm-card { transform: none; }
-.promo-close { position: absolute; top: calc(var(--w) * .09); right: calc(var(--w) * .014); z-index: 6; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255,255,255,.16); font-size: 26px; line-height: 1; color: #fff; cursor: pointer; }
-.promo-close:hover { background: rgba(255,255,255,.3); }
-
-.xm-tinsel { position: absolute; left: 0; right: 0; top: 0; height: calc(var(--w) * .09); background: url(../img/promo/xmas-tinsel.svg) repeat-x 0 0 / auto 100%; z-index: 5; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(60,0,10,.35)); }
-.xm-fx { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
-.xm-spark { position: absolute; width: var(--s); height: var(--s); opacity: 0; background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 L14.4 9.6 L24 12 L14.4 14.4 L12 24 L9.6 14.4 L0 12 L9.6 9.6 Z' fill='%23fff3c4'/%3E%3C/svg%3E"); animation: xm-twinkle 2.6s ease-in-out infinite var(--d); }
-.xm-flake { position: absolute; top: -4%; left: var(--l); width: var(--s); height: var(--s); border-radius: 50%; background: #fff; opacity: .75; animation: xm-fall var(--t) linear infinite var(--d); }
-@keyframes xm-twinkle { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
-@keyframes xm-fall { from { transform: translate(0, 0); } to { transform: translate(var(--x), calc(var(--w) * .55)); } }
-
-.xm-copy { position: absolute; left: 6%; top: 52%; transform: translateY(-46%); width: 46%; z-index: 3; }
-.xm-copy h2 { font-family: 'Jost', sans-serif; font-weight: 300; text-transform: uppercase; letter-spacing: .05em; font-size: calc(var(--w) * .05); line-height: 1.14; text-shadow: 0 2px 10px rgba(80,0,15,.3); }
-.xm-copy h2 span { display: block; color: #ffe9b0; }
-.xm-cta { display: inline-block; margin-top: calc(var(--w) * .035); padding: calc(var(--w) * .013) calc(var(--w) * .036); border: 2px solid #f1d77a; border-radius: 99px; background: var(--green); color: #fff; font-size: calc(var(--w) * .019); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; box-shadow: 0 6px 18px rgba(40,0,10,.35); transition: background .25s, transform .25s; }
-.xm-cta:hover { background: #3b6b49; transform: translateY(-2px); }
-
-.xm-burger { position: absolute; right: -3%; bottom: -6%; width: 51%; z-index: 2; }
-.xm-burger img { display: block; width: 100%; height: auto; filter: drop-shadow(0 calc(var(--w) * .022) calc(var(--w) * .03) rgba(70,0,12,.5)); }
-.xm-hat { position: absolute; left: 12%; top: -8%; width: 30%; transform: rotate(-10deg); filter: drop-shadow(0 4px 6px rgba(60,0,10,.35)); }
-
-.xm-tree { position: absolute; bottom: -1%; z-index: 3; filter: drop-shadow(0 3px 4px rgba(60,0,10,.35)); }
-.xm-tree-a { left: 2.5%; width: calc(var(--w) * .075); height: calc(var(--w) * .115); }
-.xm-tree-b { left: 8.5%; width: calc(var(--w) * .055); height: calc(var(--w) * .085); }
-.xm-tree-c { left: 13%; width: calc(var(--w) * .09); height: calc(var(--w) * .138); }
-
-@media (max-width: 640px) {
-  .xm-card { --w: min(94vw, calc(86vh * 1.7)); aspect-ratio: 1.7 / 1; }
-  .xm-copy { width: 48%; }
-  .xm-copy h2 { font-size: calc(var(--w) * .056); }
-  .xm-cta { font-size: calc(var(--w) * .03); }
-  .xm-burger { width: 56%; right: -5%; }
-  .promo-close { width: 32px; height: 32px; font-size: 22px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .xm-flake { display: none; }
-  .xm-spark { animation: none; opacity: .85; }
-}
+.xm-bg { display: block; width: 100%; height: 100%; }
+/* real button laid over the "Order now" pill baked into the artwork */
+.xm-cta { position: absolute; left: 11.6%; top: 65.8%; width: 14.9%; height: 8%; display: flex; align-items: center; justify-content: center;
+  background: #fff; color: #3a3a3a; border-radius: calc(var(--w) * .011); text-decoration: none; font: 700 calc(var(--w) * .0165)/1 'Jost', sans-serif; letter-spacing: .06em; text-transform: uppercase;
+  box-shadow: 0 3px 10px rgba(40,0,10,.3); transition: transform .2s, box-shadow .2s; }
+.xm-cta:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 18px rgba(40,0,10,.4); }
+.promo-close { position: absolute; top: calc(var(--w) * .02); right: calc(var(--w) * .02); z-index: 6; width: 38px; height: 38px; border: 0; border-radius: 50%; background: rgba(0,0,0,.35); font-size: 24px; line-height: 1; color: #fff; cursor: pointer; }
+.promo-close:hover { background: rgba(0,0,0,.55); }
 
 /* ── Sticky hero: sections below scroll up over it ── */
 @media (min-width: 768px) and (min-height: 650px) {

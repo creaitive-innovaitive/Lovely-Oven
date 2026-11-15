@@ -162,25 +162,11 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
   } catch (e) { /* ignore */ }
 })();
 
-/* ── Christmas burger pop-up: every page load, until the offer ends on 31 December ── */
+/* ── Merry Peri burger pop-up: every page load, until the offer ends on 31 December ── */
 (function () {
   const el = document.getElementById('promo');
   if (!el) return;
   if (new Date() > new Date(2026, 11, 31, 23, 59, 59)) return;
-
-  // sparkles and a little snow, scattered at random each time
-  const fx = document.getElementById('xm-fx');
-  const r = (a, b) => a + Math.random() * (b - a);
-  for (let i = 0; i < 18; i++) {
-    const s = document.createElement('i'); s.className = 'xm-spark';
-    s.style.cssText = `left:${r(2, 96)}%;top:${r(8, 90)}%;--s:${r(10, 26).toFixed(0)}px;--d:${r(0, 3).toFixed(2)}s`;
-    fx.appendChild(s);
-  }
-  for (let i = 0; i < 24; i++) {
-    const f = document.createElement('i'); f.className = 'xm-flake';
-    f.style.cssText = `--l:${r(0, 100).toFixed(1)}%;--s:${r(3, 7).toFixed(1)}px;--t:${r(6, 12).toFixed(1)}s;--d:-${r(0, 10).toFixed(1)}s;--x:${r(-30, 30).toFixed(0)}px`;
-    fx.appendChild(f);
-  }
 
   const onKey = e => { if (e.key === 'Escape') close(); };
   const close = () => {
