@@ -71,23 +71,10 @@ html.fx .hero-paths { animation: blurIn 0.9s 1.4s both; }
 @keyframes cue { 0% { transform: scaleY(0); transform-origin: top; } 45% { transform: scaleY(1); transform-origin: top; } 55% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
 @media (max-width: 767px) { .scroll-cue { display: none; } }
 
-/* ── Marquee strip: the first sheet that slides over the hero ── */
-.fx-marquee {
-  position: relative; z-index: 1; overflow: hidden; background: var(--accent); color: var(--dark);
-  border-radius: 28px 28px 0 0; margin-top: -28px; padding: 1.1rem 0 0.9rem;
-  box-shadow: 0 -24px 60px rgba(0,0,0,0.5);
-  --skew: 0deg;
-}
-.fx-marquee-track { display: flex; width: max-content; transform: skewX(var(--skew)); animation: marquee 38s linear infinite; }
-.fx-marquee-track span {
-  white-space: pre; font: italic 600 clamp(1.5rem, 3.2vw, 2.4rem)/1 'Cormorant Garamond', serif; letter-spacing: 0.04em;
-}
-@keyframes marquee { to { translate: -50% 0; } }
-
 /* ── Sections: stacked sheets with ghost lettering ── */
 .home-sec { position: relative; z-index: 1; overflow-x: clip; --gx: 0px; --gy: 0px; }
-.home-sec + .home-sec { border-radius: 32px 32px 0 0; margin-top: -32px; box-shadow: 0 -18px 50px rgba(0,0,0,0.16); padding-top: calc(6rem + 32px); }
-@media (max-width: 900px) { .home-sec + .home-sec { padding-top: calc(5rem + 32px); } }
+.hero + .home-sec, .home-sec + .home-sec { border-radius: 32px 32px 0 0; margin-top: -32px; box-shadow: 0 -18px 50px rgba(0,0,0,0.16); padding-top: calc(6rem + 32px); }
+@media (max-width: 900px) { .hero + .home-sec, .hero + .home-sec, .home-sec + .home-sec { padding-top: calc(5rem + 32px); } }
 .home-sec > * { position: relative; z-index: 1; }
 .home-sec::before {
   content: attr(data-ghost); position: absolute; z-index: 0; left: 0; top: 5%; white-space: nowrap; pointer-events: none;
@@ -138,5 +125,5 @@ html.fx .rv-label::after { transform-origin: left; }
 html.fx .rv-label.in::before, html.fx .rv-label.in::after { transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .fx-marquee-track, .hero-dust i, .scroll-cue i { animation: none; }
+  .hero-dust i, .scroll-cue i { animation: none; }
 }
