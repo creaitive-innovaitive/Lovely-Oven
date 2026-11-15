@@ -45,7 +45,7 @@
   const sideExtra = v => (SIDE_OPTIONS.find(o => o.value === v) || {}).extra || 0;
   const fmt = n => '₫' + n.toLocaleString();
 
-  /* Chicken burger: ₫100,000 with lettuce, tomato and your choice of topping; a side adds ₫20,000; toppings are extras */
+  /* Chicken burger: ₫100,000 with lettuce, tomato and your choice of flavour; a side adds ₫20,000; toppings are extras */
   const BURGER_BASE = 100000, BURGER_SIDE = 20000;
   const burgerStarted  = () => !!(ORDER.bflavour || ORDER.bside || Object.keys(ORDER.btop).length);
   const burgerComplete = () => !!ORDER.bflavour;
