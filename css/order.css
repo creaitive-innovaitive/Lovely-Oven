@@ -64,6 +64,7 @@
   .o-tabs { justify-content: flex-start; }
   .o-build-grid { grid-template-columns: 1fr; }
   .o-build-img { width: 100%; height: 160px; }
+  #o-burger .o-build-img { height: auto; aspect-ratio: 1 / 1; max-height: 340px; object-position: center 40%; }
   .o-step { grid-template-columns: 1fr; gap: 0.3rem; }
   .o-cols { grid-template-columns: 1fr; }
 }
