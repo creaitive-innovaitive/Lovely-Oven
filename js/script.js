@@ -87,7 +87,7 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
   if (!gal) return;
   const size = () => {
     const w = document.documentElement.clientWidth;
-    const s = w <= 900 ? (w - 12 - 3 * 4) / 4 : Math.min(300, Math.max(210, w * 0.21));
+    const s = w <= 900 ? (w - 12 - 3 * 10) / 4 : Math.min(300, Math.max(210, w * 0.21));
     gal.style.setProperty('--s', Math.floor(s / 2) * 2 + 'px');
   };
   size();
