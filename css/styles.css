@@ -2021,7 +2021,7 @@ footer {
   .xm-bg { display: none; }
   .xm-art { aspect-ratio: 800 / 1500; }
   .xm-m { display: block; position: absolute; inset: 0; }
-  .xm-m { background: url(../img/promo/merry-peri-portrait.jpg) center / 100% 100% no-repeat; }
+  .xm-m { background: url(../img/promo/merry-peri-portrait.jpg?v=2) center / 100% 100% no-repeat; }
   .xm-cta { left: 29%; top: 86.6%; width: 42%; height: 4.8%; font-size: calc(var(--w) * .04); border-radius: calc(var(--w) * .02); }
   .xm-launch { font-size: calc(var(--w) * .03); letter-spacing: .1em; padding: calc(var(--w) * .03) 1rem; }
   .xm-launch strong { display: block; }
