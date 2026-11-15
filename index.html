@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/styles.css?v=20261101s">
+  <link rel="stylesheet" href="css/styles.css?v=20261115b">
 </head>
 <body>
 
@@ -306,6 +306,27 @@
   </div>
 </div>
 
-<script src="js/script.js?v=20261113a"></script>
+<div class="promo" id="promo" role="dialog" aria-modal="true" aria-labelledby="promo-title">
+  <div class="promo-card">
+    <button class="promo-close" type="button" aria-label="Close" data-promo-close>&times;</button>
+    <span class="promo-tag">New on the menu</span>
+    <h2 id="promo-title">Build Your Own <em>Chicken Burger</em></h2>
+    <div class="promo-stage" aria-hidden="true">
+      <div class="promo-shadow"></div>
+      <div class="promo-spin"><div class="promo-turn">
+        <div class="promo-layer" style="--y:316;--dy:-130;--d:.3s"><img src="img/promo/burger-toppings.webp" alt=""></div>
+        <div class="promo-layer" style="--y:450;--dy:0;--d:.45s"><img src="img/promo/burger-filling.webp" alt=""></div>
+        <div class="promo-layer" style="--y:625;--dy:130;--d:.6s"><img src="img/promo/burger-base.webp" alt=""></div>
+        <div class="promo-layer" style="--y:0;--dy:-260;--d:0s"><img src="img/promo/burger-bun.webp" alt=""></div>
+      </div></div>
+    </div>
+    <div class="promo-price">₫100,000</div>
+    <p class="promo-note"><strong>Special price until 30 November.</strong><br>Available until 31 December.</p>
+    <a class="promo-cta" href="/order#o-burger">Order now</a>
+    <button class="promo-later" type="button" data-promo-close>Maybe later</button>
+  </div>
+</div>
+
+<script src="js/script.js?v=20261115a"></script>
 </body>
 </html>

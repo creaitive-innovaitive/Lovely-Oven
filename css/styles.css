@@ -1995,3 +1995,50 @@ footer {
 .reviews-dots button.on { background: var(--accent); transform: scale(1.3); }
 @media (max-width: 900px) { .reviews-sec { padding: 4rem 1.25rem; } }
 @media (prefers-reduced-motion: reduce) { .reviews-track { transition: none; } }
+
+/* ── Burger offer pop-up ── */
+.promo { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(28,40,32,0.72); opacity: 0; transition: opacity .4s; }
+.promo.open { display: flex; }
+.promo.show { opacity: 1; }
+.promo-card { position: relative; width: min(100%, 440px); max-height: 100%; overflow-y: auto; text-align: center; background: var(--olive-light); border: 1px solid var(--gold); border-radius: 18px; padding: 28px 24px 24px; box-shadow: 0 24px 70px rgba(0,0,0,.45); transform: translateY(18px) scale(.97); transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+.promo.show .promo-card { transform: none; }
+.promo-close { position: absolute; top: 10px; right: 12px; width: 36px; height: 36px; border: 0; background: none; font-size: 28px; line-height: 1; color: var(--charcoal); cursor: pointer; }
+.promo-tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--deep-red); background: var(--gold); padding: 5px 12px; border-radius: 99px; }
+.promo h2 { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: clamp(28px, 7vw, 36px); line-height: 1.05; color: var(--deep-red); margin: 12px 0 0; }
+.promo h2 em { color: var(--green); }
+
+.promo-stage { --w: min(62vw, 250px); --u: calc(var(--w) / 893); position: relative; width: var(--w); height: calc(var(--u) * 1168); margin: 6px auto 0; perspective: 1100px; }
+.promo-spin { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateX(-7deg); }
+.promo-turn { position: absolute; inset: 0; transform-style: preserve-3d; animation: promo-turn 11s linear infinite; }
+.promo-layer { position: absolute; left: 0; width: 100%; top: calc(var(--u) * (260 + var(--y))); backface-visibility: visible; animation: promo-lift 11s cubic-bezier(.5,0,.3,1) infinite; animation-delay: var(--d); filter: drop-shadow(0 6px 8px rgba(0,0,0,.18)); }
+.promo-layer img { display: block; width: 100%; height: auto; }
+.promo-shadow { position: absolute; left: 14%; right: 14%; bottom: calc(var(--u) * 150); height: calc(var(--u) * 50); background: radial-gradient(closest-side, rgba(0,0,0,.28), transparent); animation: promo-shadow 11s ease-in-out infinite; }
+
+/* 0-10% whole and turning, 10-26% lift, 26-70% held apart so each layer can be seen, 70-86% collapse */
+@keyframes promo-lift {
+  0%, 8%   { transform: translateY(0); }
+  26%, 68% { transform: translateY(calc(var(--dy) * var(--u))); }
+  86%, 100%{ transform: translateY(0); }
+}
+/* spin while the layers lift, sway gently while they hang apart, spin again as they close */
+@keyframes promo-turn {
+  0%   { transform: rotateY(0); animation-timing-function: ease-in-out; }
+  30%  { transform: rotateY(360deg); animation-timing-function: ease-in-out; }
+  42%  { transform: rotateY(378deg); animation-timing-function: ease-in-out; }
+  54%  { transform: rotateY(342deg); animation-timing-function: ease-in-out; }
+  64%  { transform: rotateY(360deg); animation-timing-function: ease-in-out; }
+  90%, 100% { transform: rotateY(720deg); }
+}
+@keyframes promo-shadow { 0%, 8%, 86%, 100% { transform: scaleX(1); opacity: 1; } 26%, 68% { transform: scaleX(1.25); opacity: .55; } }
+
+.promo-price { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: clamp(44px, 12vw, 58px); line-height: 1; color: var(--deep-red); margin-top: 4px; }
+.promo-note { margin-top: 8px; font-size: 14px; color: var(--text-muted); line-height: 1.55; }
+.promo-note strong { color: var(--deep-red); font-weight: 600; }
+.promo-cta { display: inline-block; margin-top: 18px; padding: 13px 34px; border-radius: 99px; background: var(--green); color: #fff; font-weight: 600; letter-spacing: .04em; text-decoration: none; }
+.promo-cta:hover { background: var(--charcoal); }
+.promo-later { display: block; margin: 10px auto 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--text-muted); text-decoration: underline; cursor: pointer; }
+
+@media (max-height: 640px) { .promo-stage { --w: min(44vw, 170px); } }
+@media (prefers-reduced-motion: reduce) {
+  .promo-turn, .promo-layer, .promo-shadow { animation: none; }
+}

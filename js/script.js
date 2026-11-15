@@ -161,3 +161,24 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
     });
   } catch (e) { /* ignore */ }
 })();
+
+/* ── Burger offer pop-up: once per browser session, only while the November price is running ── */
+(function () {
+  const el = document.getElementById('promo');
+  if (!el) return;
+  if (new Date() > new Date(2026, 10, 30, 23, 59, 59)) return;
+  try { if (sessionStorage.getItem('lo-promo-seen')) return; } catch (e) { /* private mode: show anyway */ }
+  const close = () => {
+    el.classList.remove('show');
+    setTimeout(() => { el.classList.remove('open'); }, 400);
+    document.removeEventListener('keydown', onKey);
+    try { sessionStorage.setItem('lo-promo-seen', '1'); } catch (e) { /* ignore */ }
+  };
+  const onKey = e => { if (e.key === 'Escape') close(); };
+  setTimeout(() => {
+    el.classList.add('open');
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+    document.addEventListener('keydown', onKey);
+  }, 700);
+  el.addEventListener('click', e => { if (e.target === el || e.target.closest('[data-promo-close]')) close(); });
+})();
