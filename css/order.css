@@ -42,10 +42,10 @@
 .o-chip.order-selected { background: var(--olive-darker); border-color: var(--olive-darker); color: var(--parchment); }
 
 .o-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.75rem; align-items: start; }
-.o-col .o-sec { margin-bottom: 1.5rem; }
+.o-col .o-sec { margin-bottom: 1.5rem; background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 3px 14px rgba(28,40,32,0.08); }
 .o-item {
-  display: flex; align-items: center; gap: 0.75rem; background: #fff; border: 1.5px solid transparent; border-radius: 10px;
-  padding: 0.55rem 0.8rem 0.55rem 0.55rem; margin-top: 0.5rem; cursor: pointer; box-shadow: 0 2px 8px rgba(28,40,32,0.07);
+  display: flex; align-items: center; gap: 0.75rem; background: var(--parchment); border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 0.55rem 0.8rem 0.55rem 0.55rem; margin-top: 0.5rem; cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
 }
 .o-item:hover { border-color: var(--accent); }
@@ -71,7 +71,7 @@
 
 /* Soup toppings: only orderable with a soup */
 .o-item.o-locked { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
-.o-item.o-locked:hover { border-color: transparent; }
+.o-item.o-locked:hover { border-color: var(--border); }
 .o-topping-note { font-style: italic; }
 .o-topping-note.o-topping-note-open { display: none; }
 

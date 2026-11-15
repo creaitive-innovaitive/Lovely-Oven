@@ -70,7 +70,7 @@ def build_burger():
     price = re.search(r'class="o-badge">(.*?)</span>', body).group(1)
     sub = re.search(r'<p class="o-sub">(.*?)</p>', body, re.S).group(1)
     steps = ""
-    for label, group in (("1 · Flavour", "bflavour"), ("2 · Toppings", "btop"), ("3 · Side", "bside")):
+    for label, group in (("1 · Flavour", "bflavour"), ("2 · Toppings", "btop"), ("3 · Sides", "bside")):
         opts = [re.sub(r"&amp;", "&", o) for o in re.findall(r'data-group="%s" data-value="[^"]*"[^>]*>([^<]*(?:&amp;[^<]*)?)<' % group, body)]
         steps += '      <div class="pg2-step"><b>%s</b>%s</div>\n' % (label, "".join("<span>%s</span>" % o.replace("&", "&amp;") for o in opts))
         if group == "bflavour":

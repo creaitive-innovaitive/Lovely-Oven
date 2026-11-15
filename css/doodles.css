@@ -1,5 +1,14 @@
-/* ── Ink doodles behind the menu and order pages ── */
-.order-page, body.doodle-bg { background-image: url(../img/doodles/food-doodles.svg?v=2); background-size: 1300px 1300px; background-repeat: repeat; }
-@media print { body.doodle-bg { background-image: none; } }
+/* ── Ink doodles in the side margins of the menu and order pages ── */
+.order-page, body.doodle-bg { position: relative; isolation: isolate; }
 .print-pages { background: transparent; }
 @media print { .print-pages { background: var(--cream-dark); } }
+
+@media (min-width: 1400px) {
+  .order-page::before, .order-page::after, body.doodle-bg::before, body.doodle-bg::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: calc((100% - 1100px) / 2 - 20px); pointer-events: none; z-index: -1;
+    background-repeat: repeat-y; background-position: center top; background-size: 300px auto;
+  }
+  .order-page::before, body.doodle-bg::before { left: 0; background-image: url(../img/doodles/strip-left.svg?v=3); }
+  .order-page::after, body.doodle-bg::after { right: 0; background-image: url(../img/doodles/strip-right.svg?v=3); }
+}
+@media print { body.doodle-bg::before, body.doodle-bg::after { display: none; } }

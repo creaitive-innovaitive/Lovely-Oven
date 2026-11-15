@@ -18,7 +18,7 @@
   // extras / setMeals: quantity-based, each keyed by item value
   const ORDER = {
     protein: null, flavour: null, spiceLevel: null, carb: null, side: null,
-    bflavour: null, bside: null, btop: {},   // chicken burger: flavour, optional side, topping extras { name: price }
+    bflavour: null, bsides: [], btop: {},   // chicken burger: flavour, optional sides (any number), topping extras { name: price }
     extras:   {},  // { key: { label, price, qty } }
     toppings: {},  // soup-only options, only orderable alongside a soup
     setMeals: {}   // { key: { label, price, qty } }
@@ -47,11 +47,11 @@
 
   /* Chicken burger: ₫100,000 with lettuce, tomato and your choice of flavour; a side adds ₫20,000; toppings are extras */
   const BURGER_BASE = 100000, BURGER_SIDE = 20000;
-  const burgerStarted  = () => !!(ORDER.bflavour || ORDER.bside || Object.keys(ORDER.btop).length);
+  const burgerStarted  = () => !!(ORDER.bflavour || ORDER.bsides.length || Object.keys(ORDER.btop).length);
   const burgerComplete = () => !!ORDER.bflavour;
-  const burgerPrice    = () => BURGER_BASE + (ORDER.bside ? BURGER_SIDE : 0) + Object.values(ORDER.btop).reduce((n, p) => n + p, 0);
+  const burgerPrice    = () => BURGER_BASE + ORDER.bsides.length * BURGER_SIDE + Object.values(ORDER.btop).reduce((n, p) => n + p, 0);
   const burgerToppings = () => Object.keys(ORDER.btop);
-  const burgerDetail   = () => [ORDER.bflavour, burgerToppings().join(', ') || 'no extra toppings', ORDER.bside ? ORDER.bside : 'no side'].join(' · ');
+  const burgerDetail   = () => [ORDER.bflavour, burgerToppings().join(', ') || 'no extra toppings', ORDER.bsides.join(', ') || 'no side'].join(' · ');
 
   function recalc(item) {
     item.price = item.base + (item.rice === 'Yes' ? RICE_PRICE : 0) + sideExtra(item.side);
@@ -143,6 +143,8 @@
         el.addEventListener('click', handleQtySelect);
       } else if (g === 'btop') {
         el.addEventListener('click', handleBurgerTop);
+      } else if (g === 'bside') {
+        el.addEventListener('click', handleBurgerSide);
       } else {
         el.addEventListener('click', handleSelect);
       }
@@ -179,6 +181,14 @@
     const el = e.currentTarget, key = el.dataset.value;
     if (ORDER.btop[key] != null) { delete ORDER.btop[key]; el.classList.remove('order-selected'); }
     else { ORDER.btop[key] = parseInt(el.dataset.price || '0', 10); el.classList.add('order-selected'); }
+    updateBar();
+  }
+
+  /* Burger sides: tap to add, tap again to remove; each one is +20,000 */
+  function handleBurgerSide(e) {
+    const el = e.currentTarget, key = el.dataset.value, i = ORDER.bsides.indexOf(key);
+    if (i >= 0) { ORDER.bsides.splice(i, 1); el.classList.remove('order-selected'); }
+    else { ORDER.bsides.push(key); el.classList.add('order-selected'); }
     updateBar();
   }
 
@@ -289,7 +299,7 @@
   /* ── Clear everything ────────────────────────────────── */
   window.loClearSelection = function () {
     ['protein', 'flavour', 'carb', 'side', 'spiceLevel'].forEach(k => { ORDER[k] = null; });
-    ORDER.bflavour = null; ORDER.bside = null; ORDER.btop = {};
+    ORDER.bflavour = null; ORDER.bsides = []; ORDER.btop = {};
     ORDER.extras = {};
     ORDER.toppings = {};
     ORDER.setMeals = {};
@@ -363,7 +373,7 @@
     if (burgerStarted()) {
       html += `<div class="lo-section-title">🍔 Chicken Burger</div>`;
       if (!burgerComplete()) html += `<div class="lo-incomplete"><span>⚠️</span> Still need: <strong>Flavour</strong></div>`;
-      [['Flavour', ORDER.bflavour], ['Toppings', burgerToppings().join(', ') || 'Lettuce and tomato only'], ['Side', ORDER.bside ? ORDER.bside + ' (+' + fmt(BURGER_SIDE) + ')' : 'No side']].forEach(([label, val]) => {
+      [['Flavour', ORDER.bflavour], ['Toppings', burgerToppings().join(', ') || 'Lettuce and tomato only'], ['Sides', ORDER.bsides.length ? ORDER.bsides.join(', ') + ' (+' + fmt(BURGER_SIDE * ORDER.bsides.length) + ')' : 'No side']].forEach(([label, val]) => {
         html += `<div class="lo-sum-row ${val ? 'lo-row-done' : 'lo-row-empty'}"><span class="lo-sum-icon">🍔</span><div class="lo-sum-text"><span class="lo-sum-label">${label}</span><span class="lo-sum-val">${val || '<em>Not chosen yet</em>'}</span></div>${val ? '<span class="lo-sum-tick">✓</span>' : ''}</div>`;
       });
       if (burgerComplete()) html += `<div class="lo-sum-subtotal"><span>Chicken burger</span><strong>₫${burgerPrice().toLocaleString()}</strong></div>`;
@@ -491,7 +501,7 @@
       msg += `🍔 CHICKEN BURGER\n`;
       msg += `   Flavour:  ${ORDER.bflavour || '—'}\n`;
       msg += `   Toppings: ${burgerToppings().join(', ') || 'lettuce and tomato only'}\n`;
-      msg += `   Side:     ${ORDER.bside || 'none'}\n`;
+      msg += `   Sides:    ${ORDER.bsides.join(', ') || 'none'}\n`;
       if (burgerComplete()) { msg += `   Subtotal: ₫${burgerPrice().toLocaleString()}\n`; grand += burgerPrice(); }
       msg += '\n';
     }
@@ -556,7 +566,7 @@
     }
     if (burgerComplete()) {
       items.push({ g: 'burger', value: 'Chicken burger', label: 'Chicken burger', qty: 1, price: burgerPrice(), detail: burgerDetail(),
-        opts: { flavour: ORDER.bflavour, side: ORDER.bside || '', toppings: burgerToppings() } });
+        opts: { flavour: ORDER.bflavour, side: ORDER.bsides.join(', '), sides: ORDER.bsides.slice(), toppings: burgerToppings() } });
     }
     [['setmeal', ORDER.setMeals], ['topping', ORDER.toppings], ['extra', ORDER.extras]].forEach(([g, group]) => {
       Object.keys(group).forEach(k => {
