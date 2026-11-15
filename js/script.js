@@ -178,8 +178,9 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
   // 3D burger: three.js is only fetched when the pop-up opens; the flat layered image stays as the fallback
   const load = src => new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
   const load3d = () => (window.THREE ? Promise.resolve() : load('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'))
-    .then(() => window.LOBurger3D ? 0 : load('js/burger3d.js?v=20261115d'))
-    .then(() => { if (window.LOBurger3D.start(document.getElementById('promo-3d'))) el.classList.add('is3d'); })
+    .then(() => window.LOBurger3D ? 0 : load('js/burger3d.js?v=20261115j'))
+    .then(() => { return window.LOBurger3D.start(document.getElementById('promo-3d'), '/'); })
+    .then(ok => { if (ok) el.classList.add('is3d'); })
     .catch(() => {});
   const onKey = e => { if (e.key === 'Escape') close(); };
   setTimeout(() => {
