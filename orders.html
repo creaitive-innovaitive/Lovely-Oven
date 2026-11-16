@@ -263,8 +263,16 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
 .dl .sub { grid-column: 1 / -1; font-size: 14px; }
 .modebar { display: flex; gap: 8px; }
 .picker { display: grid; gap: 14px; }
-select.pick { width: 100%; height: 56px; border: 2px solid var(--line2); border-radius: 15px; background: var(--surface); color: var(--ink); font: 600 19px var(--body); padding: 0 14px; }
-select.pick:focus { border-color: var(--accent); outline: 3px solid var(--accent-soft); outline-offset: 0; }
+.pick { width: 100%; height: 56px; border: 2px solid var(--line2); border-radius: 15px; background: var(--surface); color: var(--ink); font: 600 19px var(--body); padding: 0 40px 0 14px; text-align: left; cursor: pointer; position: relative; }
+.pick::after { content: ""; position: absolute; right: 16px; top: 50%; width: 8px; height: 8px; border: solid var(--muted); border-width: 0 2px 2px 0; transform: translateY(-70%) rotate(45deg); }
+.pick[aria-expanded="true"]::after { transform: translateY(-30%) rotate(225deg); }
+.pick:focus-visible, .pick[aria-expanded="true"] { border-color: var(--accent); outline: 3px solid var(--accent-soft); outline-offset: 0; }
+.dd { min-width: 0; }
+.dd.open { grid-column: 1 / -1; }
+.ddlist { margin-top: 6px; border: 2px solid var(--line2); border-radius: 15px; background: var(--surface); max-height: min(60vh, 420px); overflow-y: auto; padding: 6px; }
+.ddhead { font: 700 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 10px 10px 4px; }
+.ddopt { display: block; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); font: 600 17px var(--body); padding: 12px 10px; border-radius: 10px; cursor: pointer; }
+.ddopt:hover, .ddopt:focus-visible { background: var(--accent-soft); outline: none; }
 .drops { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 .psec > h3 { font: 700 12px/1.2 var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 6px 0; }
 .prow { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
@@ -1326,14 +1334,25 @@ function pickRow(it) {
   }
   return row;
 }
+/* In-page menu instead of a native <select>: the native pop-up was closing without picking anything on some Macs
+   because the picker is rebuilt the moment a choice is made. */
+var openDrop = '';
 function dropdown(label, groups, onPick) {
-  var sel = h('select', { class: 'pick', 'aria-label': label }, h('option', { value: '', text: label + '…' }));
-  groups.forEach(function (g) {
-    if (!g.items.length) return;
-    sel.appendChild(h('optgroup', { label: g.title }, g.items.map(function (it) { return h('option', { value: it.value, text: it.label || it.value }); })));
-  });
-  sel.addEventListener('change', function () { var v = sel.value; sel.value = ''; if (v) onPick(v); });
-  return sel;
+  var open = openDrop === label;
+  var wrap = h('div', { class: open ? 'dd open' : 'dd' },
+    h('button', { type: 'button', class: 'pick', 'aria-haspopup': 'listbox', 'aria-expanded': open ? 'true' : 'false', text: label + '…', onclick: function (ev) { ev.stopPropagation(); openDrop = open ? '' : label; renderPicker(); } }));
+  if (open) {
+    var list = h('div', { class: 'ddlist', role: 'listbox', 'aria-label': label });
+    groups.forEach(function (g) {
+      if (!g.items.length) return;
+      list.appendChild(h('div', { class: 'ddhead', text: g.title }));
+      g.items.forEach(function (it) {
+        list.appendChild(h('button', { type: 'button', class: 'ddopt', role: 'option', text: it.label || it.value, onclick: function (ev) { ev.stopPropagation(); openDrop = ''; onPick(it.value); renderPicker(); } }));
+      });
+    });
+    wrap.appendChild(list);
+  }
+  return wrap;
 }
 function secItems(ids) { return MENU.sections.filter(function (x) { return ids.indexOf(x.id) >= 0; }); }
 function cartRow(l) {
@@ -2060,7 +2079,8 @@ function init() {
   $('t-date').onchange = function () { if (this.value) { TV.date = this.value; renderToday(); } };
   $('c-search').addEventListener('input', function () { CV.q = $('c-search').value; renderCustomers(); });
   $('modal').addEventListener('click', function (ev) { if (ev.target === $('modal')) closeModal(); });
-  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') closeModal(); });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { closeModal(); if (openDrop) { openDrop = ''; renderPicker(); } } });
+  document.addEventListener('click', function (ev) { if (openDrop && !ev.target.closest('.dd')) { openDrop = ''; renderPicker(); } });
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible' && S && !busy && view !== 'customers' && Date.now() - lastLoad > 60000) load(true);
   });
