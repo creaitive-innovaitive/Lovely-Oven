@@ -1297,7 +1297,7 @@ function burgerBuilder() {
       }))),
       h('div', null, h('div', { class: 'lbl', text: 'Sides (+' + fmt(B.sidePrice) + ' each)' }), h('div', { class: 'chips', style: 'margin-top:0' },
         B.side.map(function (v) { return h('button', { type: 'button', class: 'chip', 'aria-pressed': BB.sides.indexOf(v) >= 0 ? 'true' : 'false', text: v, onclick: function () { var i = BB.sides.indexOf(v); if (i >= 0) BB.sides.splice(i, 1); else BB.sides.push(v); renderPicker(); } }); }))),
-      h('button', { type: 'button', class: 'btn primary', text: ready ? 'Add chicken burger · ' + fmt(price) : 'Choose a flavour', disabled: !ready, onclick: addBurger })));
+      h('button', { type: 'button', class: 'btn primary', text: ready ? 'Add chicken burger · ' + fmt(price) : 'Choose a flavour', disabled: !ready, onclick: addBurger }), h('button', { type: 'button', class: 'btn', text: 'Cancel', onclick: function () { BB = { flavour: '', tops: {}, sides: [] }; D.showBurger = false; renderPicker(); } })));
 }
 function chipRow(title, values, cur, pick) {
   return h('div', null, h('div', { class: 'lbl', text: title }), h('div', { class: 'chips', style: 'margin-top:0' }, values.map(function (v) {
@@ -1314,7 +1314,7 @@ function chickenBuilder() {
       PB.flavour === 'Peri Peri' ? chipRow('Spice', c.spice, PB.spice, function (v) { PB.spice = v; renderPicker(); }) : null,
       chipRow('Carb', c.carb, PB.carb, function (v) { PB.carb = v; renderPicker(); }),
       chipRow('Side', c.side, PB.side, function (v) { PB.side = v; renderPicker(); }),
-      h('button', { type: 'button', class: 'btn primary', text: ready ? 'Add chicken meal · ' + fmt(price) : 'Choose marinade, carb and side', disabled: !ready, onclick: addChicken })));
+      h('button', { type: 'button', class: 'btn primary', text: ready ? 'Add chicken meal · ' + fmt(price) : 'Choose marinade, carb and side', disabled: !ready, onclick: addChicken }), h('button', { type: 'button', class: 'btn', text: 'Cancel', onclick: function () { PB = { flavour: '', spice: '', carb: '', side: '' }; D.showChicken = false; renderPicker(); } })));
 }
 function pickRow(it) {
   var l = lineFor(it), n = l ? l.qty : 0, locked = it.g === 'topping' && !hasSoup();
