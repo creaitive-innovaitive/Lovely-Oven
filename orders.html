@@ -1881,7 +1881,8 @@ function openEdit(o) {
     body.push(h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Discount' }), h('div', { class: 'money' }, money('Discount', function () { return E.disc; }, function (n) { E.disc = n; }), h('span', { text: 'VND' }))));
     paidInp = money('Paid', function () { return E.paid; }, function (n) { E.paid = n; });
     body.push(h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Paid' }), h('div', { class: 'money' }, paidInp, h('span', { text: 'VND' })),
-      h('button', { type: 'button', class: 'btn small', text: 'Paid in full', onclick: function () { E.paid = Math.max(0, total()); paidInp.value = E.paid ? fmt(E.paid) : ''; check(); } })));
+      h('button', { type: 'button', class: 'btn small', text: 'Paid in full', onclick: function () { E.paid = Math.max(0, total()); paidInp.value = E.paid ? fmt(E.paid) : ''; check(); } }),
+      h('button', { type: 'button', class: 'btn small', text: 'Not paid', onclick: function () { E.paid = 0; paidInp.value = ''; check(); } })));
     var notes = h('input', { type: 'text', autocomplete: 'off', placeholder: 'Notes', 'aria-label': 'Notes', value: E.notes });
     notes.addEventListener('input', function () { E.notes = notes.value; });
     body.push(notes);
