@@ -1336,18 +1336,19 @@ function pickRow(it) {
 }
 /* In-page menu instead of a native <select>: the native pop-up was closing without picking anything on some Macs
    because the picker is rebuilt the moment a choice is made. */
-var openDrop = '';
-function dropdown(label, groups, onPick) {
-  var open = openDrop === label;
+var openDrop = '', dropRedraw = null;
+function dropdown(label, groups, onPick, redraw) {
+  var open = openDrop === label, rd = redraw || renderPicker;
+  if (open) dropRedraw = rd;
   var wrap = h('div', { class: open ? 'dd open' : 'dd' },
-    h('button', { type: 'button', class: 'pick', 'aria-haspopup': 'listbox', 'aria-expanded': open ? 'true' : 'false', text: label + '…', onclick: function (ev) { ev.stopPropagation(); openDrop = open ? '' : label; renderPicker(); } }));
+    h('button', { type: 'button', class: 'pick', 'aria-haspopup': 'listbox', 'aria-expanded': open ? 'true' : 'false', text: label + '…', onclick: function (ev) { ev.stopPropagation(); openDrop = open ? '' : label; rd(); } }));
   if (open) {
     var list = h('div', { class: 'ddlist', role: 'listbox', 'aria-label': label });
     groups.forEach(function (g) {
       if (!g.items.length) return;
       list.appendChild(h('div', { class: 'ddhead', text: g.title }));
       g.items.forEach(function (it) {
-        list.appendChild(h('button', { type: 'button', class: 'ddopt', role: 'option', text: it.label || it.value, onclick: function (ev) { ev.stopPropagation(); openDrop = ''; onPick(it.value); renderPicker(); } }));
+        list.appendChild(h('button', { type: 'button', class: 'ddopt', role: 'option', text: it.label || it.value, onclick: function (ev) { ev.stopPropagation(); openDrop = ''; onPick(it.value); rd(); } }));
       });
     });
     wrap.appendChild(list);
@@ -1868,7 +1869,7 @@ function openEdit(o) {
             q,
             h('button', { type: 'button', 'aria-label': 'One more', text: '+', disabled: l.qty >= 60, onclick: function () { l.qty++; draw(); } }))));
       });
-      if (MENU) body.push(dropdown('Add an item', MENU.sections.map(function (x) { return { title: x.title, items: x.items }; }), function (v) { if (BYVAL[v]) addLine(BYVAL[v]); }));
+      if (MENU) body.push(dropdown('Add an item', MENU.sections.map(function (x) { return { title: x.title, items: x.items }; }), function (v) { if (BYVAL[v]) addLine(BYVAL[v]); }, draw));
     } else {
       body.push(h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Meals' }),
         h('div', { class: 'pq' },
@@ -2080,7 +2081,7 @@ function init() {
   $('c-search').addEventListener('input', function () { CV.q = $('c-search').value; renderCustomers(); });
   $('modal').addEventListener('click', function (ev) { if (ev.target === $('modal')) closeModal(); });
   document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { closeModal(); if (openDrop) { openDrop = ''; renderPicker(); } } });
-  document.addEventListener('click', function (ev) { if (openDrop && !ev.target.closest('.dd')) { openDrop = ''; renderPicker(); } });
+  document.addEventListener('click', function (ev) { if (openDrop && !ev.target.closest('.dd')) { openDrop = ''; (dropRedraw || renderPicker)(); } });
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible' && S && !busy && view !== 'customers' && Date.now() - lastLoad > 60000) load(true);
   });
