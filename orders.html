@@ -1742,7 +1742,7 @@ function cancelAsk(m) {
   return h('div', { class: 'ask' }, h('span', { text: 'Cancel this meal for ' + m.name + '?' }),
     h('button', { type: 'button', class: 'btn danger', text: back ? 'Remove + refund ' + fmt(back) : 'Remove from order', onclick: function () { remove(true); } }),
     back ? h('button', { type: 'button', class: 'btn', text: 'Remove, no refund', onclick: function () { remove(false); } }) : null,
-    h('button', { type: 'button', class: 'btn', text: 'Rebook later', onclick: function () { done(); act('setMealStatus', { id: m.id, status: STATUS_.CANCELLED }, 'Meal cancelled. ' + m.name + ' has it back to schedule.'); } }),
+    h('button', { type: 'button', class: 'btn', text: 'Bank it (keep paid)', onclick: function () { done(); act('setMealStatus', { id: m.id, status: STATUS_.CANCELLED }, 'Banked 1 meal for ' + m.name + ' · already paid, book it later'); } }),
     h('button', { type: 'button', class: 'btn', text: 'Keep', onclick: function () { done(); renderToday(); } }));
 }
 
@@ -1806,6 +1806,7 @@ function openBank(c) {
     var dateInp = h('input', { type: 'date', value: B.date, 'aria-label': 'Date paid' });
     dateInp.onchange = function () { if (dateInp.value) B.date = dateInp.value; };
     openModal([h('h2', { text: 'Bank money for ' + c.name }),
+      c.credit > 0 ? h('p', { class: 'sub', style: 'color:var(--warn);font-weight:600', text: c.name + ' already has ' + plural(c.credit, 'banked meal') + '. If a paid meal went unserved, don’t add it here: use Cancel → Bank it on that meal, or it is counted twice.' }) : null,
       h('p', { class: 'sub', text: 'Money paid ahead with no order yet. It shows as banked meals, to book later or use on a new order with the Banked payment option.' }),
       h('div', { class: 'row' }, h('span', { class: 'sub', text: 'Meals' }), h('div', { class: 'pq' },
         h('button', { type: 'button', text: '−', disabled: B.qty <= 1, onclick: function () { B.qty--; draw(); } }), h('span', { text: String(B.qty) }),
@@ -2004,7 +2005,7 @@ function renderDetail() {
 
   detail.appendChild(h('div', { class: 'sect' }, h('h2', { text: 'Recent orders' }),
     h('div', { class: 'rl', style: 'max-height:460px;overflow:auto;align-content:start' }, mine.map(function (o) {
-      return h('div', { class: 'orow' }, h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
+      return h('div', { class: 'orow' }, h('span', { text: dayLong(o.date) }), h('span', { text: plural(o.qty, 'meal') + (o.servedN ? ' · ' + o.servedN + ' served' : '') + (o.credit > 0 ? ' · ' + o.credit + ' banked' : '') + (o.notes ? ' · ' + o.notes : '') }), h('span', { class: 'r', text: fmt(o.payable) }),
         h('span', { class: 'r ra' }, h('span', { class: 'rs' + (o.owed ? ' owes' : ''), text: o.owed ? 'owes ' + fmt(o.owed) : 'paid' + (o.method ? ' · ' + o.method : '') }), h('span', { class: 'rb' },
           h('button', { type: 'button', class: 'btn small', text: 'Edit', 'aria-label': 'Edit this order', onclick: function () { openEdit(o); } }),
           o.qty - o.servedN > 0 ? h('button', { type: 'button', class: 'btn small', text: 'Refund', 'aria-label': 'Refund the meals not yet served', onclick: function () { confirmRefund(o); } }) : null,
