@@ -11,7 +11,7 @@ window.addEventListener('scroll', () => {
 /* ── Analytics + cookie choice ──
    Google Analytics only loads after the visitor says yes. Leave GA_ID empty and the site sets no tracking and shows no banner.
    To switch it on, paste the Measurement ID from Google Analytics (Admin > Data streams), like 'G-ABC123XYZ'. */
-const GA_ID = '';
+const GA_ID = 'G-0P93BLS8H8';
 const CHOICE_KEY = 'cookieChoice';
 
 (function () {
