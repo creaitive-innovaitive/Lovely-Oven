@@ -2004,6 +2004,8 @@ footer {
   box-shadow: 0 30px 80px rgba(0,0,0,.55); background: #7a0f1f;
   transform: translateY(18px) scale(.97); transition: transform .5s cubic-bezier(.2,.8,.2,1); }
 .promo.show .xm-card { transform: none; }
+.xm-top { margin: 0; text-align: center; padding: calc(var(--w) * .014) 3rem calc(var(--w) * .014); background: #4d0916; border-bottom: 1px solid rgba(241,215,122,.45);
+  font: 500 calc(var(--w) * .0175)/1.2 'Jost', sans-serif; letter-spacing: .2em; text-transform: uppercase; color: #fff; }
 .xm-art { position: relative; aspect-ratio: 1440 / 736; }
 .xm-bg { display: block; width: 100%; height: 100%; }
 /* real button laid over the "Order now" pill baked into the artwork */
@@ -2023,6 +2025,7 @@ footer {
   .xm-m { display: block; position: absolute; inset: 0; }
   .xm-m { background: url(../img/promo/merry-peri-portrait.jpg?v=2) center / 100% 100% no-repeat; }
   .xm-cta { left: 29%; top: 86.6%; width: 42%; height: 4.8%; font-size: calc(var(--w) * .04); border-radius: calc(var(--w) * .02); }
+  .xm-top { font-size: calc(var(--w) * .03); letter-spacing: .1em; padding: calc(var(--w) * .03) 3rem; }
   .xm-launch { font-size: calc(var(--w) * .03); letter-spacing: .1em; padding: calc(var(--w) * .03) 1rem; }
   .xm-launch strong { display: block; }
   .promo-close { top: 10px; right: 10px; }
