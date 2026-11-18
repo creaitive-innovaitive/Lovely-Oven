@@ -452,7 +452,15 @@ function showLogin(msg) { showForm('loginform'); $('loginmsg').textContent = msg
 
 /* ---------- two-step sign-in (authenticator app) ---------- */
 function signOutToLogin(msg) { SB.auth.signOut().then(function () { $('pw').value = ''; showLogin(msg); }); }
+function codeError(e) {
+  var m = (e && (e.message || e.code)) || 'unknown error';
+  return /invalid totp|mfa_verification_failed|verification failed/i.test(m + ' ' + (e && e.code || ''))
+    ? 'That code did not work. Wait for the next one and try again, and check your phone clock is set automatically.'
+    : 'Could not check the code: ' + m;
+}
+var gating = false;
 function gate(session) {
+  if (gating) return; gating = true; setTimeout(function () { gating = false; }, 4000);
   SB.auth.mfa.getAuthenticatorAssuranceLevel().then(function (r) {
     var a = r.data;
     if (r.error || !a) { showLogin('Could not check your sign-in. Please try again.'); return; }
@@ -469,7 +477,7 @@ function askCode(session) {
     $('mfaform').onsubmit = function (ev) {
       ev.preventDefault(); $('mfamsg').textContent = 'Checking…';
       SB.auth.mfa.challengeAndVerify({ factorId: f.id, code: $('mfacode').value.trim() }).then(function (v) {
-        if (v.error) { $('mfamsg').textContent = 'That code did not work. Wait for the next one and try again.'; $('mfacode').value = ''; $('mfacode').focus(); }
+        if (v.error) { $('mfamsg').textContent = codeError(v.error); $('mfacode').value = ''; $('mfacode').focus(); }
         else enter(session);
       });
     };
@@ -490,7 +498,7 @@ function startEnrol(session) {
     $('enrolform').onsubmit = function (ev) {
       ev.preventDefault(); $('enrolmsg').textContent = 'Checking…';
       SB.auth.mfa.challengeAndVerify({ factorId: id, code: $('enrolcode').value.trim() }).then(function (v) {
-        if (v.error) { $('enrolmsg').textContent = 'That code did not work. Check the time on your phone and try the next code.'; $('enrolcode').value = ''; }
+        if (v.error) { $('enrolmsg').textContent = codeError(v.error); $('enrolcode').value = ''; }
         else enter(session);
       });
     };
