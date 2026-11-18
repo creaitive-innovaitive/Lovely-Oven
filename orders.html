@@ -1188,28 +1188,10 @@ function renderHint() {
   box.appendChild(h('span', { text: 'Last order ' + dayLong(c.last) + (c.unitPrice ? ' at ' + fmt(c.unitPrice) : '') }));
   if (c.credit > 0) {
     box.appendChild(h('span', { class: 'pill warn', text: plural(c.credit, 'meal') + ' banked, already paid' }));
-    box.appendChild(h('button', { type: 'button', class: 'btn small ok', text: 'Use ' + plural(Math.min(D.qty, c.credit), 'banked meal') + ' on ' + dayShort(D.date) + ' (nothing to pay)', onclick: useBanked }));
+    box.appendChild(h('button', { type: 'button', class: 'btn small ok', text: 'Order with ' + plural(Math.min(D.qty, c.credit), 'banked meal') + ' (pick dishes, nothing to pay)', onclick: function () { D.payMode = 'bank'; updateOrder(); } }));
   }
   if (c.owed > 0) box.appendChild(h('span', { class: 'pill bad', text: 'Owes ' + fmt(c.owed) }));
 }
-
-/* books meals for the chosen day against orders the customer has already paid for, so no new payment is due */
-function useBanked() {
-  if (busy) return;
-  var key = D.name.trim().toLowerCase(), need = D.qty, jobs = [];
-  S.orders.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; }).forEach(function (o) {
-    if (o.name.toLowerCase() !== key || !o.oid || o.credit <= 0 || need <= 0) return;
-    var n = Math.min(need, o.credit); need -= n;
-    jobs.push({ oid: o.oid, schedule: [{ date: D.date, count: n }] });
-  });
-  if (!jobs.length) return;
-  (function next(i) {
-    if (i >= jobs.length) { D = newDraft(); scheduleOrder.reset(); updateOrder(); return; }
-    act('scheduleMeals', jobs[i], function (inf) { return 'Used ' + plural(inf.scheduled, 'banked meal') + ' for ' + inf.name + ' · nothing to pay'; })
-      .then(function (r) { if (r && r.state) next(i + 1); });
-  })(0);
-}
-
 
 /* ------------------------------------------------------------------ dish picker (built from the website menu, see tools/build_orders.py) */
 var RULES = MENU ? MENU.rules : null, BYVAL = {}, SECOF = {};
