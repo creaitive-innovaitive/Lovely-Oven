@@ -8,21 +8,70 @@ window.addEventListener('scroll', () => {
   if (btn) btn.classList.toggle('visible', window.scrollY > 400);
 });
 
-/* ── Cookie Banner ── */
-(function() {
-  if (localStorage.getItem('cookieDismissed')) {
-    const banner = document.getElementById('cookieBanner');
-    if (banner) banner.style.display = 'none';
+/* ── Analytics + cookie choice ──
+   Google Analytics only loads after the visitor says yes. Leave GA_ID empty and the site sets no tracking and shows no banner.
+   To switch it on, paste the Measurement ID from Google Analytics (Admin > Data streams), like 'G-ABC123XYZ'. */
+const GA_ID = '';
+const CHOICE_KEY = 'cookieChoice';
+
+(function () {
+  const banner = document.getElementById('cookieBanner');
+  const get = () => { try { return localStorage.getItem(CHOICE_KEY); } catch (e) { return null; } };
+
+  function loadAnalytics() {
+    if (!GA_ID || window.__gaLoaded) return;
+    window.__gaLoaded = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GA_ID, { anonymize_ip: true });
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_ID);
+    document.head.appendChild(s);
+  }
+
+  function forgetAnalyticsCookies() {
+    document.cookie.split(';').forEach(c => {
+      const name = c.split('=')[0].trim();
+      if (name === '_ga' || name.indexOf('_ga_') === 0) {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.' + location.hostname.replace(/^www\./, '');
+      }
+    });
+  }
+
+  function setBanner(show) {
+    if (!banner) return;
+    banner.hidden = !show;
+    document.documentElement.style.setProperty('--banner-h', show ? banner.offsetHeight + 'px' : '0px');
+  }
+
+  function choose(value) {
+    try { localStorage.setItem(CHOICE_KEY, value); } catch (e) { /* private mode: choice lasts this page only */ }
+    setBanner(false);
+    if (value === 'accepted') loadAnalytics(); else forgetAnalyticsCookies();
+  }
+
+  if (!GA_ID) return;   // nothing to ask about
+
+  if (banner) banner.querySelectorAll('[data-consent]').forEach(b => b.addEventListener('click', () => choose(b.dataset.consent)));
+  window.addEventListener('resize', () => { if (banner && !banner.hidden) setBanner(true); });
+
+  const saved = get();
+  if (saved === 'accepted') loadAnalytics();
+  else if (!saved) setBanner(true);
+
+  // A way back, so the choice is never permanent
+  const foot = document.querySelector('.footer-bottom');
+  if (foot) {
+    const p = document.createElement('p');
+    const link = document.createElement('button');
+    link.type = 'button'; link.className = 'cookie-link'; link.textContent = 'Cookie settings';
+    link.addEventListener('click', () => setBanner(true));
+    p.appendChild(link); foot.appendChild(p);
   }
 })();
-
-function dismissCookie() {
-  localStorage.setItem('cookieDismissed', '1');
-  const banner = document.getElementById('cookieBanner');
-  const scrollBtn = document.getElementById('scrollTop');
-  if (banner) banner.style.display = 'none';
-  if (scrollBtn) scrollBtn.style.bottom = '1.5rem';
-}
 
 /* ── Navigation Popup ── */
 function openPopup(e) {
@@ -77,18 +126,6 @@ const animObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 
 document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observe(el));
-
-/* ── Keep the hero labels clear of the cookie banner ── */
-(function () {
-  const banner = document.getElementById('cookieBanner');
-  const set = () => {
-    const h = banner && banner.style.display !== 'none' ? banner.offsetHeight : 0;
-    document.documentElement.style.setProperty('--banner-h', h + 'px');
-  };
-  set();
-  window.addEventListener('resize', set);
-  document.addEventListener('click', () => setTimeout(set, 0));
-})();
 
 /* ── Gallery diamonds: whole-pixel, even sizes so neighbouring diamonds keep an exact gap ── */
 (function () {

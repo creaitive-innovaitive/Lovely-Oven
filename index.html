@@ -290,12 +290,11 @@
 <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- ── Cookie Banner ── -->
-<div class="cookie-banner" id="cookieBanner">
-  <p><strong>Bánh quy — but not the edible kind.</strong> We use cookies to make your experience even more delicious. By accepting, you agree we can do just that.</p>
+<div class="cookie-banner" id="cookieBanner" role="region" aria-label="Cookie choice" hidden>
+  <p><strong>Bánh quy — but not the edible kind.</strong> We'd like to use Google Analytics to see which pages get visited, so we can keep improving the site. It sets cookies and sends anonymous usage data to Google. Your choice, and you can change it any time from "Cookie settings" at the bottom of the page.</p>
   <div class="cookie-btns">
-    <button class="cookie-btn accept" onclick="dismissCookie()">Yes, I'm Happy</button>
-    <button class="cookie-btn" onclick="dismissCookie()">No Thanks</button>
-    <button class="cookie-btn" onclick="dismissCookie()">Manage Cookies</button>
+    <button type="button" class="cookie-btn accept" data-consent="accepted">Yes, I'm Happy</button>
+    <button type="button" class="cookie-btn" data-consent="declined">No Thanks</button>
   </div>
 </div>
 

@@ -2041,3 +2041,7 @@ footer {
 }
 
 .hamburger:focus-visible, .close-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.cookie-banner[hidden] { display: none !important; }
+.cookie-link { background: none; border: 0; padding: 0; color: inherit; opacity: .6; font: inherit; font-size: .85em; text-decoration: underline; cursor: pointer; }
+.cookie-link:hover { opacity: 1; }

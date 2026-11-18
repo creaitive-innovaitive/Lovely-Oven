@@ -712,6 +712,13 @@
     return items;
   }
 
+  /* Reports a sent order to Google Analytics, if the visitor agreed to it */
+  function track(method) {
+    if (!window.gtag) return;
+    const total = buildItems().reduce((n, i) => n + i.price * i.qty, 0);
+    window.gtag('event', 'send_order', { method, value: total, currency: 'VND' });
+  }
+
   let lastPosted = '';
   function postToDashboard(msg, d) {
     const items = buildItems();
@@ -738,6 +745,7 @@
     const msg = buildMessage(d);
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
     postToDashboard(msg, d);
+    track('whatsapp');
     window.open(url, '_blank');
     showSent('whatsapp', d, () => window.open(url, '_blank'));
   };
@@ -747,6 +755,7 @@
     if (!d) return;
     const msg = buildMessage(d);
     postToDashboard(msg, d);
+    track('zalo');
     const open = () => window.open(`https://zalo.me/${ZALO_NUMBER}`, '_blank');
     const again = () => { navigator.clipboard.writeText(msg).catch(() => {}); open(); };
 
