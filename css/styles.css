@@ -163,6 +163,7 @@ nav {
 .nav-links a:hover::after { right: 0; }
 
 .hamburger {
+  background: none; border: 0; font: inherit;
   display: none;
   flex-direction: column;
   gap: 5px;
@@ -1074,7 +1075,7 @@ footer {
 /* ── Nutrition Page ── */
 .nutrition-hero {
   min-height: 55vh;
-  background-image: url('../img/hero/menu-top.jpg?v=20261030c');
+  background-image: url('../img/hero/menu-top.webp?v=20261030c');
   background-size: cover;
   background-position: center 40%;
   display: flex;
@@ -1162,7 +1163,7 @@ footer {
 /* ── Social Page ── */
 .social-hero {
   min-height: 55vh;
-  background-image: url('../img/hero/menu-top.jpg?v=20261030c');
+  background-image: url('../img/hero/menu-top.webp?v=20261030c');
   background-size: cover;
   background-position: center 30%;
   display: flex;
@@ -1611,7 +1612,7 @@ footer {
 .hero-split { position: absolute; inset: 0; }
 .hero-half { position: absolute; inset: 0; background-size: cover; background-position: center; }
 .hero-half-chicken {
-  background-image: url('../img/hero/chicken-hero.jpg?v=20261030c');
+  background-image: url('../img/hero/chicken-hero.webp?v=20261030c');
   /* shifted 16vw left and 5vh down; element overhangs the top so the shift never exposes a gap; clip compensates */
   inset: 0;
   background-position: 50% 50%;
@@ -1724,7 +1725,7 @@ footer {
 }
 .page-hero::before { content: ''; position: absolute; inset: 0; background: rgba(20,32,25,0.62); }
 .page-hero > * { position: relative; }
-.page-hero-meat { background-image: url('../img/hero/chicken-hero.jpg?v=20261030c'); }
+.page-hero-meat { background-image: url('../img/hero/chicken-hero.webp?v=20261030c'); }
 .page-hero-title {
   font-family: 'Cormorant Garamond', serif; font-weight: 600;
   font-size: clamp(2.6rem, 7vw, 4.5rem); line-height: 1.05; margin: 0.4rem 0 1rem; color: #fff;
@@ -1863,7 +1864,7 @@ footer {
 .contact-sec .home-title { color: var(--parchment); }
 .contact-grid { width: 100%; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr; gap: 3.5rem; align-items: center; }
 .contact-zalo { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; color: var(--parchment); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; }
-.contact-zalo img { width: min(300px, 38vh); background: #fff; padding: 10px; border-radius: 10px; }
+.contact-zalo img { width: min(300px, 38vh); height: auto; background: #fff; padding: 10px; border-radius: 10px; }
 .contact-links { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
 .contact-links a {
   display: flex; align-items: center; gap: 1.1rem; padding: 1.1rem 1.5rem; border-radius: 10px;
@@ -2023,7 +2024,7 @@ footer {
   .xm-bg { display: none; }
   .xm-art { aspect-ratio: 800 / 1500; }
   .xm-m { display: block; position: absolute; inset: 0; }
-  .xm-m { background: url(../img/promo/merry-peri-portrait.jpg?v=2) center / 100% 100% no-repeat; }
+  .xm-m { background: url(../img/promo/merry-peri-portrait.webp?v=2) center / 100% 100% no-repeat; }
   .xm-cta { left: 29%; top: 86.6%; width: 42%; height: 4.8%; font-size: calc(var(--w) * .04); border-radius: calc(var(--w) * .02); }
   .xm-top { font-size: calc(var(--w) * .03); letter-spacing: .1em; padding: calc(var(--w) * .03) 3rem; }
   .xm-launch { font-size: calc(var(--w) * .03); letter-spacing: .1em; padding: calc(var(--w) * .03) 1rem; }
@@ -2038,3 +2039,5 @@ footer {
   .hero { position: sticky; top: 0; z-index: 0; }
   .home-sec, footer { position: relative; z-index: 1; }
 }
+
+.hamburger:focus-visible, .close-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }

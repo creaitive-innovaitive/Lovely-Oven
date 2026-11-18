@@ -53,8 +53,17 @@ if (popup) {
 /* ── Mobile Menu ── */
 function toggleMobile() {
   const menu = document.getElementById('mobileMenu');
-  if (menu) menu.classList.toggle('open');
+  if (!menu) return;
+  const open = menu.classList.toggle('open');
+  const btn = document.getElementById('hamburger');
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) { const first = menu.querySelector('a, button'); if (first) first.focus(); }
+  else if (btn) btn.focus();
 }
+document.addEventListener('keydown', e => {
+  const menu = document.getElementById('mobileMenu');
+  if (e.key === 'Escape' && menu && menu.classList.contains('open')) toggleMobile();
+});
 
 /* ── Scroll Entrance Animations for Cards ── */
 const animObserver = new IntersectionObserver((entries) => {
@@ -162,22 +171,42 @@ document.querySelectorAll('.card, .phil-card').forEach(el => animObserver.observ
   } catch (e) { /* ignore */ }
 })();
 
-/* ── Merry Peri burger pop-up: every page load, until the offer ends on 31 December ── */
+/* ── Merry Peri burger pop-up: once per visitor every 3 days, until the offer ends on 31 December ── */
 (function () {
   const el = document.getElementById('promo');
   if (!el) return;
   if (new Date() > new Date(2026, 11, 31, 23, 59, 59)) return;
+  const KEY = 'promoSeen', GAP = 3 * 864e5;
+  try { const t = +localStorage.getItem(KEY); if (t && Date.now() - t < GAP) return; } catch (e) { /* private mode: show it */ }
 
-  const onKey = e => { if (e.key === 'Escape') close(); };
+  // The strip under the artwork follows the launch date (18 November 2026)
+  const strip = el.querySelector('.xm-launch');
+  const now = new Date(), day = new Date(now.getFullYear(), now.getMonth(), now.getDate()), launch = new Date(2026, 10, 18);
+  if (strip && day >= launch) strip.innerHTML = day.getTime() === launch.getTime() ? 'Official launch <strong>today</strong>' : '<strong>Now on the menu</strong>';
+
+  const closeBtn = el.querySelector('[data-promo-close]'), cta = el.querySelector('.xm-cta');
+  let opener = null;
+  const onKey = e => {
+    if (e.key === 'Escape') close();
+    if (e.key === 'Tab') {   // keep focus inside the pop-up while it is open
+      const first = closeBtn, last = cta;
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  };
   const close = () => {
     el.classList.remove('show');
     setTimeout(() => { el.classList.remove('open'); }, 400);
     document.removeEventListener('keydown', onKey);
+    if (opener && opener.focus) opener.focus();
   };
   setTimeout(() => {
+    opener = document.activeElement;
     el.classList.add('open');
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
     document.addEventListener('keydown', onKey);
+    if (closeBtn) closeBtn.focus();
+    try { localStorage.setItem(KEY, String(Date.now())); } catch (e) { /* ignore */ }
   }, 700);
   el.addEventListener('click', e => { if (e.target === el || e.target.closest('[data-promo-close]')) close(); });
 })();

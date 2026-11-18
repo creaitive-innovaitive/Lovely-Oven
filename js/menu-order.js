@@ -159,6 +159,13 @@
   function attachHandlers() {
     document.querySelectorAll('[data-group]').forEach(el => {
       const g = el.dataset.group;
+      // Keyboard and screen-reader access: chips act as toggle buttons, item cards as focusable groups
+      el.tabIndex = 0;
+      if (el.classList.contains('o-chip')) { el.setAttribute('role', 'button'); el.setAttribute('aria-pressed', 'false'); }
+      else { el.setAttribute('role', 'group'); el.setAttribute('aria-label', (el.dataset.label || el.dataset.value || '') + (el.dataset.price ? ', ₫' + (+el.dataset.price).toLocaleString() : '')); }
+      el.addEventListener('keydown', e => {
+        if ((e.key === 'Enter' || e.key === ' ') && e.target === el) { e.preventDefault(); el.click(); }
+      });
       if (g === 'extra' || g === 'setmeal' || g === 'topping') {
         el.addEventListener('click', handleQtySelect);
       } else if (g === 'btop') {
@@ -330,6 +337,7 @@
   };
 
   /* ── Modal ───────────────────────────────────────────── */
+  let lastFocus = null;
   window.loOpenModal = function () {
     buildSummary();
     const modal = document.getElementById('loModal');
@@ -337,6 +345,8 @@
       modal.classList.add('lo-modal-open');
       document.body.style.overflow = 'hidden';
       document.body.classList.add('lo-open');
+      lastFocus = document.activeElement;
+      const x = modal.querySelector('.lo-modal-close'); if (x) x.focus();
     }
   };
 
@@ -349,6 +359,7 @@
     }
     document.body.style.overflow = '';
     document.body.classList.remove('lo-open');
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
   };
 
   /* After sending: clear the cart and close */
@@ -819,6 +830,16 @@
 </div>`;
 
     document.body.insertAdjacentHTML('beforeend', barHTML + modalHTML);
+
+    const sync = el => el.setAttribute('aria-pressed', el.classList.contains('order-selected') ? 'true' : 'false');
+    const watch = new MutationObserver(list => list.forEach(m => { if (m.target.matches('.o-chip[data-group]')) sync(m.target); }));
+    document.querySelectorAll('.o-chip[data-group]').forEach(el => watch.observe(el, { attributes: true, attributeFilter: ['class'] }));
+
+    // Order dialog: announced as a dialog, Escape closes it, focus moves in and returns
+    const box = document.querySelector('#loModal .lo-modal');
+    box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'loTitle');
+    box.querySelector('.lo-modal-title').id = 'loTitle';
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && $id('loModal').classList.contains('lo-modal-open')) window.loCloseModal(); });
 
     const date = $id('loDate');
     date.min = earliestDate();

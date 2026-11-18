@@ -17,13 +17,14 @@
   <meta property="og:image:alt" content="Lovely Oven: home cooked, fresh and healthy">
   <meta name="twitter:image" content="https://www.lovelyoven.com/img/social/og-share.jpg">
   <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FoodEstablishment", "name": "Lovely Oven", "description": "Fresh, home-cooked chicken, beef and pork meals from a home oven in Danang. Free delivery in the FPT Urban area; order on Grab elsewhere in Danang and Hoi An.", "url": "https://www.lovelyoven.com/", "image": "https://www.lovelyoven.com/img/social/og-share.jpg", "logo": "https://www.lovelyoven.com/img/logos/lovely-oven-logo.svg", "telephone": "+84987390140", "priceRange": "₫₫", "servesCuisine": ["Home-cooked", "Chicken", "Beef", "Pork"], "address": {"@type": "PostalAddress", "addressLocality": "Da Nang", "addressCountry": "VN"}, "areaServed": ["Da Nang", "Hoi An"], "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "11:00", "closes": "14:00"}], "hasMenu": "https://www.lovelyoven.com/menu", "sameAs": ["https://www.facebook.com/Lovelyovendanang", "https://www.instagram.com/lovelyoven/"]}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("fx")</script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/styles.css?v=20261118a">
-  <link rel="stylesheet" href="css/home-fx.css?v=2">
+  <link rel="stylesheet" href="css/styles.css?v=20261118c">
+  <link rel="stylesheet" href="css/home-fx.css?v=20261118c">
 </head>
 <body>
 
@@ -40,14 +41,14 @@
     <li><a href="/nutrition">Nutrition</a></li>
     <li><a href="/social">Social</a></li>
   </ul>
-  <div class="hamburger" onclick="toggleMobile()" id="hamburger">
+  <button type="button" class="hamburger" onclick="toggleMobile()" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
-  </div>
+  </button>
 </nav>
 
 <!-- ── Mobile Menu ── -->
 <div class="mobile-menu" id="mobileMenu">
-  <button class="close-btn" onclick="toggleMobile()">✕</button>
+  <button class="close-btn" onclick="toggleMobile()" aria-label="Close menu">✕</button>
   <a href="/" onclick="toggleMobile()">Home</a>
   <a href="/menu" onclick="toggleMobile()">Menu</a>
   <a href="/order" onclick="toggleMobile()">Order</a>
@@ -131,7 +132,7 @@
       <p class="story-dream">Long before there was a Lovely Oven, there was a dream: that one day my cooking would make people happy. Everything since has been a step towards it.</p>
       <p>I learned to cook the traditional way: clean, fresh food, prepared by family for family. When I moved to Hanoi for university, I began to develop a style of my own, and as I met more foreigners I adapted the ingredients and flavours to suit them, without losing the care I grew up with. After a few meals for people at local workplaces, the idea grew quickly into what we are today. Now we cook for individuals and groups, locally and city-wide, as ready-to-eat meals and bulk orders.</p>
     </div>
-    <div class="story-photo"><img src="img/home/story-rice-field.jpg" alt="A quiet wooden deck looking out over golden rice fields, a water buffalo grazing in the distance" loading="lazy" style="object-position:50% 62%"></div>
+    <div class="story-photo"><img src="img/home/story-rice-field.webp" alt="A quiet wooden deck looking out over golden rice fields, a water buffalo grazing in the distance" loading="lazy" style="object-position:50% 62%" width="1200" height="900" decoding="async"></div>
   </div>
 </section>
 
@@ -165,20 +166,20 @@
   </div>
   <div class="food-gallery">
    <div class="g-row">
-    <figure class="g-item"><img src="img/gallery/chicken-meal.jpg" alt="Chicken Thigh Meal"></figure>
-    <figure class="g-item"><img src="img/gallery/mushy-peas.jpg" alt="Mushy Peas"></figure>
-    <figure class="g-item"><img src="img/gallery/gluten-free.jpg" style="object-position:50% 62%" alt="Chilli Con Carne"></figure>
+    <figure class="g-item"><img src="img/gallery/chicken-meal.webp" alt="Chicken Thigh Meal" width="900" height="1200" loading="lazy" decoding="async"></figure>
+    <figure class="g-item"><img src="img/gallery/mushy-peas.webp" alt="Mushy Peas" width="825" height="1100" loading="lazy" decoding="async"></figure>
+    <figure class="g-item"><img src="img/gallery/gluten-free.webp" style="object-position:50% 62%" alt="Chilli Con Carne" width="900" height="1200" loading="lazy" decoding="async"></figure>
    </div>
    <div class="g-row">
-    <figure class="g-item"><img src="img/gallery/keto-beef.jpg" alt="Keto Beef with Cauliflower Mash"></figure>
-    <figure class="g-item"><img src="img/gallery/wedges.jpg" alt="Potato Wedges"></figure>
-    <figure class="g-item"><img src="img/gallery/coleslaw.jpg" alt="Coleslaw"></figure>
-    <figure class="g-item"><img src="img/gallery/bolognaise.jpg" alt="Homemade Bolognaise"></figure>
+    <figure class="g-item"><img src="img/gallery/keto-beef.webp" alt="Keto Beef with Cauliflower Mash" width="900" height="900" loading="lazy" decoding="async"></figure>
+    <figure class="g-item"><img src="img/gallery/wedges.webp" alt="Potato Wedges" width="900" height="675" loading="lazy" decoding="async"></figure>
+    <figure class="g-item"><img src="img/gallery/coleslaw.webp" alt="Coleslaw" width="400" height="459" loading="lazy" decoding="async"></figure>
+    <figure class="g-item"><img src="img/gallery/bolognaise.webp" alt="Homemade Bolognaise" width="900" height="900" loading="lazy" decoding="async"></figure>
    </div>
    <div class="g-row">
-    <figure class="g-item fit soft"><img src="img/gallery/lasagne.jpg" style="object-fit:contain" alt="Lasagne"></figure>
-    <figure class="g-item"><img src="img/gallery/beef-ragout.jpg" alt="Beef Ragout"></figure>
-    <figure class="g-item nz"><img src="img/gallery/chicken-burger.jpg?v=2" alt="Chicken Burger"></figure>
+    <figure class="g-item fit soft"><img src="img/gallery/lasagne.webp" style="object-fit:contain" alt="Lasagne" width="825" height="1100" loading="lazy" decoding="async"></figure>
+    <figure class="g-item"><img src="img/gallery/beef-ragout.webp" alt="Beef Ragout" width="825" height="1100" loading="lazy" decoding="async"></figure>
+    <figure class="g-item nz"><img src="img/gallery/chicken-burger.webp?v=2" alt="Chicken Burger" width="900" height="900" loading="lazy" decoding="async"></figure>
    </div>
   </div>
 </section>
@@ -212,18 +213,18 @@
   </div>
   <div class="pay-grid">
     <div class="pay-card">
-      <img src="img/payment/payment-qr.jpg" alt="Bank transfer QR code" loading="lazy">
+      <img src="img/payment/payment-qr.jpg" alt="Bank transfer QR code" loading="lazy" width="785" height="940" decoding="async">
       <h3>Local deliveries</h3>
       <p>Scan the QR code to pay by bank transfer.</p>
     </div>
     <div class="pay-card">
-      <img class="pay-square" src="img/payment/grab-page.jpg" alt="Lovely Oven on the Grab merchant page" loading="lazy">
+      <img class="pay-square" src="img/payment/grab-page.webp" alt="Lovely Oven on the Grab merchant page" loading="lazy" width="435" height="900" decoding="async">
       <h3>Grab deliveries</h3>
       <p>Pay in the Grab app when you order from our Grab merchant page.</p>
     </div>
     <div class="pay-card pay-card-text">
       <div class="pay-soon">
-        <img src="img/home/restaurant-sketch.jpg" alt="Sketch of the Lovely Oven restaurant frontage (placeholder)" loading="lazy">
+        <img src="img/home/restaurant-sketch.webp" alt="Sketch of the Lovely Oven restaurant frontage (placeholder)" loading="lazy" width="710" height="472" decoding="async">
         <span class="pay-soon-tag">Coming soon</span>
       </div>
       <h3>At the restaurant</h3>
@@ -240,7 +241,7 @@
   </div>
   <div class="contact-grid">
     <div class="contact-zalo">
-      <img src="img/payment/zalo-qr.png" alt="Zalo QR code for Lovely Oven" loading="lazy">
+      <img src="img/payment/zalo-qr.webp" alt="Zalo QR code for Lovely Oven" loading="lazy" width="372" height="378" decoding="async">
       <span>Scan to chat on Zalo</span>
     </div>
     <ul class="contact-links">
@@ -328,7 +329,7 @@
   </div>
 </div>
 
-<script src="js/script.js?v=20261116a"></script>
-<script src="js/home-fx.js?v=2" defer></script>
+<script src="js/script.js?v=20261118c"></script>
+<script src="js/home-fx.js?v=20261118c" defer></script>
 </body>
 </html>

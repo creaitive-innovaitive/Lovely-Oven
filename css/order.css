@@ -84,3 +84,6 @@
 .o-opt:hover { border-color: var(--olive-dark); }
 .o-opt.active { background: var(--olive-darker); border-color: var(--olive-darker); color: var(--parchment); }
 .o-opt small { opacity: 0.75; margin-left: 0.2rem; }
+
+/* Visible keyboard focus */
+.o-chip:focus-visible, .o-item:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }

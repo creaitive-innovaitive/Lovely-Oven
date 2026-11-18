@@ -19,12 +19,11 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/styles.css?v=20261101s">
-  <link rel="stylesheet" href="css/menu.css?v=20261101s">
-  <link rel="stylesheet" href="css/doodles.css?v=4">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <link rel="stylesheet" href="css/styles.css?v=20261118c">
+  <link rel="stylesheet" href="css/menu.css?v=20261118c">
+  <link rel="stylesheet" href="css/doodles.css?v=20261118c">
 </head>
 <body class="doodle-bg">
 
@@ -41,14 +40,14 @@
     <li><a href="/nutrition">Nutrition</a></li>
     <li><a href="/social">Social</a></li>
   </ul>
-  <div class="hamburger" onclick="toggleMobile()" id="hamburger">
+  <button type="button" class="hamburger" onclick="toggleMobile()" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
-  </div>
+  </button>
 </nav>
 
 <!-- ── Mobile Menu ── -->
 <div class="mobile-menu" id="mobileMenu">
-  <button class="close-btn" onclick="toggleMobile()">✕</button>
+  <button class="close-btn" onclick="toggleMobile()" aria-label="Close menu">✕</button>
   <a href="/" onclick="toggleMobile()">Home</a>
   <a href="/menu" onclick="toggleMobile()">Menu</a>
   <a href="/order" onclick="toggleMobile()">Order</a>
@@ -72,7 +71,7 @@
 <!-- ═══════════ PAGE 1 — FRONT (poster cover) ═══════════ -->
 <div class="page pp1">
   <div class="pp1-hero">
-    <img data-cover src="img/hero/menu-top.jpg" alt="Lovely Oven chicken plate with sides">
+    <img data-cover src="img/hero/menu-top.webp" alt="Lovely Oven chicken plate with sides">
     <div class="pp1-shade"></div>
     <span class="pp1-logo"><img src="img/logos/lovely-oven-logo.svg" alt="Lovely Oven logo"></span>
     <div class="pp1-title">
@@ -83,9 +82,9 @@
     </div>
   </div>
   <div class="pp1-strip">
-    <figure><img data-cover src="img/hero/chicken-hero.jpg" alt="Chicken meal"><figcaption>Chicken</figcaption></figure>
-    <figure><img data-cover src="img/menu/chilli-con-carne.jpg" alt="Chilli con carne"><figcaption>Main Meals</figcaption></figure>
-    <figure><img data-cover src="img/menu/bolognaise.jpg" alt="Bolognaise"><figcaption>Beef &amp; Pork</figcaption></figure>
+    <figure><img data-cover src="img/hero/chicken-hero.webp" alt="Chicken meal"><figcaption>Chicken</figcaption></figure>
+    <figure><img data-cover src="img/menu/chilli-con-carne.webp" alt="Chilli con carne"><figcaption>Main Meals</figcaption></figure>
+    <figure><img data-cover src="img/menu/bolognaise.webp" alt="Bolognaise"><figcaption>Beef &amp; Pork</figcaption></figure>
   </div>
   <div class="pp1-bottom">
     <div class="pp1-contact">
@@ -97,7 +96,7 @@
         <span>Online <strong>www.lovelyoven.com</strong></span>
       </div>
     </div>
-    <div class="pp1-qr"><img src="img/menu/zalo-qr.png" alt="Zalo QR code"><span>Scan to chat on Zalo</span></div>
+    <div class="pp1-qr"><img src="img/menu/zalo-qr.webp" alt="Zalo QR code"><span>Scan to chat on Zalo</span></div>
     <div class="pp1-note">
       <span>Free delivery in the FPT area · Danang &amp; Hoi An: book on Grab</span>
       <strong>Turn over for the menu →</strong>
@@ -159,9 +158,9 @@
       </div>
     </div>
         <div class="pg2-photos">
-          <figure><img data-cover src="img/menu/cottage-pie-single.jpg" alt="Cottage pie"><figcaption>Cottage Pie</figcaption></figure>
-          <figure><img data-cover src="img/menu/pumpkin-soup.jpg" alt="Pumpkin soup"><figcaption>Pumpkin Soup</figcaption></figure>
-          <figure><img data-cover src="img/menu/beef-ragout-zoom.jpg" alt="Beef ragout"><figcaption>Beef Ragout</figcaption></figure>
+          <figure><img data-cover src="img/menu/cottage-pie-single.webp" alt="Cottage pie"><figcaption>Cottage Pie</figcaption></figure>
+          <figure><img data-cover src="img/menu/pumpkin-soup.webp" alt="Pumpkin soup"><figcaption>Pumpkin Soup</figcaption></figure>
+          <figure><img data-cover src="img/menu/beef-ragout-zoom.webp" alt="Beef ragout"><figcaption>Beef Ragout</figcaption></figure>
         </div>
     </div>
     <div class="pg2-stack">
@@ -268,7 +267,7 @@
   </div>
 </div>
 
-<script src="js/script.js?v=20261113a"></script>
+<script src="js/script.js?v=20261118c"></script>
 <script>
 /* ── Scroll Reveal ── */
 (function () {
@@ -313,7 +312,18 @@ function downloadPDF() {
 }
 
 /* ── Image download (desktop only) ── */
+function loadHtml2canvas() {
+  if (window.html2canvas) return Promise.resolve();
+  return new Promise((ok, fail) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = ok; s.onerror = () => fail(new Error('Could not load the image tool'));
+    document.head.appendChild(s);
+  });
+}
+
 async function downloadAsImage(btn) {
+  try { await loadHtml2canvas(); } catch (e) { alert('Could not load the image tool. Please check your connection and try again.'); return; }
   document.documentElement.style.setProperty('--pz', 1);
   btn = btn || document.querySelector('.img-download-btn');
   const original = btn.textContent;

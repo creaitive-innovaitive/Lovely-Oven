@@ -21,8 +21,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/styles.css?v=20261101s">
-  <link rel="stylesheet" href="css/social.css?v=20261101s">
+  <link rel="stylesheet" href="css/styles.css?v=20261118c">
+  <link rel="stylesheet" href="css/social.css?v=20261118c">
 </head>
 <body>
 
@@ -39,14 +39,14 @@
     <li><a href="/nutrition">Nutrition</a></li>
     <li><a href="/social">Social</a></li>
   </ul>
-  <div class="hamburger" onclick="toggleMobile()" id="hamburger">
+  <button type="button" class="hamburger" onclick="toggleMobile()" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
-  </div>
+  </button>
 </nav>
 
 <!-- ── Mobile Menu ── -->
 <div class="mobile-menu" id="mobileMenu">
-  <button class="close-btn" onclick="toggleMobile()">✕</button>
+  <button class="close-btn" onclick="toggleMobile()" aria-label="Close menu">✕</button>
   <a href="/" onclick="toggleMobile()">Home</a>
   <a href="/menu" onclick="toggleMobile()">Menu</a>
   <a href="/order" onclick="toggleMobile()">Order</a>
@@ -89,18 +89,18 @@
   </div>
   <div class="food-gallery">
     <div class="g-row">
-      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Chicken thigh meal on Instagram"><img src="img/gallery/chicken-meal.jpg" alt="Chicken thigh meal" loading="lazy"></a>
-      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Chicken pre-order boxes on Instagram"><img src="img/gallery/pre-order.jpg" alt="Chicken pre-order boxes" loading="lazy"></a>
-      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Chilli con carne on Instagram"><img src="img/gallery/gluten-free.jpg" alt="Chilli con carne" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Chicken thigh meal on Instagram"><img src="img/gallery/chicken-meal.webp" alt="Chicken thigh meal" loading="lazy" width="900" height="1200" decoding="async"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Chicken pre-order boxes on Instagram"><img src="img/gallery/pre-order.webp" alt="Chicken pre-order boxes" loading="lazy" width="900" height="675" decoding="async"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Chilli con carne on Instagram"><img src="img/gallery/gluten-free.webp" alt="Chilli con carne" loading="lazy" width="900" height="1200" decoding="async"></a>
     </div>
     <div class="g-row">
-      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Potato wedges on Instagram"><img src="img/gallery/wedges.jpg" alt="Potato wedges" loading="lazy"></a>
-      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Lasagne on Instagram"><img src="img/gallery/lasagne.jpg" alt="Lasagne" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Potato wedges on Instagram"><img src="img/gallery/wedges.webp" alt="Potato wedges" loading="lazy" width="900" height="675" decoding="async"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Lasagne on Instagram"><img src="img/gallery/lasagne.webp" alt="Lasagne" loading="lazy" width="825" height="1100" decoding="async"></a>
     </div>
     <div class="g-row">
-      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Mushy peas on Instagram"><img src="img/gallery/mushy-peas.jpg" alt="Mushy peas" loading="lazy"></a>
-      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Beef ragout on Instagram"><img src="img/gallery/beef-ragout.jpg" alt="Beef ragout" loading="lazy"></a>
-      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Coleslaw on Instagram"><img src="img/gallery/coleslaw.jpg" alt="Coleslaw" loading="lazy"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Mushy peas on Instagram"><img src="img/gallery/mushy-peas.webp" alt="Mushy peas" loading="lazy" width="825" height="1100" decoding="async"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Beef ragout on Instagram"><img src="img/gallery/beef-ragout.webp" alt="Beef ragout" loading="lazy" width="825" height="1100" decoding="async"></a>
+      <a class="g-item" href="https://www.instagram.com/lovelyoven/" target="_blank" rel="noopener" aria-label="Coleslaw on Instagram"><img src="img/gallery/coleslaw.webp" alt="Coleslaw" loading="lazy" width="400" height="459" decoding="async"></a>
     </div>
   </div>
   <p class="soc-tag">Tap any photo to see more on Instagram. Tag <strong>@lovelyoven</strong> in your own meal photos and we may feature you.</p>
@@ -114,7 +114,7 @@
   </div>
   <div class="contact-grid">
     <div class="contact-zalo">
-      <img src="img/payment/zalo-qr.png" alt="Zalo QR code for Lovely Oven" loading="lazy">
+      <img src="img/payment/zalo-qr.webp" alt="Zalo QR code for Lovely Oven" loading="lazy" width="372" height="378" decoding="async">
       <span>Scan to chat on Zalo</span>
     </div>
     <ul class="contact-links">
@@ -171,6 +171,6 @@
   </div>
 </div>
 
-<script src="js/script.js?v=20261113a"></script>
+<script src="js/script.js?v=20261118c"></script>
 </body>
 </html>

@@ -21,10 +21,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/styles.css?v=20261104a">
-  <link rel="stylesheet" href="css/menu.css?v=20261118b">
-  <link rel="stylesheet" href="css/order.css?v=20261116a">
-  <link rel="stylesheet" href="css/doodles.css?v=4">
+  <link rel="stylesheet" href="css/styles.css?v=20261118c">
+  <link rel="stylesheet" href="css/menu.css?v=20261118c">
+  <link rel="stylesheet" href="css/order.css?v=20261118c">
+  <link rel="stylesheet" href="css/doodles.css?v=20261118c">
 </head>
 <body>
 
@@ -41,14 +41,14 @@
     <li><a href="/nutrition">Nutrition</a></li>
     <li><a href="/social">Social</a></li>
   </ul>
-  <div class="hamburger" onclick="toggleMobile()" id="hamburger">
+  <button type="button" class="hamburger" onclick="toggleMobile()" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
-  </div>
+  </button>
 </nav>
 
 <!-- ── Mobile Menu ── -->
 <div class="mobile-menu" id="mobileMenu">
-  <button class="close-btn" onclick="toggleMobile()">✕</button>
+  <button class="close-btn" onclick="toggleMobile()" aria-label="Close menu">✕</button>
   <a href="/" onclick="toggleMobile()">Home</a>
   <a href="/menu" onclick="toggleMobile()">Menu</a>
   <a href="/order" onclick="toggleMobile()">Order</a>
@@ -81,7 +81,7 @@
       <h2>Build Your Own Chicken Meal <span class="o-badge">₫130,000</span></h2>
       <p class="o-sub">Fresh boneless chicken thigh, cooked in our home oven. Includes your choice of marinade, carb and one side. Peri Peri comes mild, medium or hot.</p>
       <div class="o-build-grid">
-        <img class="o-build-img" src="img/gallery/chicken-meal.jpg" alt="Chicken thigh meal" loading="lazy">
+        <img class="o-build-img" src="img/gallery/chicken-meal.webp" alt="Chicken thigh meal" loading="lazy" width="900" height="1200" decoding="async">
         <div class="o-steps">
           <div class="o-step"><b>1 · Cut</b><div><span class="o-chip" data-group="protein" data-value="Chicken Thigh (Boneless)">Chicken Thigh (Boneless)</span></div></div>
           <div class="o-step"><b>2 · Marinade</b><div><span class="o-chip" data-group="flavour" data-value="Peri Peri">Peri Peri</span><span class="o-chip" data-group="flavour" data-value="Salt & Pepper">Salt & Pepper</span><span class="o-chip" data-group="flavour" data-value="Chilli & Lime">Chilli & Lime</span><span class="o-chip" data-group="flavour" data-value="BBQ">BBQ</span></div></div>
@@ -95,7 +95,7 @@
       <h2>Build Your Own Merry Peri Chicken Burger <span class="o-badge">₫100,000</span></h2>
       <p class="o-sub">Boneless chicken breast in a burger, with lettuce, tomato and your choice of flavour. Add as many sides as you like, ₫20,000 each.</p>
       <div class="o-build-grid">
-        <img class="o-build-img" src="img/menu/chicken-burger.jpg?v=2" alt="Chicken burger" loading="lazy">
+        <img class="o-build-img" src="img/menu/chicken-burger.webp?v=2" alt="Chicken burger" loading="lazy" width="800" height="800" decoding="async">
         <div class="o-steps">
           <div class="o-step"><b>1 · Flavour</b><div><span class="o-chip" data-group="bflavour" data-value="BBQ">BBQ</span><span class="o-chip" data-group="bflavour" data-value="Peri Peri">Peri Peri</span><span class="o-chip" data-group="bflavour" data-value="Honey Mustard">Honey Mustard</span></div></div>
           <div class="o-step"><b>2 · Toppings</b><div><span class="o-chip" data-group="btop" data-value="Cheese" data-price="5000">Cheese +5,000</span><span class="o-chip" data-group="btop" data-value="Fried egg" data-price="10000">Fried egg +10,000</span><span class="o-chip" data-group="btop" data-value="Sweet &amp; sour onion" data-price="10000">Sweet &amp; sour onion +10,000</span></div></div>
@@ -108,25 +108,25 @@
     <div class="o-col">
     <section class="o-sec" id="o-set"><h2>Main Meals</h2>
       <div class="o-item" data-group="setmeal" data-rice="1" data-value="Bolognaise 200g" data-label="Bolognaise 200g (Beef & Pork)" data-price="100000">
-        <img class="o-thumb" src="img/menu/bolognaise.jpg" alt="" loading="lazy"><div class="o-info"><strong>Bolognaise 200g</strong><span>Homemade, beef &amp; pork. Add rice +₫10,000.</span></div><span class="o-price">₫100,000</span>
+        <img class="o-thumb" src="img/menu/bolognaise.webp" alt="" loading="lazy" width="900" height="1200" decoding="async"><div class="o-info"><strong>Bolognaise 200g</strong><span>Homemade, beef &amp; pork. Add rice +₫10,000.</span></div><span class="o-price">₫100,000</span>
       </div>
       <div class="o-item" data-group="setmeal" data-value="Chilli Con Carne Set" data-label="Chilli Con Carne Set (Beef & Pork)" data-price="100000">
-        <img class="o-thumb" src="img/dishes/chilli-con-carne.jpg" alt="" loading="lazy"><div class="o-info"><strong>Chilli Con Carne Set</strong><span>Homemade, beef &amp; pork, rice, peas</span></div><span class="o-price">₫100,000</span>
+        <img class="o-thumb" src="img/dishes/chilli-con-carne.webp" alt="" loading="lazy" width="675" height="900" decoding="async"><div class="o-info"><strong>Chilli Con Carne Set</strong><span>Homemade, beef &amp; pork, rice, peas</span></div><span class="o-price">₫100,000</span>
       </div>
       <div class="o-item" data-group="setmeal" data-rice="1" data-value="Beef Ragout — Medium Bowl" data-label="Beef Ragout — Medium Bowl" data-price="90000">
-        <img class="o-thumb" src="img/dishes/beef-ragout.jpg" alt="" loading="lazy"><div class="o-info"><strong>Beef Ragout · Medium bowl</strong><span>Slow-cooked beef ragout. Add rice +₫10,000.</span></div><span class="o-price">₫90,000</span>
+        <img class="o-thumb" src="img/dishes/beef-ragout.webp" alt="" loading="lazy" width="675" height="900" decoding="async"><div class="o-info"><strong>Beef Ragout · Medium bowl</strong><span>Slow-cooked beef ragout. Add rice +₫10,000.</span></div><span class="o-price">₫90,000</span>
       </div>
       <div class="o-item" data-group="setmeal" data-rice="1" data-value="Beef Ragout — Big Bowl" data-label="Beef Ragout — Big Bowl" data-price="120000">
-        <img class="o-thumb" src="img/dishes/beef-ragout.jpg" alt="" loading="lazy"><div class="o-info"><strong>Beef Ragout · Big bowl</strong><span>Slow-cooked beef ragout. Add rice +₫10,000.</span></div><span class="o-price">₫120,000</span>
+        <img class="o-thumb" src="img/dishes/beef-ragout.webp" alt="" loading="lazy" width="675" height="900" decoding="async"><div class="o-info"><strong>Beef Ragout · Big bowl</strong><span>Slow-cooked beef ragout. Add rice +₫10,000.</span></div><span class="o-price">₫120,000</span>
       </div>
       <div class="o-item" data-group="setmeal" data-side="1" data-value="Cottage Pie & 1 side" data-label="Cottage Pie & 1 side" data-price="100000">
-        <img class="o-thumb" src="img/dishes/cottage-pie.jpg" alt="" loading="lazy"><div class="o-info"><strong>Mika's Cottage Pie &amp; 1 side</strong><span>Homemade cottage pie with your choice of one side.</span></div><span class="o-price">₫100,000</span>
+        <img class="o-thumb" src="img/dishes/cottage-pie.webp" alt="" loading="lazy" width="675" height="900" decoding="async"><div class="o-info"><strong>Mika's Cottage Pie &amp; 1 side</strong><span>Homemade cottage pie with your choice of one side.</span></div><span class="o-price">₫100,000</span>
       </div>
       <div class="o-item" data-group="setmeal" data-soup="1" data-value="Pumpkin Soup with Crunchy Bacon — Small" data-label="Pumpkin Soup with Crunchy Bacon — Small" data-price="60000">
-        <img class="o-thumb" src="img/menu/pumpkin-soup.jpg" alt="" loading="lazy"><div class="o-info"><strong>Pumpkin Soup with Crunchy Bacon · Small</strong><span>Pumpkin, cream, butter, potato and herbs, topped with crunchy bacon. Soup toppings available.</span></div><span class="o-price">₫60,000</span>
+        <img class="o-thumb" src="img/menu/pumpkin-soup.webp" alt="" loading="lazy" width="678" height="452" decoding="async"><div class="o-info"><strong>Pumpkin Soup with Crunchy Bacon · Small</strong><span>Pumpkin, cream, butter, potato and herbs, topped with crunchy bacon. Soup toppings available.</span></div><span class="o-price">₫60,000</span>
       </div>
       <div class="o-item" data-group="setmeal" data-soup="1" data-value="Pumpkin Soup with Crunchy Bacon — Medium" data-label="Pumpkin Soup with Crunchy Bacon — Medium" data-price="90000">
-        <img class="o-thumb" src="img/menu/pumpkin-soup.jpg" alt="" loading="lazy"><div class="o-info"><strong>Pumpkin Soup with Crunchy Bacon · Medium</strong><span>Pumpkin, cream, butter, potato and herbs, topped with crunchy bacon. Soup toppings available.</span></div><span class="o-price">₫90,000</span>
+        <img class="o-thumb" src="img/menu/pumpkin-soup.webp" alt="" loading="lazy" width="678" height="452" decoding="async"><div class="o-info"><strong>Pumpkin Soup with Crunchy Bacon · Medium</strong><span>Pumpkin, cream, butter, potato and herbs, topped with crunchy bacon. Soup toppings available.</span></div><span class="o-price">₫90,000</span>
       </div>
     </section>
     <section class="o-sec" id="o-toppings"><h2>Soup Toppings <small>pumpkin soup only</small></h2>
@@ -272,7 +272,7 @@
 </div>
 
 <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-<script src="js/script.js?v=20261113a"></script>
-<script src="js/menu-order.js?v=20261118b"></script>
+<script src="js/script.js?v=20261118c"></script>
+<script src="js/menu-order.js?v=20261118c"></script>
 </body>
 </html>
