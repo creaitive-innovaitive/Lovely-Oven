@@ -132,3 +132,14 @@ end $$;
 drop trigger if exists web_orders_guard on web_orders;
 create trigger web_orders_guard before insert on web_orders for each row execute function web_orders_guard();
 create index if not exists web_orders_created_idx on web_orders (created_at);
+
+-- ---- Added: admin tables need the authenticator code (aal2) as well as the password ----
+-- Run this ONLY after you have signed in at /admin and finished the authenticator setup, or you will lock yourself out of
+-- the admin data (expenses, settings, receipts). Orders and the staff screen are unaffected.
+-- If you ever lose the authenticator: in the SQL editor run
+--   delete from auth.mfa_factors where user_id = (select id from auth.users where lower(email) = lower('your admin email'));
+-- then sign in again and set up a new one.
+create or replace function is_admin() returns boolean language sql stable security definer set search_path = public as $$
+  select coalesce(auth.jwt() ->> 'aal', '') = 'aal2'
+     and exists (select 1 from admins where lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+$$;

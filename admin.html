@@ -96,6 +96,17 @@ a.btn { display: inline-grid; place-items: center; text-decoration: none; color:
     <input type="email" id="email" autocomplete="username" placeholder="Email" aria-label="Email" required>
     <input type="password" id="pw" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
     <button class="btn primary" type="submit">Sign in</button></form>
+  <form id="mfaform" hidden><h1>Enter your code</h1><p class="sub" id="mfamsg">Open your authenticator app and enter the 6-digit code for Lovely Oven Admin.</p>
+    <input type="text" id="mfacode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="123456" aria-label="6-digit code" required>
+    <button class="btn primary" type="submit">Verify</button>
+    <button class="btn small" type="button" id="mfaout">Sign out</button></form>
+  <form id="enrolform" hidden><h1>Set up your authenticator</h1>
+    <p class="sub" id="enrolmsg">Scan this code with an authenticator app (Google Authenticator, 1Password, Authy), then enter the 6-digit code it shows.</p>
+    <img id="enrolqr" alt="QR code to add Lovely Oven Admin to your authenticator app" width="200" height="200" style="justify-self:center;background:#fff;border-radius:10px">
+    <p class="sub">Cannot scan? Type this key into your app and keep a copy somewhere safe: <code id="enrolsecret" style="word-break:break-all;user-select:all"></code></p>
+    <input type="text" id="enrolcode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="123456" aria-label="6-digit code" required>
+    <button class="btn primary" type="submit">Turn on</button>
+    <button class="btn small" type="button" id="enrolout">Sign out</button></form>
 </div>
 
 <div class="wrap" id="app" hidden>
@@ -432,7 +443,59 @@ function watchLive() {
 }
 
 /* ---------- login ---------- */
-function showLogin(msg) { $('app').hidden = true; $('login').hidden = false; $('loginmsg').textContent = msg || 'Sign in with your admin account.'; }
+function showForm(id) {
+  ['loginform', 'mfaform', 'enrolform'].forEach(function (f) { $(f).hidden = f !== id; });
+  $('app').hidden = true; $('login').hidden = false;
+  var first = $(id).querySelector('input:not([type=hidden])'); if (first && id !== 'loginform') setTimeout(function () { first.focus(); }, 0);
+}
+function showLogin(msg) { showForm('loginform'); $('loginmsg').textContent = msg || 'Sign in with your admin account.'; }
+
+/* ---------- two-step sign-in (authenticator app) ---------- */
+function signOutToLogin(msg) { SB.auth.signOut().then(function () { $('pw').value = ''; showLogin(msg); }); }
+function gate(session) {
+  SB.auth.mfa.getAuthenticatorAssuranceLevel().then(function (r) {
+    var a = r.data;
+    if (r.error || !a) { showLogin('Could not check your sign-in. Please try again.'); return; }
+    if (a.currentLevel === 'aal2') enter(session);
+    else if (a.nextLevel === 'aal2') askCode(session);
+    else startEnrol(session);
+  });
+}
+function askCode(session) {
+  SB.auth.mfa.listFactors().then(function (r) {
+    var f = r.data && r.data.totp && r.data.totp[0];
+    if (!f) { startEnrol(session); return; }
+    showForm('mfaform'); $('mfacode').value = '';
+    $('mfaform').onsubmit = function (ev) {
+      ev.preventDefault(); $('mfamsg').textContent = 'Checking…';
+      SB.auth.mfa.challengeAndVerify({ factorId: f.id, code: $('mfacode').value.trim() }).then(function (v) {
+        if (v.error) { $('mfamsg').textContent = 'That code did not work. Wait for the next one and try again.'; $('mfacode').value = ''; $('mfacode').focus(); }
+        else enter(session);
+      });
+    };
+  });
+}
+function startEnrol(session) {
+  // clear half-finished attempts so a new one can be created
+  SB.auth.mfa.listFactors().then(function (l) {
+    var stale = ((l.data && l.data.all) || []).filter(function (f) { return f.status === 'unverified'; });
+    return Promise.all(stale.map(function (f) { return SB.auth.mfa.unenroll({ factorId: f.id }); }));
+  }).then(function () {
+    return SB.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Admin ' + new Date().toISOString() });
+  }).then(function (r) {
+    if (r.error || !r.data) { showLogin('Could not start setup: ' + ((r.error && r.error.message) || 'unknown error')); return; }
+    var id = r.data.id;
+    $('enrolqr').src = r.data.totp.qr_code; $('enrolsecret').textContent = r.data.totp.secret;
+    showForm('enrolform'); $('enrolcode').value = '';
+    $('enrolform').onsubmit = function (ev) {
+      ev.preventDefault(); $('enrolmsg').textContent = 'Checking…';
+      SB.auth.mfa.challengeAndVerify({ factorId: id, code: $('enrolcode').value.trim() }).then(function (v) {
+        if (v.error) { $('enrolmsg').textContent = 'That code did not work. Check the time on your phone and try the next code.'; $('enrolcode').value = ''; }
+        else enter(session);
+      });
+    };
+  });
+}
 function enter(session) {
   SB.from('admins').select('email').then(function (r) {
     if (r.error || !r.data || !r.data.length) { SB.auth.signOut(); showLogin('That account is not an admin.'); return; }
@@ -453,10 +516,11 @@ function init() {
   $('loginform').onsubmit = function (ev) {
     ev.preventDefault(); $('loginmsg').textContent = 'Signing in…';
     SB.auth.signInWithPassword({ email: $('email').value.trim(), password: $('pw').value }).then(function (r) {
-      if (r.error) showLogin('Wrong email or password.'); else enter(r.data.session);
+      if (r.error) showLogin('Wrong email or password.'); else gate(r.data.session);
     });
   };
-  SB.auth.getSession().then(function (r) { if (r.data.session) enter(r.data.session); else showLogin(); });
+  $('mfaout').onclick = $('enrolout').onclick = function () { signOutToLogin(); };
+  SB.auth.getSession().then(function (r) { if (r.data.session) gate(r.data.session); else showLogin(); });
 }
 init();
 })();
