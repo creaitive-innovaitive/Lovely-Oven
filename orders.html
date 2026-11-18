@@ -923,7 +923,7 @@ function readData() {
   var web = sb.from('web_orders').select('*').eq('status', 'New').order('id').then(function (r) { return r.error ? [] : r.data; }, function () { return []; });
   return Promise.all([fetchAll('orders', 'id'), fetchAll('meals', 'seq'), web]).then(function (rs) {
     return {
-      today: localToday(), web: rs[2].map(function (w) { return { id: w.id, customer: w.customer, notes: w.notes, items: w.items, total: w.total, status: w.status }; }),
+      today: localToday(), web: rs[2].map(function (w) { return { id: w.id, customer: w.customer, notes: w.notes, items: w.items, total: w.total, status: w.status, deliveryDate: w.delivery_date || '', phone: w.phone || '', address: w.address || '' }; }),
       orders: rs[0].map(function (r) {
         return { row: r.id, date: r.order_date, name: r.customer, qty: r.qty, food: r.food || '', pfood: r.pfood, extra: r.extra || '', pextra: r.pextra, disc: r.disc, paid: r.paid, notes: r.notes || '', items: r.items || [], oid: r.oid || '', method: r.method || '' };
       }),
@@ -1381,7 +1381,8 @@ function renderPicker() {
 
 /* ------------------------------------------------------------------ website orders waiting */
 function loadWebOrder(w) {
-  D = newDraft(); D.webId = w.id; D.name = w.customer || ''; D.notes = w.notes || '';
+  D = newDraft(); D.webId = w.id; D.name = w.customer || ''; D.notes = [w.phone, w.address, w.notes].filter(Boolean).join(' · ');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(w.deliveryDate || '')) D.date = w.deliveryDate;
   D.items = w.items.map(function (it) { var l = JSON.parse(JSON.stringify(it)); l.base = BYVAL[l.value] ? BYVAL[l.value].price : l.price; l.opts = l.opts || {}; return l; });
   var f = findCustomer(D.name); if (f && f.method) D.method = f.method;
   closeModal(); scheduleOrder.reset(); updateOrder();
@@ -1391,6 +1392,9 @@ function openWeb() {
     return h('div', { class: 'box', style: 'margin-top:10px' },
       h('strong', { text: (w.customer || 'No name') + ' · ' + fmt(w.total || 0) }),
       w.items.map(function (it) { return h('div', { class: 'sub', text: it.qty + ' × ' + (it.value || it.label) + (it.detail ? ' · ' + it.detail : '') }); }),
+      w.deliveryDate ? h('div', { class: 'sub', text: 'Deliver: ' + dayLong(w.deliveryDate) }) : null,
+      w.phone ? h('div', { class: 'sub', text: 'Phone: ' + w.phone }) : null,
+      w.address ? h('div', { class: 'sub', text: 'Address: ' + w.address }) : null,
       w.notes ? h('div', { class: 'sub', text: 'Notes: ' + w.notes }) : null,
       h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', text: 'Use for an order', onclick: function () { loadWebOrder(w); } }),
         h('button', { type: 'button', class: 'btn danger', text: 'Dismiss', onclick: function () { closeModal(); act('dismissWeb', { id: w.id }, 'Dismissed'); } })));

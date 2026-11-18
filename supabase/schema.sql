@@ -62,7 +62,8 @@ grant insert on web_orders to anon;
 
 -- ---- Added: admin panel (admin.html). Applied to the live project as migration "admin_panel". ----
 create table if not exists admins (email text primary key);
-insert into admins (email) values ('gbyatt@gmail.com') on conflict do nothing;
+-- Add the admin's email once in the SQL editor (kept out of this public repo):
+--   insert into admins (email) values ('you@example.com') on conflict do nothing;
 alter table admins enable row level security;
 create or replace function is_admin() returns boolean language sql stable security definer set search_path = public as $$
   select exists (select 1 from admins where lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
@@ -97,3 +98,37 @@ begin
     end if;
   end loop;
 end $$;
+
+-- ---- Added: delivery details on website orders, and limits on what the public form can insert ----
+alter table web_orders add column if not exists delivery_date date;
+alter table web_orders add column if not exists phone   text not null default '';
+alter table web_orders add column if not exists address text not null default '';
+
+drop policy if exists "website can add" on web_orders;
+create policy "website can add" on web_orders for insert to anon
+  with check (status = 'New' and char_length(customer) <= 60 and char_length(notes) <= 300
+              and char_length(phone) <= 20 and char_length(address) <= 250
+              and jsonb_typeof(items) = 'array' and jsonb_array_length(items) between 1 and 30);
+
+-- The total is always recomputed from the items, items must be sane, and at most 20 website orders are
+-- accepted in any 10 minutes (stops a script flooding the staff screen; real orders still arrive by WhatsApp/Zalo).
+create or replace function web_orders_guard() returns trigger language plpgsql security definer set search_path = public as $$
+declare it jsonb; t numeric := 0; q numeric; p numeric;
+begin
+  if octet_length(new.items::text) > 20000 then raise exception 'order too large'; end if;
+  for it in select * from jsonb_array_elements(new.items) loop
+    if jsonb_typeof(it) <> 'object' then raise exception 'bad item'; end if;
+    if jsonb_typeof(it -> 'qty') is distinct from 'number' or jsonb_typeof(it -> 'price') is distinct from 'number' then raise exception 'bad item'; end if;
+    q := (it ->> 'qty')::numeric; p := (it ->> 'price')::numeric;
+    if q < 1 or q > 50 or p < 0 or p > 2000000 then raise exception 'bad item'; end if;
+    t := t + q * p;
+  end loop;
+  new.total := round(t);
+  if (select count(*) from web_orders where created_at > now() - interval '10 minutes') >= 20 then
+    raise exception 'too many orders, try again shortly';
+  end if;
+  return new;
+end $$;
+drop trigger if exists web_orders_guard on web_orders;
+create trigger web_orders_guard before insert on web_orders for each row execute function web_orders_guard();
+create index if not exists web_orders_created_idx on web_orders (created_at);

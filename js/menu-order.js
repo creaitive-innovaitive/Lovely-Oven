@@ -13,6 +13,26 @@
   const ORDERS_URL = 'https://drkebbkyipipxwcclihc.supabase.co/rest/v1/web_orders';
   const ORDERS_KEY = 'sb_publishable_x2cn9JVmEk5eCUJ3CtiAgA_5zLN4XqM';
 
+  /* ── Delivery rules: Monday to Friday, 11am to 2pm, Vietnam time ── */
+  const VN_TZ = 'Asia/Ho_Chi_Minh';
+  const CUTOFF_HOUR = 14;   // deliveries end at 2pm, so today is only offered before then
+  const MAX_DAYS_AHEAD = 90;
+  function vnNow() {
+    const p = {};
+    new Intl.DateTimeFormat('en-CA', { timeZone: VN_TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' })
+      .formatToParts(new Date()).forEach(x => { p[x.type] = x.value; });
+    return { date: `${p.year}-${p.month}-${p.day}`, hour: +p.hour };
+  }
+  const addDays   = (s, n) => { const d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  const isWeekend = s => [0, 6].includes(new Date(s + 'T00:00:00Z').getUTCDay());
+  const prettyDate = s => new Date(s + 'T00:00:00Z').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
+  function earliestDate() {
+    const n = vnNow();
+    let d = n.hour < CUTOFF_HOUR ? n.date : addDays(n.date, 1);
+    while (isWeekend(d)) d = addDays(d, 1);
+    return d;
+  }
+
   /* ── Order state ─────────────────────────────────────── */
   // Chicken meal: one item requiring all 4 steps
   // extras / setMeals: quantity-based, each keyed by item value
@@ -316,15 +336,118 @@
     if (modal) {
       modal.classList.add('lo-modal-open');
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('lo-open');
     }
   };
 
   window.loCloseModal = function (e) {
     if (e && e.target !== document.getElementById('loModal')) return;
     const modal = document.getElementById('loModal');
-    if (modal) modal.classList.remove('lo-modal-open');
+    if (modal) {
+      modal.classList.remove('lo-modal-open');
+      modal.querySelector('.lo-modal').classList.remove('lo-sent');
+    }
     document.body.style.overflow = '';
+    document.body.classList.remove('lo-open');
   };
+
+  /* After sending: clear the cart and close */
+  window.loFinish = function () {
+    window.loClearSelection();
+    lastPosted = '';
+    window.loCloseModal();
+  };
+
+  /* ── Delivery details form ───────────────────────────── */
+  const $id = id => document.getElementById(id);
+  const val = id => ($id(id)?.value || '').trim();
+  const SAVED_KEY = 'lo-details';
+
+  function readDetails() {
+    return { name: val('loName').slice(0, 60), phone: val('loPhone').slice(0, 20), date: val('loDate'),
+             address: val('loAddress').slice(0, 250), notes: val('loNotes').slice(0, 300) };
+  }
+
+  function checkDetails(d) {
+    const n = vnNow(), min = earliestDate();
+    if (!d.name)  return ['loName', 'Please add your name.'];
+    if (d.phone.replace(/\D/g, '').length < 8) return ['loPhone', 'Please add a phone number Mika can reach you on.'];
+    if (!d.date)  return ['loDate', 'Please choose a delivery date.'];
+    if (isWeekend(d.date)) return ['loDate', 'We deliver Monday to Friday. Please pick a weekday.'];
+    if (d.date < min) return ['loDate', d.date === n.date ? `Today's delivery window has closed. The earliest date is ${prettyDate(min)}.` : `That date has passed. The earliest date is ${prettyDate(min)}.`];
+    if (d.date > addDays(n.date, MAX_DAYS_AHEAD)) return ['loDate', 'Please choose a date within the next three months.'];
+    if (d.address.length < 6) return ['loAddress', 'Please add your delivery address.'];
+    return null;
+  }
+
+  /* Anything half-finished that would send a confusing order */
+  function orderProblem() {
+    const missing = STEPS.filter(s => !ORDER[s.key]).map(s => s.label);
+    if (STEPS.some(s => ORDER[s.key]) && missing.length) return `Your chicken meal still needs: ${missing.join(', ')}.`;
+    if (ORDER.flavour === 'Peri Peri' && !ORDER.spiceLevel) return 'Please choose a heat level for your Peri Peri chicken.';
+    if (burgerStarted() && !burgerComplete()) return 'Your burger still needs a flavour.';
+    const noSide = Object.values(ORDER.setMeals).find(i => i.hasSide && !i.side);
+    if (noSide) return `Please choose a side for ${noSide.label}.`;
+    if (!buildItems().length) return 'Your order is empty.';
+    return null;
+  }
+
+  function showErr(id, msg) {
+    document.querySelectorAll('.lo-invalid').forEach(el => el.classList.remove('lo-invalid'));
+    const box = $id('loErr');
+    if (!box) return;
+    box.hidden = !msg;
+    box.textContent = msg || '';
+    if (!msg) return;
+    const field = id && $id(id);
+    if (field) { field.classList.add('lo-invalid'); field.focus({ preventScroll: true }); }
+    (field || box).scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  function updateDateHint() {
+    const hint = $id('loDateHint'), d = val('loDate');
+    if (!hint) return;
+    hint.textContent = !d ? 'Monday to Friday, delivered 11am to 2pm.'
+      : d === vnNow().date ? 'Same-day orders depend on what is left. Mika will confirm.'
+      : 'Delivered 11am to 2pm.';
+  }
+
+  /* Returns the details if the form and the order are good to send, otherwise shows what is wrong */
+  function prepareSend() {
+    const problem = orderProblem();
+    if (problem) { showErr(null, problem); return null; }
+    const d = readDetails(), bad = checkDetails(d);
+    if (bad) { showErr(bad[0], bad[1]); return null; }
+    showErr();
+    try { localStorage.setItem(SAVED_KEY, JSON.stringify({ name: d.name, phone: d.phone, address: d.address })); } catch (e) { /* private mode */ }
+    return d;
+  }
+
+  function showSent(how, d, retry) {
+    const total = buildItems().reduce((n, i) => n + i.price * i.qty, 0);
+    const box = $id('loConfirm');
+    if (!box) return;
+    $id('loConfirmTitle').textContent = how === 'whatsapp' ? 'One more step' : 'Order copied';
+    $id('loConfirmText').textContent = how === 'whatsapp'
+      ? 'WhatsApp has opened with your order typed in. Press Send there. Your order only reaches Mika once you do, and she will confirm on WhatsApp.'
+      : 'Your order is copied. Paste it into the Zalo chat and press Send. Your order only reaches Mika once you do, and she will confirm on Zalo.';
+    const rows = [['Delivery', `${prettyDate(d.date)}, 11am to 2pm`], ['To', d.address], ['Total', fmt(total)]];
+    const card = $id('loConfirmCard');
+    card.textContent = '';
+    rows.forEach(([k, v]) => {
+      const row = document.createElement('div');
+      const a = document.createElement('span'), b = document.createElement('strong');
+      a.textContent = k; b.textContent = v;
+      row.append(a, b);
+      card.appendChild(row);
+    });
+    const again = $id('loConfirmAgain');
+    again.textContent = how === 'whatsapp' ? 'Open WhatsApp again' : 'Open Zalo again';
+    again.onclick = retry;
+    document.querySelector('#loModal .lo-modal').classList.add('lo-sent');
+    box.hidden = false;
+    $id('loModal').scrollTop = 0;
+  }
 
   function buildSummary() {
     const el = document.getElementById('loSummary');
@@ -475,9 +598,7 @@
   }
 
   /* ── Build the message text ──────────────────────────── */
-  function buildMessage() {
-    const name     = (document.getElementById('loName')?.value  || '').trim();
-    const notes    = (document.getElementById('loNotes')?.value || '').trim();
+  function buildMessage(d) {
     const spice    = ORDER.spiceLevel ? ` (${ORDER.spiceLevel})` : '';
     const hasChicken = STEPS.some(s => ORDER[s.key]);
     const setKeys  = Object.keys(ORDER.setMeals);
@@ -550,8 +671,11 @@
     msg += `💰 FINAL TOTAL: ₫${grand.toLocaleString()}\n`;
     msg += `━━━━━━━━━━━━━━━━\n\n`;
 
-    if (name)  msg += `👤 Name:   ${name}\n`;
-    if (notes) msg += `📝 Notes:  ${notes}\n`;
+    msg += `📅 Delivery: ${prettyDate(d.date)}, 11am to 2pm\n`;
+    msg += `👤 Name:    ${d.name}\n`;
+    msg += `📞 Phone:   ${d.phone}\n`;
+    msg += `📍 Address: ${d.address}\n`;
+    if (d.notes) msg += `📝 Notes:   ${d.notes}\n`;
     msg += `\n— Sent from lovelyoven.com`;
     return msg;
   }
@@ -578,48 +702,49 @@
   }
 
   let lastPosted = '';
-  function postToDashboard(msg) {
+  function postToDashboard(msg, d) {
     const items = buildItems();
     if (!items.length || msg === lastPosted) return;   // same order sent again (e.g. WhatsApp then Zalo): record it once
     lastPosted = msg;
     const total = items.reduce((n, i) => n + i.price * i.qty, 0);
-    const name = (document.getElementById('loName')?.value || '').trim().slice(0, 60);
-    const notes = (document.getElementById('loNotes')?.value || '').trim().slice(0, 300);
+    const send = body => fetch(ORDERS_URL, { method: 'POST', keepalive: true,
+      headers: { apikey: ORDERS_KEY, Authorization: 'Bearer ' + ORDERS_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify(body) });
+    // If the database does not have the delivery columns yet, fall back to the old shape with the details folded into notes.
+    const legacy = { customer: d.name, items, total,
+      notes: ['Deliver ' + d.date, d.phone, d.address, d.notes].filter(Boolean).join(' · ').slice(0, 300) };
     try {
-      fetch(ORDERS_URL, { method: 'POST', keepalive: true,
-        headers: { apikey: ORDERS_KEY, Authorization: 'Bearer ' + ORDERS_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-        body: JSON.stringify({ customer: name, notes, items, total }) }).catch(() => {});
+      send({ customer: d.name, notes: d.notes, items, total, delivery_date: d.date, phone: d.phone, address: d.address })
+        .then(r => { if (r.status === 400) return send(legacy); })
+        .catch(() => {});
     } catch (e) { /* the WhatsApp/Zalo message is the order; this copy is a bonus */ }
   }
 
   /* ── Send actions ────────────────────────────────────── */
   window.loSendWhatsApp = function () {
-    const msg = buildMessage();
-    postToDashboard(msg);
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+    const d = prepareSend();
+    if (!d) return;
+    const msg = buildMessage(d);
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    postToDashboard(msg, d);
+    window.open(url, '_blank');
+    showSent('whatsapp', d, () => window.open(url, '_blank'));
   };
 
   window.loSendZalo = function () {
-    const msg = buildMessage();
-    postToDashboard(msg);
-    const btn = document.getElementById('loZaloBtn');
+    const d = prepareSend();
+    if (!d) return;
+    const msg = buildMessage(d);
+    postToDashboard(msg, d);
+    const open = () => window.open(`https://zalo.me/${ZALO_NUMBER}`, '_blank');
+    const again = () => { navigator.clipboard.writeText(msg).catch(() => {}); open(); };
 
-    navigator.clipboard.writeText(msg).then(() => {
-      if (btn) {
-        btn.innerHTML = '<span class="lo-send-icon">✓</span> Copied! Opening Zalo…';
-        btn.disabled = true;
-        setTimeout(() => {
-          btn.innerHTML = '<span class="lo-send-icon">📱</span> Send via Zalo';
-          btn.disabled = false;
-        }, 3500);
-      }
-    }).catch(() => {
+    navigator.clipboard.writeText(msg).catch(() => {
       window.prompt('Copy this message and paste it into Zalo:', msg);
+    }).finally(() => {
+      showSent('zalo', d, again);
+      setTimeout(open, 400);
     });
-
-    setTimeout(() => {
-      window.open(`https://zalo.me/${ZALO_NUMBER}`, '_blank');
-    }, 400);
   };
 
   /* ── Inject HTML ─────────────────────────────────────── */
@@ -652,9 +777,21 @@
     <div id="loSummary" class="lo-summary"></div>
 
     <div class="lo-modal-fields">
-      <input  type="text" id="loName"  class="lo-input"    placeholder="Your name (optional)" />
-      <textarea           id="loNotes" class="lo-textarea" placeholder="Special requests, delivery address, anything else…" rows="3"></textarea>
+      <label class="lo-label" for="loName">Your name</label>
+      <input  type="text" id="loName" class="lo-input" autocomplete="name" maxlength="60" />
+      <label class="lo-label" for="loPhone">Phone (WhatsApp or Zalo)</label>
+      <input  type="tel" id="loPhone" class="lo-input" autocomplete="tel" inputmode="tel" maxlength="20" />
+      <label class="lo-label" for="loDate">Delivery date</label>
+      <input  type="date" id="loDate" class="lo-input" />
+      <small class="lo-field-hint" id="loDateHint">Monday to Friday, delivered 11am to 2pm.</small>
+      <label class="lo-label" for="loAddress">Delivery address</label>
+      <textarea id="loAddress" class="lo-textarea" rows="2" maxlength="250" autocomplete="street-address"></textarea>
+      <small class="lo-field-hint">Free delivery in the FPT Urban area. Elsewhere in Danang or Hoi An, please order on Grab.</small>
+      <label class="lo-label" for="loNotes">Anything else <span>(optional)</span></label>
+      <textarea id="loNotes" class="lo-textarea" rows="2" maxlength="300" placeholder="Allergies, special requests…"></textarea>
     </div>
+
+    <p class="lo-err" id="loErr" role="alert" hidden></p>
 
     <div class="lo-modal-actions">
       <button class="lo-send-btn lo-whatsapp-btn" onclick="loSendWhatsApp()">
@@ -669,10 +806,29 @@
       WhatsApp opens with your order pre-typed. Zalo copies it to your clipboard — just paste when the chat opens.
     </p>
 
+    <div class="lo-confirm" id="loConfirm" hidden>
+      <div class="lo-confirm-tick" aria-hidden="true">✓</div>
+      <h3 class="lo-modal-title" id="loConfirmTitle"></h3>
+      <p id="loConfirmText"></p>
+      <div class="lo-confirm-card" id="loConfirmCard"></div>
+      <button type="button" class="lo-send-btn lo-again" id="loConfirmAgain"></button>
+      <button type="button" class="lo-confirm-done" onclick="loFinish()">Done, clear my order</button>
+    </div>
+
   </div>
 </div>`;
 
     document.body.insertAdjacentHTML('beforeend', barHTML + modalHTML);
+
+    const date = $id('loDate');
+    date.min = earliestDate();
+    date.max = addDays(vnNow().date, MAX_DAYS_AHEAD);
+    date.addEventListener('input', updateDateHint);
+    try {
+      const saved = JSON.parse(localStorage.getItem(SAVED_KEY) || 'null');
+      if (saved) { $id('loName').value = saved.name || ''; $id('loPhone').value = saved.phone || ''; $id('loAddress').value = saved.address || ''; }
+    } catch (e) { /* private mode */ }
+    document.querySelectorAll('#loModal .lo-input, #loModal .lo-textarea').forEach(el => el.addEventListener('input', () => el.classList.remove('lo-invalid')));
   }
 
   /* ── Kick off ────────────────────────────────────────── */
