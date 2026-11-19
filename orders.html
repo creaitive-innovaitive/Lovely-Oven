@@ -737,6 +737,14 @@ function planServeOne_(p, data) {
   return { update: null, meal: m, info: { name: baseName_(o.name) } };
 }
 
+/* a one-off dish for a single meal is stored in meals.note behind this prefix, so no schema change is needed */
+var DISH_PFX = '@ ';
+function planEditMeal_(p, data) {
+  var m = findMeal_(data, p.id), ix = indexData_(data), o = ix.byOid[m.oid], txt = String(p.dish || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+  if (m.status === STATUS_.CANCELLED) fail_('That meal is cancelled.');
+  return { id: m.id, note: txt ? DISH_PFX + txt : (o && o.food) || '', info: { name: baseName_(m.name), reset: !txt } };
+}
+
 function planMove_(p, data) {
   var m = findMeal_(data, p.id), ix = indexData_(data), o = ix.byOid[m.oid];
   if (m.status !== STATUS_.SCHEDULED) fail_('Only a scheduled meal can be moved.');
@@ -904,6 +912,7 @@ function makeMock() {
     scheduleMeals: function (p) { var plan = planSchedule_(p, data()); addMeals(plan.meals); return out(plan.info); },
     setMealStatus: function (p) { var plan = planMealStatus_(p, data()); findMeal_(data(), plan.id).status = plan.status; return out(plan.info); },
     moveMeal: function (p) { var plan = planMove_(p, data()); findMeal_(data(), plan.id).date = plan.date; return out(plan.info); },
+    editMeal: function (p) { var plan = planEditMeal_(p, data()); findMeal_(data(), plan.id).note = plan.note; return out(plan.info); },
     serveOne: function (p) {
       var plan = planServeOne_(p, data());
       if (plan.update) { var m = findMeal_(data(), plan.update.id); m.date = plan.update.date; m.status = STATUS_.SERVED; } else addMeals([plan.meal]);
@@ -1025,6 +1034,9 @@ var sbApi = {
   },
   moveMeal: function (p) {
     return readData().then(function (d) { var plan = planMove_(p, d); return sb.from('meals').update({ meal_date: plan.date }).eq('id', plan.id).then(ok).then(function () { return reply(plan.info); }); });
+  },
+  editMeal: function (p) {
+    return readData().then(function (d) { var plan = planEditMeal_(p, d); return sb.from('meals').update({ note: plan.note }).eq('id', plan.id).then(ok).then(function () { return reply(plan.info); }); });
   },
   serveOne: function (p) {
     return readData().then(function (d) {
@@ -1471,6 +1483,11 @@ function dishesFor(date) {
     var here = [], first = ms[0].date === date;
     ms.forEach(function (m, idx) { if (m.date === date) here.push(idx); });
     if (!here.length) return;
+    here = here.filter(function (idx) {
+      var n = ms[idx].note || '';
+      if (n.indexOf(DISH_PFX) !== 0) return true;
+      putFree('Meals', n.slice(DISH_PFX.length), 1); return false;
+    });
     if (!o.items || !o.items.length) { putFree('Meals', o.food, here.length); if (first) putFree('Extras', o.extra, 1); return; }
     var units = [];
     o.items.forEach(function (it) { if (isMain_(it)) for (var k = 0; k < it.qty; k++) units.push(it); });
@@ -1711,6 +1728,7 @@ function renderToday() {
 }
 /* the one dish this meal is for: an order's dishes are dealt out one per meal in date order (same rule as the Dishes panel) */
 function mealDish(m) {
+  if (m.note && m.note.indexOf(DISH_PFX) === 0) return m.note.slice(DISH_PFX.length);
   var o = S.orders.filter(function (x) { return x.oid && x.oid === m.oid; })[0];
   if (!o) return m.note;
   var ms = S.meals.filter(function (x) { return x.oid === m.oid && x.status !== STATUS_.CANCELLED; }).sort(cmpMeal_), idx = -1, i;
@@ -1735,6 +1753,7 @@ function mealCard(m, showDate) {
   } else {
     acts = [
       h('button', { type: 'button', class: 'btn ok', text: 'Served', onclick: function () { act('setMealStatus', { id: m.id, status: STATUS_.SERVED }); } }),
+      h('button', { type: 'button', class: 'btn', text: 'Edit', onclick: function () { openEditMeal(m); } }),
       h('button', { type: 'button', class: 'btn', text: 'Move', onclick: function () { openMove(m); } }),
       h('button', { type: 'button', class: 'btn danger', text: 'Cancel', onclick: function () { TV.confirm[m.id] = true; renderToday(); } })
     ];
@@ -1762,6 +1781,24 @@ function cancelAsk(m) {
 
 function openModal(content) { var s = $('sheet'); s.textContent = ''; add(s, content); $('modal').hidden = false; }
 function closeModal() { $('modal').hidden = true; }
+function openEditMeal(m) {
+  var cur = mealDish(m) || '', opts = ['Chicken meal'], inp;
+  MENU.sections.forEach(function (sec) { if (sec.id === 'set' || sec.id === 'box') sec.items.forEach(function (it) { opts.push(it.value); }); });
+  opts.push('Chicken Burger');
+  inp = h('input', { type: 'text', list: 'dishlist', autocomplete: 'off', 'aria-label': 'Dish for this meal', value: cur, placeholder: 'e.g. Chicken meal, Peri Peri, Wedges' });
+  function save(v) { closeModal(); act('editMeal', { id: m.id, dish: v }, function (i) { return i.reset ? 'Back to the order’s dish for ' + i.name : 'Updated ' + i.name + '’s meal on ' + dayLong(m.date); }); }
+  openModal([
+    h('h2', { text: 'Edit ' + m.name + '’s meal' }),
+    h('p', { class: 'sub', text: dayLong(m.date) + ' only. The rest of the order stays as it is. Price is not changed here.' }),
+    h('datalist', { id: 'dishlist' }, opts.map(function (v) { return h('option', { value: v }); })),
+    inp,
+    h('div', { class: 'row', style: 'margin-top:14px' },
+      h('button', { type: 'button', class: 'btn primary', text: 'Save', onclick: function () { save(inp.value); } }),
+      h('button', { type: 'button', class: 'btn', text: 'Use the order’s dish', onclick: function () { save(''); } }),
+      h('button', { type: 'button', class: 'btn', text: 'Cancel', onclick: closeModal }))
+  ]);
+  setTimeout(function () { inp.focus(); inp.select(); }, 30);
+}
 function openMove(m) {
   var weekends = isWeekend_(m.date), ord = S.orders.filter(function (o) { return o.oid && o.oid === m.oid; })[0];
   var floor = ord ? ord.date : addDays_(m.date, -60), start = floor > addDays_(m.date, -7) ? floor : addDays_(m.date, -7);
