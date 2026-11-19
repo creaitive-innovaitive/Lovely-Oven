@@ -39,6 +39,7 @@
   const ORDER = {
     protein: null, flavour: null, spiceLevel: null, carb: null, side: null,
     bflavour: null, bsides: [], btop: {},   // chicken burger: flavour, optional sides (any number), topping extras { name: price }
+    meals: [], burgers: [],   // finished "Build your own" meals added with the Add to order button
     extras:   {},  // { key: { label, price, qty } }
     toppings: {},  // soup-only options, only orderable alongside a soup
     setMeals: {}   // { key: { label, price, qty } }
@@ -72,6 +73,17 @@
   const burgerPrice    = () => BURGER_BASE + ORDER.bsides.length * BURGER_SIDE + Object.values(ORDER.btop).reduce((n, p) => n + p, 0);
   const burgerToppings = () => Object.keys(ORDER.btop);
   const burgerDetail   = () => [ORDER.bflavour, burgerToppings().join(', ') || 'no extra toppings', ORDER.bsides.join(', ') || 'no side'].join(' · ');
+
+  /* Build-your-own meals: the builder holds the one being tailored, "Add to order" files it away so another can be built */
+  const mealPriceOf   = m => 130000 + (SIDE_SURCHARGE[m.side] || 0);
+  const mealDetailOf  = m => [m.protein, m.flavour + (m.spice ? ` (${m.spice})` : ''), m.carb, sideText(m.side)].join(' · ');
+  const burgerPriceOf = b => BURGER_BASE + b.sides.length * BURGER_SIDE + Object.values(b.top).reduce((n, p) => n + p, 0);
+  const burgerDetailOf = b => [b.flavour, Object.keys(b.top).join(', ') || 'no extra toppings', b.sides.join(', ') || 'no side'].join(' · ');
+  const curMeal   = () => ({ protein: ORDER.protein, flavour: ORDER.flavour, spice: ORDER.spiceLevel || '', carb: ORDER.carb, side: ORDER.side });
+  const curBurger = () => ({ flavour: ORDER.bflavour, sides: ORDER.bsides.slice(), top: Object.assign({}, ORDER.btop) });
+  const mealReady = () => STEPS.every(s => ORDER[s.key]) && (ORDER.flavour !== 'Peri Peri' || !!ORDER.spiceLevel);
+  const allMeals   = () => ORDER.meals.concat(STEPS.every(s => ORDER[s.key]) ? [curMeal()] : []);
+  const allBurgers = () => ORDER.burgers.concat(burgerComplete() ? [curBurger()] : []);
 
   function recalc(item) {
     item.price = item.base + (item.rice === 'Yes' ? RICE_PRICE : 0) + sideExtra(item.side);
@@ -120,6 +132,7 @@
     Object.values(ORDER.extras).forEach(v => n += v.qty);
     Object.values(ORDER.setMeals).forEach(v => n += v.qty);
     Object.values(ORDER.toppings).forEach(v => n += v.qty);
+    n += ORDER.meals.length + ORDER.burgers.length;
     if (burgerComplete()) n += 1;
     return n;
   }
@@ -143,9 +156,88 @@
     document.querySelectorAll('.o-topping-note').forEach(el => el.classList.toggle('o-topping-note-open', !locked));
   }
 
+  /* ── "Add to order" for the build-your-own sections ─────── */
+  const CHICKEN_GROUPS = ['protein', 'flavour', 'carb', 'side'];
+  function setupBuilders() {
+    const mk = (secId, kind) => {
+      const grid = document.querySelector(`#${secId} .o-build-grid`);
+      if (!grid) return;
+      const row = document.createElement('div');
+      row.className = 'o-addrow';
+      row.id = `oAdd-${kind}`;
+      row.innerHTML = (kind === 'meal'
+        ? `<div class="o-heat" hidden><b>Heat level</b>${['Mild', 'Medium', 'Hot'].map(h => `<span class="o-chip" role="button" tabindex="0" data-heat="${h}">${h}</span>`).join('')}</div>` : '') +
+        `<div class="o-addbar"><button type="button" class="o-addbtn" data-add="${kind}" disabled>Add to order</button><span class="o-addhint" aria-live="polite"></span></div>` +
+        `<div class="o-added" hidden></div>`;
+      grid.insertAdjacentElement('afterend', row);
+      row.querySelector('.o-addbtn').addEventListener('click', () => addBuilt(kind));
+      row.querySelectorAll('[data-heat]').forEach(c => {
+        const pick = () => { ORDER.spiceLevel = ORDER.spiceLevel === c.dataset.heat ? null : c.dataset.heat; updateBar(); };
+        c.addEventListener('click', pick);
+        c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+      });
+      row.addEventListener('click', e => {
+        const b = e.target.closest('[data-rm]');
+        if (!b) return;
+        (kind === 'meal' ? ORDER.meals : ORDER.burgers).splice(+b.dataset.rm, 1);
+        updateBar();
+      });
+    };
+    mk('o-chicken', 'meal');
+    mk('o-burger', 'burger');
+  }
+
+  function addBuilt(kind) {
+    if (kind === 'meal') {
+      if (!mealReady()) return;
+      ORDER.meals.push(curMeal());
+      CHICKEN_GROUPS.forEach(g => { ORDER[g] = null; });
+      ORDER.spiceLevel = null;
+      CHICKEN_GROUPS.forEach(g => document.querySelectorAll(`[data-group="${g}"]`).forEach(el => el.classList.remove('order-selected')));
+    } else {
+      if (!burgerComplete()) return;
+      ORDER.burgers.push(curBurger());
+      ORDER.bflavour = null; ORDER.bsides = []; ORDER.btop = {};
+      ['bflavour', 'btop', 'bside'].forEach(g => document.querySelectorAll(`[data-group="${g}"]`).forEach(el => el.classList.remove('order-selected')));
+    }
+    updateBar();
+    const hint = document.querySelector(`#oAdd-${kind} .o-addhint`);
+    if (hint) hint.textContent = 'Added. Build another or review your order below.';
+  }
+
+  /* Keeps the heat row, button state and added-lists in step with the current selection */
+  function syncBuilders() {
+    const heat = document.querySelector('#oAdd-meal .o-heat');
+    if (heat) {
+      heat.hidden = ORDER.flavour !== 'Peri Peri';
+      heat.querySelectorAll('[data-heat]').forEach(c => {
+        const on = ORDER.spiceLevel === c.dataset.heat;
+        c.classList.toggle('order-selected', on);
+        c.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+    [['meal', mealReady(), ORDER.meals, mealDetailOf, mealPriceOf, 'Meal',
+      () => { const m = STEPS.filter(s => !ORDER[s.key]).map(s => s.label.toLowerCase()); if (ORDER.flavour === 'Peri Peri' && !ORDER.spiceLevel) m.push('heat level'); return m; }],
+     ['burger', burgerComplete(), ORDER.burgers, burgerDetailOf, burgerPriceOf, 'Burger', () => ['flavour']]
+    ].forEach(([kind, ready, list, detail, price, noun, missing]) => {
+      const row = $id(`oAdd-${kind}`);
+      if (!row) return;
+      const btn = row.querySelector('.o-addbtn'), hint = row.querySelector('.o-addhint'), box = row.querySelector('.o-added');
+      btn.disabled = !ready;
+      const started = kind === 'meal' ? STEPS.some(s => ORDER[s.key]) : burgerStarted();
+      if (ready) hint.textContent = '';
+      else if (started) hint.textContent = 'Still to choose: ' + missing().join(', ');
+      else if (!list.length) hint.textContent = '';
+      box.hidden = !list.length;
+      box.innerHTML = list.length ? `<b>In your order (${list.length})</b>` + list.map((x, i) =>
+        `<div class="o-added-row"><span>${noun} ${i + 1}: ${detail(x)}</span><span>${fmt(price(x))}</span><button type="button" data-rm="${i}" aria-label="Remove ${noun.toLowerCase()} ${i + 1}">Remove</button></div>`).join('') : '';
+    });
+  }
+
   /* ── Init ────────────────────────────────────────────── */
   function init() {
     injectUI();
+    setupBuilders();
     attachHandlers();
     updateBar();
   }
@@ -278,6 +370,7 @@
   /* ── Floating order bar ──────────────────────────────── */
   function updateBar() {
     syncToppings();
+    syncBuilders();
     const bar = document.getElementById('loBar');
     if (!bar) return;
 
@@ -327,6 +420,7 @@
   window.loClearSelection = function () {
     ['protein', 'flavour', 'carb', 'side', 'spiceLevel'].forEach(k => { ORDER[k] = null; });
     ORDER.bflavour = null; ORDER.bsides = []; ORDER.btop = {};
+    ORDER.meals = []; ORDER.burgers = [];
     ORDER.extras = {};
     ORDER.toppings = {};
     ORDER.setMeals = {};
@@ -472,10 +566,20 @@
     const topKeys    = Object.keys(ORDER.toppings);
 
     let html = '';
+    const savedRow = (icon, label, detail, price, kind, i) => `<div class="lo-sum-row lo-row-done">
+      <span class="lo-sum-icon">${icon}</span>
+      <div class="lo-sum-text"><span class="lo-sum-label">${label}</span><span class="lo-sum-val">${detail}</span></div>
+      <span class="lo-sum-tick">₫${price.toLocaleString()}</span>
+      <button type="button" class="lo-sum-remove" data-remove="${kind}" data-i="${i}" aria-label="Remove ${label}">✕</button>
+    </div>`;
 
-    /* ── Chicken meal ── */
+    /* ── Chicken meals ── */
+    if (hasChicken || ORDER.meals.length) {
+      html += `<div class="lo-section-title">🍗 Chicken Meal${ORDER.meals.length + (hasChicken ? 1 : 0) > 1 ? 's' : ''}</div>`;
+      ORDER.meals.forEach((m, i) => { html += savedRow('🍗', `Meal ${i + 1}`, mealDetailOf(m), mealPriceOf(m), 'meal', i); });
+    }
     if (hasChicken) {
-      html += `<div class="lo-section-title">🍗 Chicken Meal</div>`;
+      if (ORDER.meals.length) html += `<div class="lo-sum-label" style="margin:.6rem 0 .2rem">Meal ${ORDER.meals.length + 1}</div>`;
 
       if (!allChosen) {
         html += `<div class="lo-incomplete">
@@ -497,20 +601,25 @@
           </div>
           ${s.key === 'flavour' && val === 'Peri Peri' ? spicePicker() : ''}`;
       });
-
-      if (allChosen) {
-        html += `<div class="lo-sum-subtotal"><span>Chicken meal</span><strong>₫${chickenPrice().toLocaleString()}</strong></div>`;
-      }
+    }
+    if (allMeals().length) {
+      html += `<div class="lo-sum-subtotal"><span>Chicken meal${allMeals().length > 1 ? 's × ' + allMeals().length : ''}</span><strong>₫${allMeals().reduce((n, m) => n + mealPriceOf(m), 0).toLocaleString()}</strong></div>`;
     }
 
-    /* ── Chicken burger ── */
+    /* ── Chicken burgers ── */
+    if (burgerStarted() || ORDER.burgers.length) {
+      html += `<div class="lo-section-title">🍔 Chicken Burger${ORDER.burgers.length + (burgerStarted() ? 1 : 0) > 1 ? 's' : ''}</div>`;
+      ORDER.burgers.forEach((b, i) => { html += savedRow('🍔', `Burger ${i + 1}`, burgerDetailOf(b), burgerPriceOf(b), 'burger', i); });
+    }
     if (burgerStarted()) {
-      html += `<div class="lo-section-title">🍔 Chicken Burger</div>`;
+      if (ORDER.burgers.length) html += `<div class="lo-sum-label" style="margin:.6rem 0 .2rem">Burger ${ORDER.burgers.length + 1}</div>`;
       if (!burgerComplete()) html += `<div class="lo-incomplete"><span>⚠️</span> Still need: <strong>Flavour</strong></div>`;
       [['Flavour', ORDER.bflavour], ['Toppings', burgerToppings().join(', ') || 'Lettuce and tomato only'], ['Sides', ORDER.bsides.length ? ORDER.bsides.join(', ') + ' (+' + fmt(BURGER_SIDE * ORDER.bsides.length) + ')' : 'No side']].forEach(([label, val]) => {
         html += `<div class="lo-sum-row ${val ? 'lo-row-done' : 'lo-row-empty'}"><span class="lo-sum-icon">🍔</span><div class="lo-sum-text"><span class="lo-sum-label">${label}</span><span class="lo-sum-val">${val || '<em>Not chosen yet</em>'}</span></div>${val ? '<span class="lo-sum-tick">✓</span>' : ''}</div>`;
       });
-      if (burgerComplete()) html += `<div class="lo-sum-subtotal"><span>Chicken burger</span><strong>₫${burgerPrice().toLocaleString()}</strong></div>`;
+    }
+    if (allBurgers().length) {
+      html += `<div class="lo-sum-subtotal"><span>Chicken burger${allBurgers().length > 1 ? 's × ' + allBurgers().length : ''}</span><strong>₫${allBurgers().reduce((n, b) => n + burgerPriceOf(b), 0).toLocaleString()}</strong></div>`;
     }
 
     /* ── Main Meals ── */
@@ -575,8 +684,8 @@
 
     /* ── Grand total ── */
     let grandTotal = 0;
-    if (allChosen) grandTotal += chickenPrice();
-    if (burgerComplete()) grandTotal += burgerPrice();
+    allMeals().forEach(m => grandTotal += mealPriceOf(m));
+    allBurgers().forEach(b => grandTotal += burgerPriceOf(b));
     Object.values(ORDER.setMeals).forEach(v => grandTotal += v.price * v.qty);
     Object.values(ORDER.extras).forEach(v => grandTotal += v.price * v.qty);
     Object.values(ORDER.toppings).forEach(v => grandTotal += v.price * v.qty);
@@ -585,6 +694,12 @@
     }
 
     el.innerHTML = html;
+
+    el.querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => {
+      (b.dataset.remove === 'meal' ? ORDER.meals : ORDER.burgers).splice(+b.dataset.i, 1);
+      updateBar();
+      buildSummary();
+    }));
 
     // Wire up spice buttons
     el.querySelectorAll('.lo-spice-btn').forEach(btn => {
@@ -595,6 +710,7 @@
         btn.classList.add('lo-spice-active');
         const barChip = document.querySelector('[data-bar-step="flavour"]');
         if (barChip) barChip.textContent = `Peri Peri (${ORDER.spiceLevel})`;
+        syncBuilders();
       });
     });
   }
@@ -619,23 +735,36 @@
     let msg = `🍽️ New Order — Lovely Oven\n\n`;
     let grand = 0;
 
-    if (hasChicken) {
-      msg += `🍗 CHICKEN MEAL\n`;
-      msg += `   Cut:      ${ORDER.protein || '—'}\n`;
-      msg += `   Marinade: ${ORDER.flavour ? ORDER.flavour + spice : '—'}\n`;
-      msg += `   Carb:     ${ORDER.carb || '—'}\n`;
-      msg += `   Side:     ${sideText(ORDER.side) || '—'}\n`;
-      if (STEPS.every(s => ORDER[s.key])) { msg += `   Subtotal: ₫${chickenPrice().toLocaleString()}\n`; grand += chickenPrice(); }
-      msg += '\n';
+    const meals = allMeals(), burgers = allBurgers();
+    if (hasChicken || meals.length) {
+      meals.forEach((m, i) => {
+        msg += `🍗 CHICKEN MEAL${meals.length > 1 ? ' ' + (i + 1) : ''}\n`;
+        msg += `   Cut:      ${m.protein}\n`;
+        msg += `   Marinade: ${m.flavour}${m.spice ? ` (${m.spice})` : ''}\n`;
+        msg += `   Carb:     ${m.carb}\n`;
+        msg += `   Side:     ${sideText(m.side)}\n`;
+        msg += `   Subtotal: ₫${mealPriceOf(m).toLocaleString()}\n\n`;
+        grand += mealPriceOf(m);
+      });
+      if (hasChicken && !STEPS.every(s => ORDER[s.key])) {
+        msg += `🍗 CHICKEN MEAL (unfinished)\n`;
+        msg += `   Cut:      ${ORDER.protein || '—'}\n`;
+        msg += `   Marinade: ${ORDER.flavour ? ORDER.flavour + spice : '—'}\n`;
+        msg += `   Carb:     ${ORDER.carb || '—'}\n`;
+        msg += `   Side:     ${sideText(ORDER.side) || '—'}\n\n`;
+      }
     }
 
-    if (burgerStarted()) {
-      msg += `🍔 CHICKEN BURGER\n`;
-      msg += `   Flavour:  ${ORDER.bflavour || '—'}\n`;
-      msg += `   Toppings: ${burgerToppings().join(', ') || 'lettuce and tomato only'}\n`;
-      msg += `   Sides:    ${ORDER.bsides.join(', ') || 'none'}\n`;
-      if (burgerComplete()) { msg += `   Subtotal: ₫${burgerPrice().toLocaleString()}\n`; grand += burgerPrice(); }
-      msg += '\n';
+    burgers.forEach((b, i) => {
+      msg += `🍔 CHICKEN BURGER${burgers.length > 1 ? ' ' + (i + 1) : ''}\n`;
+      msg += `   Flavour:  ${b.flavour}\n`;
+      msg += `   Toppings: ${Object.keys(b.top).join(', ') || 'lettuce and tomato only'}\n`;
+      msg += `   Sides:    ${b.sides.join(', ') || 'none'}\n`;
+      msg += `   Subtotal: ₫${burgerPriceOf(b).toLocaleString()}\n\n`;
+      grand += burgerPriceOf(b);
+    });
+    if (burgerStarted() && !burgerComplete()) {
+      msg += `🍔 CHICKEN BURGER (unfinished)\n   Flavour:  —\n\n`;
     }
 
     if (setKeys.length > 0) {
@@ -694,15 +823,14 @@
   /* ── Itemised copy of the order for the staff dashboard ── */
   function buildItems() {
     const items = [];
-    if (STEPS.every(s => ORDER[s.key])) {
-      items.push({ g: 'chicken', value: 'chicken', label: 'Chicken meal', qty: 1, price: chickenPrice(),
-        detail: [ORDER.protein, ORDER.flavour + (ORDER.spiceLevel ? ` (${ORDER.spiceLevel})` : ''), ORDER.carb, sideText(ORDER.side)].join(' · '),
-        opts: { protein: ORDER.protein, flavour: ORDER.flavour, spice: ORDER.spiceLevel || '', carb: ORDER.carb, side: ORDER.side } });
-    }
-    if (burgerComplete()) {
-      items.push({ g: 'burger', value: 'Chicken burger', label: 'Chicken burger', qty: 1, price: burgerPrice(), detail: burgerDetail(),
-        opts: { flavour: ORDER.bflavour, side: ORDER.bsides.join(', '), sides: ORDER.bsides.slice(), toppings: burgerToppings() } });
-    }
+    allMeals().forEach(m => {
+      items.push({ g: 'chicken', value: 'chicken', label: 'Chicken meal', qty: 1, price: mealPriceOf(m), detail: mealDetailOf(m),
+        opts: { protein: m.protein, flavour: m.flavour, spice: m.spice || '', carb: m.carb, side: m.side } });
+    });
+    allBurgers().forEach(b => {
+      items.push({ g: 'burger', value: 'Chicken burger', label: 'Chicken burger', qty: 1, price: burgerPriceOf(b), detail: burgerDetailOf(b),
+        opts: { flavour: b.flavour, side: b.sides.join(', '), sides: b.sides.slice(), toppings: Object.keys(b.top) } });
+    });
     [['setmeal', ORDER.setMeals], ['topping', ORDER.toppings], ['extra', ORDER.extras]].forEach(([g, group]) => {
       Object.keys(group).forEach(k => {
         const it = group[k];

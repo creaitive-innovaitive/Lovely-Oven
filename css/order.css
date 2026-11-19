@@ -87,3 +87,20 @@
 
 /* Visible keyboard focus */
 .o-chip:focus-visible, .o-item:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* Add to order (build-your-own) */
+.o-addrow { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(28,40,32,0.1); }
+.o-heat { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-bottom: 0.75rem; }
+.o-heat b { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--olive-dark); margin-right: 0.4rem; }
+.o-heat[hidden], .o-added[hidden] { display: none; }
+.o-addbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.o-addbtn { font: inherit; font-weight: 600; padding: 0.7rem 1.6rem; border: 0; border-radius: 999px; background: var(--olive-darker); color: var(--parchment); cursor: pointer; }
+.o-addbtn:hover:not(:disabled) { filter: brightness(1.15); }
+.o-addbtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.o-addbtn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.o-addhint { font-size: 0.85rem; color: var(--olive-dark); }
+.o-added { margin-top: 0.9rem; font-size: 0.9rem; }
+.o-added b { display: block; margin-bottom: 0.3rem; }
+.o-added-row { display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem; align-items: center; padding: 0.35rem 0; border-top: 1px dashed rgba(28,40,32,0.15); }
+.o-added-row button { font: inherit; font-size: 0.8rem; background: none; border: 0; color: #a33; text-decoration: underline; cursor: pointer; }
+.lo-sum-remove { background: none; border: 0; color: #a33; font-size: 1rem; cursor: pointer; padding: 0 0 0 0.5rem; }
