@@ -721,6 +721,22 @@ function planMealStatus_(p, data) {
   return { id: m.id, status: to, info: { name: baseName_(m.name), status: to } };
 }
 
+/* One-tap "serve a banked meal": uses the customer's earliest booked meal (moved to today), else an unbooked paid meal.
+   The original order is never trimmed or re-created, so "Meal n of m" stays right. */
+function planServeOne_(p, data) {
+  var key = baseName_(p.name).toLowerCase(), ix = indexData_(data), today = data.today || localToday(), found = null, o = null;
+  data.meals.filter(function (m) { return m.status === STATUS_.SCHEDULED && baseName_(m.name).toLowerCase() === key; }).sort(cmpMeal_).some(function (m) { found = m; return true; });
+  if (found) return { update: { id: found.id, date: today }, meal: null, info: { name: baseName_(found.name) } };
+  data.orders.slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.row - b.row; }).some(function (x) {
+    if (x.oid && baseName_(x.name).toLowerCase() === key && credit_(ix, x) > 0) { o = x; return true; }
+    return false;
+  });
+  if (!o) fail_('There are no banked or booked meals to serve.');
+  var m = expandMeals_([{ date: today, count: 1 }], baseName_(o.name), o.oid, o.food, data.nonce, (ix.live[o.oid] || []).length + 100)[0];
+  m.status = STATUS_.SERVED;
+  return { update: null, meal: m, info: { name: baseName_(o.name) } };
+}
+
 function planMove_(p, data) {
   var m = findMeal_(data, p.id), ix = indexData_(data), o = ix.byOid[m.oid];
   if (m.status !== STATUS_.SCHEDULED) fail_('Only a scheduled meal can be moved.');
@@ -888,6 +904,11 @@ function makeMock() {
     scheduleMeals: function (p) { var plan = planSchedule_(p, data()); addMeals(plan.meals); return out(plan.info); },
     setMealStatus: function (p) { var plan = planMealStatus_(p, data()); findMeal_(data(), plan.id).status = plan.status; return out(plan.info); },
     moveMeal: function (p) { var plan = planMove_(p, data()); findMeal_(data(), plan.id).date = plan.date; return out(plan.info); },
+    serveOne: function (p) {
+      var plan = planServeOne_(p, data());
+      if (plan.update) { var m = findMeal_(data(), plan.update.id); m.date = plan.update.date; m.status = STATUS_.SERVED; } else addMeals([plan.meal]);
+      return out(plan.info);
+    },
     recordPayment: function (p) {
       var plan = planPayment_(p, data());
       orders.forEach(function (o) { if (o.row === plan.row) o.paid = plan.paid; });
@@ -1004,6 +1025,13 @@ var sbApi = {
   },
   moveMeal: function (p) {
     return readData().then(function (d) { var plan = planMove_(p, d); return sb.from('meals').update({ meal_date: plan.date }).eq('id', plan.id).then(ok).then(function () { return reply(plan.info); }); });
+  },
+  serveOne: function (p) {
+    return readData().then(function (d) {
+      var plan = planServeOne_(p, withNonce(d));
+      var w = plan.update ? sb.from('meals').update({ meal_date: plan.update.date, status: STATUS_.SERVED }).eq('id', plan.update.id).then(ok) : insertMeals([plan.meal]);
+      return w.then(function () { return reply(plan.info); });
+    });
   },
   recordPayment: function (p) {
     return readData().then(function (d) { var plan = planPayment_(p, d); return sb.from('orders').update({ paid: plan.paid }).eq('id', plan.row).then(ok).then(function () { return reply(plan.info); }); });
@@ -1946,7 +1974,10 @@ function renderDetail() {
     h('div', { class: 'tile' }, h('b', { text: String(c.served) }), h('span', { text: 'Served' })),
     h('div', { class: 'tile' + (c.owed ? ' bad' : '') }, h('b', { text: fmt(c.owed) }), h('span', { text: 'Owes' }))));
 
-  detail.appendChild(h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn small', text: 'Add banked money', onclick: function () { openBank(c); } })));
+  var avail = c.credit + S.meals.filter(function (m) { return m.name.toLowerCase() === key && m.status === STATUS_.SCHEDULED; }).length;
+  detail.appendChild(h('div', { class: 'row' },
+    avail > 0 ? h('button', { type: 'button', class: 'btn ok', text: 'Serve 1 meal now (' + avail + ' left)', onclick: function () { act('serveOne', { name: c.name }, function (i) { return 'Served 1 meal for ' + i.name; }); } }) : null,
+    h('button', { type: 'button', class: 'btn small', text: 'Add banked money', onclick: function () { openBank(c); } })));
 
   toSched.forEach(function (o) {
     var st = CV.sched[o.oid] || (CV.sched[o.oid] = { counts: {}, weekends: false });
