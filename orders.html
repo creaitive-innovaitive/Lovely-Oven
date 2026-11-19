@@ -1747,7 +1747,7 @@ function mealCard(m, showDate) {
   var sub = (m.n ? 'Meal ' + m.n + ' of ' + m.of : 'Meal') + (showDate ? ' · ' + dayLong(m.date) : '') + (mealDish(m) ? ' · ' + mealDish(m) : '');
   var acts;
   if (served) {
-    acts = [h('span', { class: 'tick', text: '✓ Served' }), h('button', { type: 'button', class: 'btn small', text: 'Undo', onclick: function () { act('setMealStatus', { id: m.id, status: STATUS_.SCHEDULED }); } })];
+    acts = [h('span', { class: 'tick', text: '✓ Served' }), h('button', { type: 'button', class: 'btn small', text: 'Edit', onclick: function () { openEditMeal(m); } }), h('button', { type: 'button', class: 'btn small', text: 'Undo', onclick: function () { act('setMealStatus', { id: m.id, status: STATUS_.SCHEDULED }); } })];
   } else if (ask) {
     acts = [];
   } else {
