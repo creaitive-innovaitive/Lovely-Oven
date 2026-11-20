@@ -746,10 +746,9 @@ function planEditMeal_(p, data) {
 }
 
 function planMove_(p, data) {
-  var m = findMeal_(data, p.id), ix = indexData_(data), o = ix.byOid[m.oid];
+  var m = findMeal_(data, p.id);
   if (m.status !== STATUS_.SCHEDULED) fail_('Only a scheduled meal can be moved.');
   if (!isISO_(p.date)) fail_('Pick a valid day.');
-  if (o && p.date < o.date) fail_('That is before the order was placed.');
   return { id: m.id, date: p.date, info: { name: baseName_(m.name), date: p.date } };
 }
 
@@ -1800,14 +1799,14 @@ function openEditMeal(m) {
   setTimeout(function () { inp.focus(); inp.select(); }, 30);
 }
 function openMove(m) {
-  var weekends = isWeekend_(m.date), ord = S.orders.filter(function (o) { return o.oid && o.oid === m.oid; })[0];
-  var floor = ord ? ord.date : addDays_(m.date, -60), start = floor > addDays_(m.date, -7) ? floor : addDays_(m.date, -7);
+  var weekends = isWeekend_(m.date);
+  var floor = addDays_(m.date, -120), start = floor > addDays_(m.date, -7) ? floor : addDays_(m.date, -7);
   function draw() {
     var days = [], d = start, guard = 0;
     while (days.length < 15 && guard++ < 60) { if (weekends || !isWeekend_(d)) days.push(d); d = addDays_(d, 1); }
     openModal([
       h('h2', { text: 'Move ' + m.name + '’s meal' }),
-      h('p', { class: 'sub', text: 'Now on ' + dayLong(m.date) + '. Pick the new day' + (ord ? ' (not before the order on ' + dayLong(ord.date) + ').' : '.') }),
+      h('p', { class: 'sub', text: 'Now on ' + dayLong(m.date) + '. Pick the new day.' }),
       h('div', { class: 'chips', style: 'margin:0' }, days.map(function (x) {
         return h('button', { type: 'button', class: 'chip', 'aria-pressed': x === m.date ? 'true' : 'false', text: dayLong(x), onclick: function () {
           closeModal();
