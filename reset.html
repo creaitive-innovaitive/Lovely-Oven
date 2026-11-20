@@ -28,7 +28,11 @@ input:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outl
 <main>
   <section id="checking"><h1>Reset password</h1><p>Checking your link…</p></section>
 
+  <section id="confirm" hidden><h1>Reset password</h1><p>Press the button to continue and choose a new password.</p>
+    <button class="btn primary" type="button" id="goconfirm">Continue</button></section>
+
   <section id="invalid" hidden><h1>Link not valid</h1><p>This reset link has expired or was already used. Go back to the sign-in page and choose "Forgot password?" for a new one.</p>
+    <p id="why"></p>
     <a class="btn" href="/admin#login">Admin sign-in</a><a class="btn" href="/orders#login">Orders sign-in</a></section>
 
   <form id="codeform" hidden><h1>Enter your code</h1><p id="codemsg">Your account uses an authenticator app. Enter the 6-digit code to continue.</p>
@@ -49,7 +53,7 @@ input:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outl
 (function () {
 'use strict';
 var SB = supabase.createClient('https://drkebbkyipipxwcclihc.supabase.co', 'sb_publishable_x2cn9JVmEk5eCUJ3CtiAgA_5zLN4XqM');
-var PANELS = ['checking', 'invalid', 'codeform', 'pwform', 'done'];
+var PANELS = ['checking', 'confirm', 'invalid', 'codeform', 'pwform', 'done'];
 function $(id) { return document.getElementById(id); }
 function show(id) { PANELS.forEach(function (p) { $(p).hidden = p !== id; }); var i = $(id).querySelector('input'); if (i) setTimeout(function () { i.focus(); }, 0); }
 
@@ -93,11 +97,29 @@ function askPassword() {
   };
 }
 
+function invalid(reason) { if (reason) $('why').textContent = 'Reason given: ' + reason; show('invalid'); }
+
+var query = new URLSearchParams(location.search), hash = new URLSearchParams(location.hash.slice(1));
+var tokenHash = query.get('token_hash');
+if (hash.get('error_description')) {
+  started = true; invalid(hash.get('error_description').replace(/\+/g, ' '));
+} else if (tokenHash && query.get('type') === 'recovery') {
+  // The link only carries a token; it is used when this button is pressed, so email scanners that open links cannot use it up
+  started = true; show('confirm');
+  $('goconfirm').onclick = function () {
+    $('goconfirm').disabled = true;
+    SB.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' }).then(function (r) {
+      started = false;
+      if (r.error) { started = true; invalid(r.error.message); } else begin();
+    });
+  };
+}
+
 SB.auth.onAuthStateChange(function (event) {
   if (event === 'PASSWORD_RECOVERY') setTimeout(begin, 0);   // not called inline: the client must finish its own work first
 });
 // No recovery event shortly after load means the link was missing, expired or already used
-setTimeout(function () { if (!started) show('invalid'); }, 4000);
+setTimeout(function () { if (!started) invalid(); }, 4000);
 })();
 </script>
 </body>
