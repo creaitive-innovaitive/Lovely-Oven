@@ -184,7 +184,7 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
 .sect { display: flex; flex-direction: column; gap: 10px; }
 .sect > h2 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
 .mgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 12px; }
-.meal { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); padding: 14px 16px 14px 20px; border: 2px solid transparent; }
+.meal { display: grid; grid-template-columns: minmax(0, 1fr) fit-content(calc(100% - 170px)); gap: 12px; align-items: center; background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); padding: 14px 16px 14px 20px; border: 2px solid transparent; }
 .meal.served { background: var(--ok-soft); box-shadow: none; }
 .meal .who { min-width: 0; }
 .meal .who strong { display: block; font: 700 24px/1.15 var(--display); overflow-wrap: anywhere; }
