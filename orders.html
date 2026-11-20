@@ -453,7 +453,7 @@ body.busy .btn, body.busy .chip, body.busy .seg button { pointer-events: none; o
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status" hidden></div>
 <div class="boot" id="boot"><strong id="boot-msg">Loading orders…</strong><button type="button" class="btn" id="boot-retry" hidden>Try again</button>
-  <form id="boot-key" hidden style="display:grid;gap:12px;width:min(320px,100%)"><input type="email" id="email-in" autocomplete="username" placeholder="Email" aria-label="Email"><input type="password" id="key-in" autocomplete="current-password" placeholder="Password" aria-label="Password"><button type="submit" class="btn primary">Sign in</button></form>
+  <form id="boot-key" hidden style="display:grid;gap:12px;width:min(320px,100%)"><input type="email" id="email-in" autocomplete="username" placeholder="Email" aria-label="Email"><input type="password" id="key-in" autocomplete="current-password" placeholder="Password" aria-label="Password"><button type="submit" class="btn primary">Sign in</button><button type="button" class="btn" id="forgot-key" style="min-height:44px;font-size:15px">Forgot password?</button></form>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -2103,6 +2103,14 @@ function renderAll() {
 function init() {
   if (!useSb) $('previewbar').hidden = false;
   wireOrder();
+  $('forgot-key').onclick = function () {
+    var email = $('email-in').value.trim();
+    if (!email) { $('boot-msg').textContent = 'Type your email above first, then press Forgot password.'; $('email-in').focus(); return; }
+    $('boot-msg').textContent = 'Sending…';
+    sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://www.lovelyoven.com/reset' }).then(function (r) {
+      $('boot-msg').textContent = r.error ? 'Could not send the email right now. Please try again in a few minutes.' : 'If that email is registered, a reset link is on its way. Check your spam folder too.';
+    });
+  };
   $('boot-key').onsubmit = function (ev) {
     ev.preventDefault();
     var email = $('email-in').value.trim(), pw = $('key-in').value;

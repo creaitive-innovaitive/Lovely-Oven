@@ -95,7 +95,8 @@ a.btn { display: inline-grid; place-items: center; text-decoration: none; color:
   <form id="loginform"><h1>Lovely Oven Admin</h1><p class="sub" id="loginmsg">Sign in with your admin account.</p>
     <input type="email" id="email" autocomplete="username" placeholder="Email" aria-label="Email" required>
     <input type="password" id="pw" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
-    <button class="btn primary" type="submit">Sign in</button></form>
+    <button class="btn primary" type="submit">Sign in</button>
+    <button class="btn small" type="button" id="forgot">Forgot password?</button></form>
   <form id="mfaform" hidden><h1>Enter your code</h1><p class="sub" id="mfamsg">Open your authenticator app and enter the 6-digit code for Lovely Oven Admin.</p>
     <input type="text" id="mfacode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="123456" aria-label="6-digit code" required>
     <button class="btn primary" type="submit">Verify</button>
@@ -114,7 +115,7 @@ a.btn { display: inline-grid; place-items: center; text-decoration: none; color:
     <h1>Admin</h1>
     <div class="tabs" id="tabs"></div>
     <button class="btn burger" id="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-    <div class="row menu" id="menu"><span class="sub" id="who"></span><a class="btn small" href="/orders">Orders</a><a class="btn small" href="/">Website</a><button class="btn small" id="refresh">Refresh</button><button class="btn small" id="out">Sign out</button></div>
+    <div class="row menu" id="menu"><span class="sub" id="who"></span><a class="btn small" href="/orders">Orders</a><a class="btn small" href="/">Website</a><button class="btn small" id="refresh">Refresh</button><button class="btn small" id="chpw">Change password</button><button class="btn small" id="out">Sign out</button></div>
   </div>
   <div class="panel" id="periodbar">
     <div class="row">
@@ -127,6 +128,13 @@ a.btn { display: inline-grid; place-items: center; text-decoration: none; color:
     </div>
   </div>
   <div id="view"></div>
+</div>
+<div class="login" id="pwbox" role="dialog" aria-modal="true" aria-labelledby="pwtitle" style="position:fixed;inset:0;z-index:50;background:var(--bg)" hidden>
+  <form id="pwform2"><h1 id="pwtitle">Change password</h1><p class="sub" id="pwmsg2">At least 12 characters. A few random words works well.</p>
+    <input type="password" id="npw1" autocomplete="new-password" placeholder="New password" aria-label="New password" minlength="12" required>
+    <input type="password" id="npw2" autocomplete="new-password" placeholder="Repeat new password" aria-label="Repeat new password" minlength="12" required>
+    <button class="btn primary" type="submit">Save password</button>
+    <button class="btn small" type="button" id="npwcancel">Cancel</button></form>
 </div>
 <div class="toast" id="toast" hidden></div>
 
@@ -525,6 +533,27 @@ function init() {
     ev.preventDefault(); $('loginmsg').textContent = 'Signing in…';
     SB.auth.signInWithPassword({ email: $('email').value.trim(), password: $('pw').value }).then(function (r) {
       if (r.error) showLogin('Wrong email or password.'); else gate(r.data.session);
+    });
+  };
+  $('forgot').onclick = function () {
+    var email = $('email').value.trim();
+    if (!email) { $('loginmsg').textContent = 'Type your email above first, then press Forgot password.'; $('email').focus(); return; }
+    $('loginmsg').textContent = 'Sending…';
+    SB.auth.resetPasswordForEmail(email, { redirectTo: 'https://www.lovelyoven.com/reset' }).then(function (r) {
+      $('loginmsg').textContent = r.error ? 'Could not send the email right now. Please try again in a few minutes.' : 'If that email is registered, a reset link is on its way. Check your spam folder too.';
+    });
+  };
+  $('chpw').onclick = function () { $('menu').classList.remove('open'); $('pwmsg2').textContent = 'At least 12 characters. A few random words works well.'; $('npw1').value = $('npw2').value = ''; $('pwbox').hidden = false; $('npw1').focus(); };
+  $('npwcancel').onclick = function () { $('pwbox').hidden = true; };
+  $('pwform2').onsubmit = function (ev) {
+    ev.preventDefault();
+    var a = $('npw1').value, b = $('npw2').value, m = $('pwmsg2');
+    if (a.length < 12) { m.textContent = 'Please use at least 12 characters.'; return; }
+    if (a !== b) { m.textContent = 'The two passwords do not match.'; return; }
+    m.textContent = 'Saving…';
+    SB.auth.updateUser({ password: a }).then(function (r) {
+      if (r.error) { m.textContent = 'Could not save: ' + r.error.message; return; }
+      SB.auth.signOut({ scope: 'others' }).then(function () { $('pwbox').hidden = true; toast('Password changed. Other devices were signed out.'); });
     });
   };
   $('mfaout').onclick = $('enrolout').onclick = function () { signOutToLogin(); };

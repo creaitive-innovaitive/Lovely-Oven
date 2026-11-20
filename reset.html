@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reset password — Lovely Oven</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+:root { --bg: #eef1f6; --surface: #fff; --ink: #121a2b; --muted: #566077; --line: #bcc5da; --accent: #2c44c9; --bad: #b0221a; --ok: #17703f; color-scheme: light dark; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0b101c; --surface: #151c2d; --ink: #e8ecf7; --muted: #9ba6bf; --line: #3b496b; --accent: #93a5ff; --bad: #ff8c80; --ok: #62d596; } }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; background: var(--bg); color: var(--ink); font: 500 17px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+main { width: min(360px, 100%); display: grid; gap: 12px; }
+h1 { margin: 0; font-size: 28px; line-height: 1.1; }
+p { margin: 0; color: var(--muted); }
+form { display: grid; gap: 12px; }
+input { min-height: 52px; border: 2px solid var(--line); border-radius: 12px; padding: 0 14px; background: var(--surface); color: var(--ink); font: inherit; width: 100%; }
+input:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn { min-height: 52px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font: 700 17px system-ui, -apple-system, 'Segoe UI', sans-serif; display: inline-grid; place-items: center; text-decoration: none; cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { .btn.primary { color: #0b101c; } }
+.msg.bad { color: var(--bad); } .msg.ok { color: var(--ok); }
+</style>
+</head>
+<body>
+<main>
+  <section id="checking"><h1>Reset password</h1><p>Checking your link…</p></section>
+
+  <section id="invalid" hidden><h1>Link not valid</h1><p>This reset link has expired or was already used. Go back to the sign-in page and choose "Forgot password?" for a new one.</p>
+    <a class="btn" href="/admin#login">Admin sign-in</a><a class="btn" href="/orders#login">Orders sign-in</a></section>
+
+  <form id="codeform" hidden><h1>Enter your code</h1><p id="codemsg">Your account uses an authenticator app. Enter the 6-digit code to continue.</p>
+    <input type="text" id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="123456" aria-label="6-digit code" required>
+    <button class="btn primary" type="submit">Continue</button></form>
+
+  <form id="pwform" hidden><h1>Choose a new password</h1><p id="pwmsg">At least 12 characters. A few random words works well.</p>
+    <input type="password" id="pw1" autocomplete="new-password" placeholder="New password" aria-label="New password" minlength="12" required>
+    <input type="password" id="pw2" autocomplete="new-password" placeholder="Repeat new password" aria-label="Repeat new password" minlength="12" required>
+    <button class="btn primary" type="submit">Save password</button></form>
+
+  <section id="done" hidden><h1>Password updated</h1><p class="msg ok">You can use the new password from now on. Any other devices signed in with the old one have been signed out.</p>
+    <a class="btn primary" href="/admin#login">Go to Admin</a><a class="btn" href="/orders#login">Go to Orders</a></section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function () {
+'use strict';
+var SB = supabase.createClient('https://drkebbkyipipxwcclihc.supabase.co', 'sb_publishable_x2cn9JVmEk5eCUJ3CtiAgA_5zLN4XqM');
+var PANELS = ['checking', 'invalid', 'codeform', 'pwform', 'done'];
+function $(id) { return document.getElementById(id); }
+function show(id) { PANELS.forEach(function (p) { $(p).hidden = p !== id; }); var i = $(id).querySelector('input'); if (i) setTimeout(function () { i.focus(); }, 0); }
+
+var started = false;
+function begin() {
+  if (started) return; started = true;
+  // With an authenticator enrolled, the account only lets the password change after the code
+  SB.auth.mfa.getAuthenticatorAssuranceLevel().then(function (r) {
+    var a = r.data;
+    if (r.error || !a) { show('invalid'); return; }
+    if (a.nextLevel === 'aal2' && a.currentLevel !== 'aal2') askCode(); else askPassword();
+  });
+}
+function askCode() {
+  SB.auth.mfa.listFactors().then(function (r) {
+    var f = r.data && r.data.totp && r.data.totp[0];
+    if (!f) { askPassword(); return; }
+    show('codeform');
+    $('codeform').onsubmit = function (ev) {
+      ev.preventDefault(); $('codemsg').textContent = 'Checking…';
+      SB.auth.mfa.challengeAndVerify({ factorId: f.id, code: $('code').value.trim() }).then(function (v) {
+        if (v.error) { $('codemsg').textContent = 'That code did not work. Wait for the next one and try again.'; $('code').value = ''; $('code').focus(); }
+        else askPassword();
+      });
+    };
+  });
+}
+function askPassword() {
+  show('pwform');
+  $('pwform').onsubmit = function (ev) {
+    ev.preventDefault();
+    var a = $('pw1').value, b = $('pw2').value, m = $('pwmsg');
+    m.className = '';
+    if (a.length < 12) { m.textContent = 'Please use at least 12 characters.'; m.className = 'msg bad'; return; }
+    if (a !== b) { m.textContent = 'The two passwords do not match.'; m.className = 'msg bad'; return; }
+    m.textContent = 'Saving…';
+    SB.auth.updateUser({ password: a }).then(function (r) {
+      if (r.error) { m.textContent = 'Could not save: ' + r.error.message; m.className = 'msg bad'; return; }
+      return SB.auth.signOut({ scope: 'others' }).then(function () { show('done'); });
+    });
+  };
+}
+
+SB.auth.onAuthStateChange(function (event) {
+  if (event === 'PASSWORD_RECOVERY') setTimeout(begin, 0);   // not called inline: the client must finish its own work first
+});
+// No recovery event shortly after load means the link was missing, expired or already used
+setTimeout(function () { if (!started) show('invalid'); }, 4000);
+})();
+</script>
+</body>
+</html>
